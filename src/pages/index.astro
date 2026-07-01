@@ -1,22 +1,13 @@
 ---
 /**
- * Mimi's Chocolate Bites — version showroom.
+ * Mimi's Chocolate Bites — single-page site (Rich & Moody).
  *
- * A floating "Preview" dropdown (top-right) swaps between full-page design
- * versions instantly, no reload — so Ciera can text this one link to Mimi and
- * let her flip through the options and pick a favorite. Add a Version 3+ by
- * dropping another component below and one more <option>.
+ * The other design directions (Fun & Playful, Cool & Crafted) and the
+ * version-picker showroom live on the `showroom-all-versions` branch if we
+ * ever want to revisit them.
  */
 import '../styles/global.css';
 import VersionSimple from '../components/VersionSimple.astro';
-import VersionPlayful from '../components/VersionPlayful.astro';
-import VersionCool from '../components/VersionCool.astro';
-
-const versions = [
-  { id: 'simple', label: 'Version 1 · Rich & Moody' },
-  { id: 'playful', label: 'Version 2 · Fun & Playful' },
-  { id: 'cool', label: 'Version 3 · Cool & Crafted' },
-];
 ---
 
 <!doctype html>
@@ -24,102 +15,14 @@ const versions = [
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/jpeg" href="/img/logo.jpg" />
+    <link rel="icon" type="image/png" href="/img/logo.png" />
     <title>Mimi's Chocolate Bites</title>
     <meta
       name="description"
       content="Handmade chocolate bites, cake pops and sweet treats — made with love, made to order."
     />
   </head>
-  <body class="bg-cream">
-    {/* ── Version picker (Ciera's preview control) ─────────────────────
-       Collapsed by default to a tiny 👀 button so it barely shows; tap to
-       reveal the dropdown, tap the button again (or pick) to tuck it away. */}
-    <div id="picker-wrap" class="fixed right-3 top-3 z-50 flex items-center gap-2 print:hidden" data-open="false">
-      <div
-        id="picker-panel"
-        class="flex items-center gap-2 rounded-full border border-cocoa/10 bg-white/95 px-3 py-2 text-sm font-bold text-cocoa shadow-lg backdrop-blur transition-all duration-200"
-        hidden
-      >
-        <span class="text-cocoa-soft">Preview:</span>
-        <select
-          id="version-picker"
-          class="cursor-pointer rounded-md bg-transparent pr-1 font-bold text-choc outline-none"
-        >
-          {versions.map((v) => <option value={v.id}>{v.label}</option>)}
-        </select>
-      </div>
-      <button
-        id="picker-toggle"
-        type="button"
-        aria-label="Switch preview version"
-        class="flex h-9 w-9 items-center justify-center rounded-full border border-cocoa/10 bg-white/60 text-base opacity-40 shadow-sm backdrop-blur transition hover:opacity-100"
-      >
-        👀
-      </button>
-    </div>
-
-    {/* Both versions rendered; picker toggles which is visible */}
-    <div data-version="simple">
-      <VersionSimple />
-    </div>
-    <div data-version="playful" hidden>
-      <VersionPlayful />
-    </div>
-    <div data-version="cool" hidden>
-      <VersionCool />
-    </div>
-
-    <script>
-      const picker = document.getElementById('version-picker') as HTMLSelectElement | null;
-      const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-version]'));
-      const KEY = 'mimi-preview-version';
-
-      function show(id: string) {
-        panels.forEach((p) => (p.hidden = p.dataset.version !== id));
-        if (picker) picker.value = id;
-        try {
-          localStorage.setItem(KEY, id);
-        } catch {}
-        window.scrollTo({ top: 0 });
-      }
-
-      // restore last choice (also supports ?v=playful in the URL)
-      const fromUrl = new URLSearchParams(location.search).get('v');
-      const saved = (() => {
-        try {
-          return localStorage.getItem(KEY);
-        } catch {
-          return null;
-        }
-      })();
-      const initial = fromUrl || saved;
-      if (initial && panels.some((p) => p.dataset.version === initial)) show(initial);
-
-      picker?.addEventListener('change', () => {
-        show(picker.value);
-        setOpen(false); // tuck away after choosing
-      });
-
-      // ── collapsible picker (stays out of the way) ──────────────────
-      const wrap = document.getElementById('picker-wrap');
-      const panel = document.getElementById('picker-panel') as HTMLElement | null;
-      const toggle = document.getElementById('picker-toggle');
-
-      function setOpen(open: boolean) {
-        if (!wrap || !panel) return;
-        wrap.dataset.open = String(open);
-        panel.hidden = !open;
-      }
-
-      toggle?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        setOpen(wrap?.dataset.open !== 'true');
-      });
-      // click anywhere else closes it
-      document.addEventListener('click', (e) => {
-        if (wrap && !wrap.contains(e.target as Node)) setOpen(false);
-      });
-    </script>
+  <body class="bg-[#241009]">
+    <VersionSimple />
   </body>
 </html>
