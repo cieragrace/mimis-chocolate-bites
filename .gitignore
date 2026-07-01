@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+
+# env
+.env
+.env.*
+!.env.example
+
+# os / editor
+.DS_Store
+*.log
+
+# playwright / temp
+.playwright-mcp/
+_preview_on_dark.jpg

@@ -1,0 +1,123 @@
+---
+/**
+ * VERSION 3 — "Cool & Crafted"
+ * A polished, cooler palette — sage, teal and soft blue on a fresh gradient —
+ * with the pink/chocolate logo as a warm pop of contrast. Cake pops rain in
+ * cool tones. Same structure/inquiry form as the others.
+ */
+import InquiryForm from './InquiryForm.astro';
+import Truffle from './Truffle.astro';
+import CakePop from './CakePop.astro';
+
+const IG_URL = 'https://instagram.com/mimischocolatebites';
+const offerings = ['Chocolate bites', 'Cake pops', 'Gift boxes', 'Custom orders'];
+
+// Raining cake pops in cool tones (sage / teal / sky). [left%, w, ball, drip, dur, delay]
+const rain = [
+  { l: 4, w: 40, ball: '#7fb3a3', drip: '#eaf5f0', dur: 9, delay: 0 },
+  { l: 14, w: 30, ball: '#6b9bc4', drip: '#ffffff', dur: 12, delay: -3 },
+  { l: 23, w: 48, ball: '#3d8b7a', drip: '#cfe8e0', dur: 8, delay: -6 },
+  { l: 33, w: 32, ball: '#a9c7d6', drip: '#ffffff', dur: 11, delay: -1.5 },
+  { l: 42, w: 44, ball: '#5a9a90', drip: '#eaf5f0', dur: 10, delay: -8 },
+  { l: 51, w: 28, ball: '#8fc0b0', drip: '#ffffff', dur: 13, delay: -4 },
+  { l: 60, w: 46, ball: '#6b9bc4', drip: '#dfeef4', dur: 8.5, delay: -2 },
+  { l: 69, w: 32, ball: '#3d8b7a', drip: '#ffffff', dur: 11.5, delay: -7 },
+  { l: 78, w: 40, ball: '#a9c7d6', drip: '#eaf5f0', dur: 9.5, delay: -5 },
+  { l: 87, w: 30, ball: '#7fb3a3', drip: '#ffffff', dur: 12.5, delay: -0.5 },
+  { l: 94, w: 44, ball: '#6b9bc4', drip: '#dfeef4', dur: 10.5, delay: -9 },
+];
+---
+
+<div class="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#e7f3ed] via-[#dcecf1] to-[#e9f2ec] text-[#23453f]">
+  {/* raining cake pops (cool tones), fixed to the viewport */}
+  <div class="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
+    {rain.map((p) => (
+      <div
+        class="absolute top-0 animate-rain"
+        style={`left:${p.l}%;width:${p.w}px;animation-duration:${p.dur}s;animation-delay:${p.delay}s`}
+      >
+        <CakePop ball={p.ball} drip={p.drip} class="h-auto w-full opacity-80 drop-shadow-md" />
+      </div>
+    ))}
+  </div>
+
+  <div class="relative z-10 mx-auto flex max-w-xl flex-col items-center px-6 pb-12 pt-14 text-center sm:pt-16">
+    <span
+      class="mb-6 inline-flex items-center gap-2 rounded-full border border-[#2f6f66]/30 bg-white/50 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#2f6f66]"
+    >
+      <svg class="h-3.5 w-3.5 shrink-0 text-blush" viewBox="0 0 24 24" fill="currentColor"
+        ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+      /></svg>
+      Made with love
+    </span>
+
+    {/* logo on a clean white coaster */}
+    <div class="relative flex items-center justify-center">
+      <div
+        class="absolute h-64 w-64 rounded-full bg-white shadow-xl sm:h-[19rem] sm:w-[19rem]"
+        aria-hidden="true"
+      >
+      </div>
+      <img src="/img/logo.png" alt="Mimi's Chocolate Bites" width="360" class="relative w-60 sm:w-72" />
+    </div>
+
+    <h1 class="mt-10 font-serif text-3xl leading-tight text-[#1f3d3a] sm:text-4xl">
+      Handcrafted chocolate,<br />made with love.
+    </h1>
+    <p class="mt-4 max-w-md text-lg leading-relaxed text-[#3a5c56]">
+      Small-batch chocolate bites, cake pops &amp; sweet little treats — cool, crafted &amp; made just for you.
+    </p>
+
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <a
+        href="#inquire"
+        class="rounded-full bg-[#2f6f66] px-8 py-3.5 font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:brightness-110"
+      >
+        Place an inquiry
+      </a>
+      <a
+        href={IG_URL}
+        target="_blank"
+        rel="noopener"
+        class="inline-flex items-center gap-2 rounded-full border-2 border-[#2f6f66]/35 bg-white/40 px-6 py-3.5 font-semibold text-[#2f6f66] transition hover:border-[#2f6f66] hover:text-[#1f3d3a]"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="2" width="20" height="20" rx="5.5" />
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none" />
+        </svg>
+        Follow
+      </a>
+    </div>
+
+    {/* offerings, truffle-separated */}
+    <div
+      class="mt-9 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#2f6f66]/80"
+    >
+      {offerings.map((o, i) => (
+        <Fragment>
+          {i > 0 && <Truffle class="h-2.5 w-2.5 shrink-0 opacity-80" />}
+          <span>{o}</span>
+        </Fragment>
+      ))}
+    </div>
+  </div>
+
+  {/* inquiry — clean glassy card */}
+  <section id="inquire" class="relative z-10 scroll-mt-4 px-6 pb-16 pt-2">
+    <div class="mx-auto max-w-xl rounded-[var(--radius-card)] border border-white/60 bg-white/80 p-7 shadow-2xl backdrop-blur-sm sm:p-9">
+      <h2 class="mb-1 text-center font-serif text-3xl text-[#1f3d3a]">Sweeten your day</h2>
+      <p class="mb-7 text-center text-[#3a5c56]">
+        Orders, events, or just a question — send Mimi a note.
+      </p>
+      <InquiryForm theme="cool" />
+    </div>
+  </section>
+
+  <footer class="relative z-10 border-t border-[#2f6f66]/15 py-8 text-center text-sm text-[#3a5c56]">
+    <a href={IG_URL} target="_blank" rel="noopener" class="font-semibold text-[#2f6f66] hover:text-[#1f3d3a]"
+      >@mimischocolatebites</a
+    >
+    <p class="mt-2">© {new Date().getFullYear()} Mimi's Chocolate Bites · made with love in Colorado</p>
+  </footer>
+</div>

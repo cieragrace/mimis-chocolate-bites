@@ -1,0 +1,103 @@
+---
+/**
+ * VERSION 2 — "Fun & Playful"
+ * Script wordmark instead of the full logo, a warm candy gradient, and a sky
+ * full of cake pops gently bobbing + drifting. Same inquiry form + Instagram,
+ * but bouncier. Motion respects prefers-reduced-motion (see global.css).
+ */
+import InquiryForm from './InquiryForm.astro';
+import CakePop from './CakePop.astro';
+import CakePopIcon from './CakePopIcon.astro';
+import Truffle from './Truffle.astro';
+
+const IG_URL = 'https://instagram.com/mimischocolatebites';
+
+// Raining cake pops — each falls from above the screen, tumbling, on its own
+// column/size/speed. Negative delays so the sky is already full of pops at load
+// (not an empty screen filling up). [left%, width, ball, drip, dur(s), delay(s)]
+const rain = [
+  { l: 4, w: 42, ball: '#e79bab', drip: '#fff5f7', dur: 9, delay: 0 },
+  { l: 14, w: 30, ball: '#7a5138', drip: '#e79bab', dur: 12, delay: -3 },
+  { l: 23, w: 50, ball: '#c9975a', drip: '#fff', dur: 8, delay: -6 },
+  { l: 33, w: 34, ball: '#f6d7de', drip: '#e79bab', dur: 11, delay: -1.5 },
+  { l: 42, w: 44, ball: '#5a3826', drip: '#f6d7de', dur: 10, delay: -8 },
+  { l: 51, w: 28, ball: '#e79bab', drip: '#fff', dur: 13, delay: -4 },
+  { l: 60, w: 48, ball: '#7a5138', drip: '#f6d7de', dur: 8.5, delay: -2 },
+  { l: 69, w: 32, ball: '#c9975a', drip: '#fff5f7', dur: 11.5, delay: -7 },
+  { l: 78, w: 40, ball: '#f6d7de', drip: '#e79bab', dur: 9.5, delay: -5 },
+  { l: 87, w: 30, ball: '#5a3826', drip: '#fff', dur: 12.5, delay: -0.5 },
+  { l: 94, w: 46, ball: '#e79bab', drip: '#fff5f7', dur: 10.5, delay: -9 },
+];
+---
+
+<div class="relative min-h-screen overflow-hidden bg-gradient-to-b from-blush-soft via-cream to-cream-deep text-cocoa">
+  {/* raining cake pops (fixed to the viewport so it rains as you scroll) */}
+  <div class="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
+    {rain.map((p) => (
+      <div
+        class="absolute top-0 animate-rain"
+        style={`left:${p.l}%;width:${p.w}px;animation-duration:${p.dur}s;animation-delay:${p.delay}s`}
+      >
+        <CakePop ball={p.ball} drip={p.drip} class="h-auto w-full opacity-70 drop-shadow-md" />
+      </div>
+    ))}
+  </div>
+
+  {/* content — fills the phone's whole viewport so NO input peeks; the form
+     sits entirely below the fold until they tap "Order Treats" or scroll */}
+  <div class="relative z-10 mx-auto flex min-h-[100dvh] max-w-2xl flex-col items-center justify-center px-6 py-10 text-center sm:py-16">
+    <span class="mb-2 inline-flex animate-wiggle items-center gap-1.5 rounded-full bg-white/70 px-4 py-1 text-sm font-bold text-blush shadow-sm">
+      <Truffle class="h-4 w-4" /> made with love
+    </span>
+
+    <h1 class="font-script text-6xl leading-none text-choc drop-shadow-sm sm:text-7xl md:text-8xl">Mimi's</h1>
+    <p class="mt-1 font-sans text-xl font-extrabold uppercase tracking-[0.2em] text-cocoa sm:text-3xl sm:tracking-[0.3em]">
+      Chocolate Bites
+    </p>
+
+    <p class="mt-5 max-w-md text-base font-semibold leading-relaxed text-cocoa-soft sm:mt-6 sm:text-lg">
+      Cake pops, chocolate bites &amp; the cutest little treats in town — made fresh, made to order.
+    </p>
+
+    <div class="mt-7 flex flex-wrap items-center justify-center gap-5 sm:mt-8">
+      <a
+        href="#order"
+        class="inline-flex items-center gap-2 rounded-full border-2 border-[#c96b7e] bg-white px-8 py-4 text-lg font-extrabold text-[#c96b7e] shadow-lg transition hover:-translate-y-0.5 hover:bg-blush-soft"
+      >
+        Order Treats
+        <CakePopIcon class="h-7 w-7" />
+      </a>
+      <a
+        href={IG_URL}
+        target="_blank"
+        rel="noopener"
+        class="inline-flex items-center gap-2 rounded-full bg-white/80 px-6 py-4 text-lg font-bold text-choc shadow-md transition hover:-translate-y-0.5 hover:text-blush"
+      >
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="2" width="20" height="20" rx="5.5" />
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none" />
+        </svg>
+        Follow
+      </a>
+    </div>
+  </div>
+
+  {/* inquiry */}
+  <section id="order" class="relative z-10 mx-auto max-w-xl scroll-mt-4 px-6 pb-16 pt-6">
+    <div class="rounded-[2rem] border-4 border-white/70 bg-white/80 p-7 shadow-xl backdrop-blur-sm sm:p-9">
+      <h2 class="mb-2 text-center font-script text-4xl leading-tight text-blush sm:text-5xl">
+        Tell us about your sweet dreams
+      </h2>
+      <p class="mb-7 text-center font-semibold text-cocoa-soft">
+        …and Mimi will make them real.
+      </p>
+      <InquiryForm theme="playful" />
+    </div>
+  </section>
+
+  <footer class="relative z-10 pb-12 text-center text-sm font-semibold text-cocoa-soft">
+    <a href={IG_URL} target="_blank" rel="noopener" class="hover:text-blush">@mimischocolatebites</a>
+    <p class="mt-2 text-cocoa-soft/70">© {new Date().getFullYear()} Mimi's Chocolate Bites</p>
+  </footer>
+</div>

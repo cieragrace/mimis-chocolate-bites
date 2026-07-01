@@ -1,0 +1,106 @@
+@import 'tailwindcss';
+
+@import '@fontsource-variable/fraunces';
+@import '@fontsource/nunito/400.css';
+@import '@fontsource/nunito/600.css';
+@import '@fontsource/nunito/700.css';
+@import '@fontsource/nunito/800.css';
+@import '@fontsource/parisienne';
+
+/* ── Mimi's Chocolate Bites — brand tokens ──────────────────────────
+   Palette pulled straight from the logo: deep cocoa, milk chocolate,
+   warm cream, the pink hearts, and the gold "Made with Love" seal. */
+@theme {
+  --color-cocoa: #3a2216; /* darkest chocolate — text, deep bg */
+  --color-choc: #5a3826; /* milk chocolate */
+  --color-cocoa-soft: #7a5138; /* muted brown text */
+  --color-cream: #fbf4ea; /* page cream */
+  --color-cream-deep: #f3e6d5; /* card cream */
+  --color-blush: #e79bab; /* the heart pink */
+  --color-blush-soft: #f6d7de; /* soft pink wash */
+  --color-gold: #c9975a; /* seal gold accent */
+
+  --font-script: 'Parisienne', cursive;
+  --font-serif: 'Fraunces Variable', Georgia, serif;
+  --font-sans: 'Nunito', system-ui, sans-serif;
+
+  --radius-card: 1.25rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+/* ── Playful version: floating / bobbing candy ──────────────────── */
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--r, 0deg));
+  }
+  50% {
+    transform: translateY(-18px) rotate(var(--r, 0deg));
+  }
+}
+
+@keyframes drift {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(14px, -22px) rotate(8deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+/* cake pops raining down from above the screen, tumbling as they fall */
+@keyframes cakerain {
+  0% {
+    transform: translateY(-18vh) rotate(0deg);
+  }
+  100% {
+    transform: translateY(118vh) rotate(360deg);
+  }
+}
+
+.animate-rain {
+  animation: cakerain linear infinite;
+}
+
+.animate-bob {
+  animation: bob 4s ease-in-out infinite;
+}
+.animate-drift {
+  animation: drift 9s ease-in-out infinite;
+}
+.animate-wiggle {
+  animation: wiggle 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-bob,
+  .animate-drift,
+  .animate-wiggle {
+    animation: none;
+  }
+  /* keep raining pops parked off-screen when motion is reduced */
+  .animate-rain {
+    animation: none;
+    transform: translateY(-18vh);
+  }
+}

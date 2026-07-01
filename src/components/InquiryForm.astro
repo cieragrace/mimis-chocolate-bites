@@ -1,0 +1,127 @@
+---
+/**
+ * Shared inquiry form used by both design versions.
+ *
+ * Wired for Web3Forms (same as Ciera's other client sites): the form POSTs to
+ * api.web3forms.com with a hidden access_key. Drop Mimi's real key into
+ * WEB3FORMS_KEY below (or a PUBLIC_WEB3FORMS_KEY env var) and it starts
+ * emailing inquiries straight to her inbox — no backend needed.
+ *
+ * Until a real key is set, the form is styled + validates but submission is
+ * disabled (button shows "Demo — form goes live once connected").
+ */
+interface Props {
+  /** Visual skin: 'simple', 'playful', 'moody' (gold), 'cool' (teal) */
+  theme?: 'simple' | 'playful' | 'moody' | 'cool';
+}
+const { theme = 'simple' } = Astro.props;
+
+const WEB3FORMS_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY || '';
+const isLive = WEB3FORMS_KEY.length > 10;
+
+const playful = theme === 'playful';
+const moody = theme === 'moody';
+const cool = theme === 'cool';
+
+const fieldBase =
+  'w-full rounded-2xl border bg-white/90 px-4 py-3 text-cocoa placeholder-cocoa-soft/50 outline-none transition focus:ring-2';
+const fieldSkin = playful
+  ? 'border-blush/50 focus:border-blush focus:ring-blush/40'
+  : moody
+    ? 'border-gold/40 focus:border-gold focus:ring-gold/30'
+    : cool
+      ? 'border-[#bcd6cc] focus:border-[#2f6f66] focus:ring-[#2f6f66]/25'
+      : 'border-cream-deep focus:border-choc focus:ring-choc/25';
+const labelSkin = 'mb-1.5 block text-sm font-semibold text-cocoa';
+const btnSkin = playful
+  ? 'bg-blush text-white hover:brightness-105 hover:-translate-y-0.5'
+  : moody
+    ? 'bg-gold text-cocoa hover:brightness-105 hover:-translate-y-0.5'
+    : cool
+      ? 'bg-[#2f6f66] text-white hover:brightness-110 hover:-translate-y-0.5'
+      : 'bg-cocoa text-cream hover:bg-choc';
+---
+
+<form
+  class="mx-auto w-full max-w-md text-left"
+  action="https://api.web3forms.com/api/submit"
+  method="POST"
+  data-inquiry-form
+>
+  <input type="hidden" name="access_key" value={WEB3FORMS_KEY} />
+  <input type="hidden" name="subject" value="New inquiry — Mimi's Chocolate Bites" />
+  <input type="hidden" name="from_name" value="Mimi's Chocolate Bites website" />
+  {/* honeypot */}
+  <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" />
+
+  <div class="grid gap-4">
+    <div>
+      <label class={labelSkin} for="name">Your name</label>
+      <input class={`${fieldBase} ${fieldSkin}`} id="name" name="name" type="text" required placeholder="Jane Doe" />
+    </div>
+    <div>
+      <label class={labelSkin} for="phone">Phone</label>
+      <input class={`${fieldBase} ${fieldSkin}`} id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(555) 123-4567" />
+    </div>
+    <div>
+      <label class={labelSkin} for="email">Email</label>
+      <input class={`${fieldBase} ${fieldSkin}`} id="email" name="email" type="email" required placeholder="you@email.com" />
+    </div>
+    <div>
+      <label class={labelSkin} for="message">Tell Mimi about your event or order</label>
+      <p class="mb-1.5 text-xs italic text-cocoa-soft/80">
+        (Please note your estimated # of guests and the date of your event.)
+      </p>
+      <textarea
+        class={`${fieldBase} ${fieldSkin} min-h-28 resize-y`}
+        id="message"
+        name="message"
+        required
+        placeholder="Tell Mimi about your order, event, or question…"></textarea>
+    </div>
+
+    <button
+      type="submit"
+      class={`inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-base font-bold shadow-md transition ${btnSkin}`}
+      data-submit
+      disabled={!isLive}
+    >
+      {isLive ? 'Send my inquiry' : 'Demo — form goes live once connected'}
+    </button>
+
+    <p class="text-center text-sm text-cocoa-soft" data-form-status aria-live="polite">
+      {isLive ? 'Mimi usually replies within a day 💛' : ''}
+    </p>
+  </div>
+</form>
+
+<script>
+  // Progressive enhancement: submit via fetch so the visitor stays on the page
+  // and sees a friendly confirmation instead of a raw JSON response.
+  document.querySelectorAll<HTMLFormElement>('[data-inquiry-form]').forEach((form) => {
+    const status = form.querySelector<HTMLElement>('[data-form-status]');
+    const btn = form.querySelector<HTMLButtonElement>('[data-submit]');
+    if (!btn || btn.disabled) return; // demo mode: leave inert
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+        if (res.ok) {
+          form.reset();
+          if (status) status.textContent = 'Thank you! Mimi will be in touch soon 💛';
+          btn.textContent = 'Sent ✓';
+        } else {
+          throw new Error('bad response');
+        }
+      } catch {
+        if (status) status.textContent = 'Something went wrong — please DM @mimischocolatebites instead.';
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    });
+  });
+</script>

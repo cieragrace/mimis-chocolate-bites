@@ -1,0 +1,29 @@
+---
+/**
+ * A little glossy chocolate truffle icon — used in place of emoji so the
+ * chocolate motif looks intentional and on-brand (matches the treats in the
+ * logo). Cocoa-dusted top, soft highlight.
+ *
+ * NOTE: no <defs>/gradient here on purpose. Both design versions render into
+ * the DOM at once (one is display:none), and a shared gradient id referenced
+ * from a hidden subtree paints as nothing. Solid layered circles fake the
+ * roundness instead, so the icon renders reliably wherever it's used.
+ */
+interface Props {
+  class?: string;
+}
+const { class: cls = '' } = Astro.props;
+---
+<svg viewBox="0 0 24 24" class={cls} aria-hidden="true">
+  <circle cx="12" cy="12.5" r="9.4" fill="#2a140b" />
+  {/* lighter offset body for a rounded, lit look */}
+  <circle cx="10.6" cy="10.9" r="7.4" fill="#4a2a1a" />
+  <circle cx="10" cy="10" r="4.6" fill="#5f3a24" />
+  {/* glossy highlight */}
+  <ellipse cx="9" cy="8.4" rx="3" ry="1.9" fill="#ffffff" opacity="0.28" />
+  {/* cocoa dusting */}
+  <circle cx="14.6" cy="9" r="0.7" fill="#9a7050" opacity="0.85" />
+  <circle cx="15.6" cy="12.5" r="0.6" fill="#9a7050" opacity="0.75" />
+  <circle cx="12.8" cy="15.4" r="0.6" fill="#9a7050" opacity="0.7" />
+  <circle cx="7.8" cy="14" r="0.55" fill="#9a7050" opacity="0.6" />
+</svg>
