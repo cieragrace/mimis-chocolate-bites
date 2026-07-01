@@ -56,64 +56,67 @@ const rain = [
   </div>
 
   {/* ── BEIGE band with the logo (centered, tight) ─────────────── */}
-  <div class="relative z-10 flex items-center justify-center bg-[#e9ddc7] px-6 py-3">
-    <img src="/img/logo.png" alt="Mimi's Chocolate Bites" width="360" class="w-40 sm:w-48" />
+  <div class="relative z-10 flex items-center justify-center bg-[#e9ddc7] px-6 py-3 lg:py-5">
+    <img src="/img/logo.png" alt="Mimi's Chocolate Bites" width="360" class="w-40 sm:w-48 lg:w-56" />
   </div>
 
-  {/* ── BROWN band with the tagline, buttons, offerings ────────── */}
-  <div class="relative z-10 mx-auto flex max-w-xl flex-col items-center px-6 pb-12 pt-6 text-center">
-    <h1 class="font-serif text-3xl leading-tight text-cream sm:text-4xl">
-      Handcrafted chocolate,<br />made with love.
-    </h1>
-    <p class="mt-4 max-w-md text-lg leading-relaxed text-cream/70">
-      Small-batch chocolate bites, cake pops &amp; sweet little indulgences — made just for you.
-    </p>
-
-    <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-      <a
-        href="#inquire"
-        class="rounded-full bg-gold px-8 py-3.5 font-bold text-cocoa shadow-lg transition hover:-translate-y-0.5 hover:brightness-105"
-      >
-        Place an inquiry
-      </a>
-      <a
-        href={IG_URL}
-        target="_blank"
-        rel="noopener"
-        class="inline-flex items-center gap-2 rounded-full border-2 border-cream/25 px-6 py-3.5 font-semibold text-cream transition hover:border-blush hover:text-blush"
-      >
-        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="2" y="2" width="20" height="20" rx="5.5" />
-          <circle cx="12" cy="12" r="4" />
-          <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none" />
-        </svg>
-        Follow
-      </a>
-    </div>
-
-    {/* offerings, truffle-separated */}
-    <div
-      class="mt-6 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-gold/80"
-    >
-      {offerings.map((o, i) => (
-        <Fragment>
-          {i > 0 && <Truffle class="h-2.5 w-2.5 shrink-0 opacity-80" />}
-          <span>{o}</span>
-        </Fragment>
-      ))}
-    </div>
-  </div>
-
-  {/* inquiry — bright cream card glowing on the dark page */}
-  <section id="inquire" class="relative z-10 scroll-mt-4 px-6 pb-16 pt-2">
-    <div class="mx-auto max-w-xl rounded-[var(--radius-card)] bg-cream p-7 shadow-2xl ring-1 ring-gold/25 sm:p-9">
-      <h2 class="mb-1 text-center font-serif text-3xl text-cocoa">Sweeten your day</h2>
-      <p class="mb-7 text-center text-cocoa-soft">
-        Orders, events, or just a question — send Mimi a note.
+  {/* ── BROWN band: hero text + form (side-by-side on desktop) ──── */}
+  <div class="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-8 lg:grid lg:grid-cols-2 lg:items-center lg:gap-14 lg:pt-14">
+    {/* hero text */}
+    <div class="flex flex-col items-center text-center lg:items-start lg:text-left">
+      <h1 class="font-serif text-3xl leading-tight text-cream sm:text-4xl lg:text-5xl xl:text-6xl">
+        Handcrafted chocolate,<br />made with love.
+      </h1>
+      <p class="mt-4 max-w-md text-lg leading-relaxed text-cream/70 lg:text-xl">
+        Small-batch chocolate bites, cake pops &amp; sweet little indulgences — made just for you.
       </p>
-      <InquiryForm theme="moody" />
+
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3 lg:mt-8 lg:justify-start">
+        <a
+          href="#inquire"
+          class="rounded-full bg-gold px-8 py-3.5 font-bold text-cocoa shadow-lg transition hover:-translate-y-0.5 hover:brightness-105 lg:hidden"
+        >
+          Place an inquiry
+        </a>
+        <a
+          href={IG_URL}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-2 rounded-full border-2 border-cream/25 px-6 py-3.5 font-semibold text-cream transition hover:border-blush hover:text-blush"
+        >
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="20" rx="5.5" />
+            <circle cx="12" cy="12" r="4" />
+            <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none" />
+          </svg>
+          Follow
+        </a>
+      </div>
+
+      {/* offerings, truffle-separated */}
+      <div
+        class="mt-6 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-gold/80 lg:mt-8 lg:justify-start"
+      >
+        {offerings.map((o, i) => (
+          <Fragment>
+            {i > 0 && <Truffle class="h-2.5 w-2.5 shrink-0 opacity-80" />}
+            <span>{o}</span>
+          </Fragment>
+        ))}
+      </div>
     </div>
-  </section>
+
+    {/* inquiry — bright cream card glowing on the dark page */}
+    <section id="inquire" class="relative scroll-mt-4 pt-12 lg:pt-0">
+      <div class="mx-auto max-w-xl rounded-[var(--radius-card)] bg-cream p-7 shadow-2xl ring-1 ring-gold/25 sm:p-9">
+        <h2 class="mb-1 text-center font-serif text-3xl text-cocoa">Sweeten your day</h2>
+        <p class="mb-7 text-center text-cocoa-soft">
+          Orders, events, or just a question — send Mimi a note.
+        </p>
+        <InquiryForm theme="moody" />
+      </div>
+    </section>
+  </div>
 
   <footer class="relative z-10 border-t border-white/10 py-8 text-center text-sm text-cream/60">
     <a href={IG_URL} target="_blank" rel="noopener" class="font-semibold text-cream hover:text-blush"
