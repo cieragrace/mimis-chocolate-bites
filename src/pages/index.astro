@@ -1,28 +1,27 @@
 ---
 /**
- * Mimi's Chocolate Bites — single-page site (Rich & Moody).
+ * Mimi's Chocolate Bites — landing page (Rich & Moody).
  *
- * The other design directions (Fun & Playful, Cool & Crafted) and the
- * version-picker showroom live on the `showroom-all-versions` branch if we
- * ever want to revisit them.
+ * Two-page layout: this one-screen landing + a dedicated /contact page for the
+ * inquiry form. The all-in-one single-page version lives on `main`; the other
+ * design directions + showroom live on `showroom-all-versions`.
  */
 import '../styles/global.css';
-import VersionSimple from '../components/VersionSimple.astro';
+import Seo from '../components/Seo.astro';
+import Landing from '../components/Landing.astro';
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/img/logo.png" />
-    <title>Mimi's Chocolate Bites</title>
-    <meta
-      name="description"
-      content="Handmade chocolate bites, cake pops and sweet treats — made with love, made to order."
+    <Seo
+      title="Mimi's Chocolate Bites"
+      description="Handmade chocolate bites, cake pops & sweet treats — made with love, made to order. Serving Colorado."
+      path="/"
+      jsonld
     />
   </head>
   <body class="bg-[#241009]">
-    <VersionSimple />
+    <Landing />
   </body>
 </html>

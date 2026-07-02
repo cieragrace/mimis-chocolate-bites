@@ -24,7 +24,7 @@ const moody = theme === 'moody';
 const cool = theme === 'cool';
 
 const fieldBase =
-  'w-full rounded-2xl border bg-white/90 px-4 py-3 text-cocoa placeholder-cocoa-soft/50 outline-none transition focus:ring-2';
+  'w-full rounded-2xl border bg-white/90 px-4 py-2.5 text-cocoa placeholder-cocoa-soft outline-none transition focus:ring-2';
 const fieldSkin = playful
   ? 'border-blush/50 focus:border-blush focus:ring-blush/40'
   : moody
@@ -32,7 +32,7 @@ const fieldSkin = playful
     : cool
       ? 'border-[#bcd6cc] focus:border-[#2f6f66] focus:ring-[#2f6f66]/25'
       : 'border-cream-deep focus:border-choc focus:ring-choc/25';
-const labelSkin = 'mb-1.5 block text-sm font-semibold text-cocoa';
+const labelSkin = 'mb-1 block text-sm font-semibold text-cocoa';
 const btnSkin = playful
   ? 'bg-blush text-white hover:brightness-105 hover:-translate-y-0.5'
   : moody
@@ -52,28 +52,30 @@ const btnSkin = playful
   <input type="hidden" name="subject" value="New inquiry — Mimi's Chocolate Bites" />
   <input type="hidden" name="from_name" value="Mimi's Chocolate Bites website" />
   {/* honeypot */}
-  <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" />
+  <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
-  <div class="grid gap-4">
+  <div class="grid gap-2.5">
+    <p class="-mb-1 text-xs text-cocoa-soft"><span class="text-blush">*</span> Required</p>
     <div>
-      <label class={labelSkin} for="name">Your name</label>
-      <input class={`${fieldBase} ${fieldSkin}`} id="name" name="name" type="text" required placeholder="Jane Doe" />
+      <label class={labelSkin} for="name">Your name <span class="text-blush" aria-hidden="true">*</span></label>
+      <input class={`${fieldBase} ${fieldSkin}`} id="name" name="name" type="text" autocomplete="name" required placeholder="Jane Doe" />
     </div>
     <div>
       <label class={labelSkin} for="phone">Phone</label>
       <input class={`${fieldBase} ${fieldSkin}`} id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(555) 123-4567" />
     </div>
     <div>
-      <label class={labelSkin} for="email">Email</label>
-      <input class={`${fieldBase} ${fieldSkin}`} id="email" name="email" type="email" required placeholder="you@email.com" />
+      <label class={labelSkin} for="email">Email <span class="text-blush" aria-hidden="true">*</span></label>
+      <input class={`${fieldBase} ${fieldSkin}`} id="email" name="email" type="email" autocomplete="email" required placeholder="you@email.com" />
     </div>
     <div>
-      <label class={labelSkin} for="message">Tell Mimi about your event or order</label>
-      <p class="mb-1.5 text-xs italic text-cocoa-soft/80">
-        (Please note your estimated # of guests and the date of your event.)
+      <label class={labelSkin} for="message">Tell Mimi about your event or order <span class="text-blush" aria-hidden="true">*</span></label>
+      <p class="mb-1 text-xs italic text-cocoa-soft">
+        (Please include your guest count &amp; event date.)
       </p>
       <textarea
-        class={`${fieldBase} ${fieldSkin} min-h-28 resize-y`}
+        rows="2"
+        class={`${fieldBase} ${fieldSkin} min-h-16 max-h-[40vh] resize-y`}
         id="message"
         name="message"
         required
@@ -82,11 +84,11 @@ const btnSkin = playful
 
     <button
       type="submit"
-      class={`inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-base font-bold shadow-md transition ${btnSkin}`}
+      class={`inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-base font-bold shadow-md transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cocoa/60 focus-visible:ring-offset-2 focus-visible:ring-offset-cream disabled:cursor-not-allowed ${btnSkin}`}
       data-submit
       disabled={!isLive}
     >
-      {isLive ? 'Send my inquiry' : 'Demo — form goes live once connected'}
+      {isLive ? 'Send my inquiry' : 'Testing 123...'}
     </button>
 
     <p class="text-center text-sm text-cocoa-soft" data-form-status aria-live="polite">
