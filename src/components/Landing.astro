@@ -10,6 +10,7 @@
  * tagline (the `short:` variant, @media(max-height:600px)) so it still fits.
  */
 import Truffle from './Truffle.astro';
+import CakePop from './CakePop.astro';
 import RainField from './RainField.astro';
 
 const IG_URL = 'https://instagram.com/mimischocolatebites';
@@ -19,7 +20,7 @@ const focusRing =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#241009]';
 ---
 
-<div class="relative flex min-h-[100svh] flex-col bg-[#241009] text-cream">
+<div class="relative flex min-h-[100svh] flex-col justify-center bg-[#241009] text-cream">
   <RainField />
 
   {/* ── HEADER: pill + beige logo band ─────────────────────────── */}
@@ -46,7 +47,7 @@ const focusRing =
   </header>
 
   {/* ── MAIN hero — fills the rest, centered ───────────────────── */}
-  <main class="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-6 text-center short:py-3">
+  <main class="relative z-10 flex flex-col items-center px-6 pt-10 pb-6 text-center short:py-3">
     <h1 class="font-serif text-3xl leading-tight text-cream sm:text-4xl lg:text-5xl short:text-xl">
       Handcrafted chocolate,<br />made with love.
     </h1>
@@ -57,8 +58,9 @@ const focusRing =
     <div class="mt-11 flex flex-wrap items-center justify-center gap-3 short:mt-4">
       <a
         href="/contact"
-        class={`rounded-full bg-gold px-8 py-3.5 font-bold text-cocoa shadow-lg transition hover:-translate-y-0.5 hover:brightness-105 focus-visible:ring-cream ${focusRing}`}
+        class={`inline-flex items-center gap-2 rounded-full bg-gold px-8 py-3.5 font-bold text-cocoa shadow-lg transition hover:-translate-y-0.5 hover:brightness-105 focus-visible:ring-cream ${focusRing}`}
       >
+        <CakePop class="-ml-1 h-6 w-auto shrink-0 drop-shadow-sm" />
         Place an inquiry
       </a>
       <a
