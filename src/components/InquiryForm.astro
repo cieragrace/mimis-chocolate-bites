@@ -106,6 +106,36 @@ const btnSkin = playful
   </div>
 </form>
 
+{/* Success pop-up — shown after a successful submit */}
+<div
+  data-success-modal
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-cocoa/70 px-6 backdrop-blur-sm"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="success-title"
+>
+  <div class="w-full max-w-sm rounded-3xl bg-cream p-8 text-center shadow-2xl">
+    <CakePop class="mx-auto mb-3 h-14 w-auto drop-shadow-sm" />
+    <h2 id="success-title" class="font-serif text-2xl font-bold text-cocoa">Thank you!</h2>
+    <p class="mt-2 text-cocoa-soft">Mimi will be in touch soon 💛</p>
+    <div class="mt-6 flex flex-col gap-2.5">
+      <button
+        type="button"
+        data-modal-again
+        class={`inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-bold shadow-md transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cocoa/60 focus-visible:ring-offset-2 focus-visible:ring-offset-cream ${btnSkin}`}
+      >
+        Place another inquiry
+      </button>
+      <a
+        href="/"
+        class="rounded-full border-2 border-cocoa/20 px-6 py-3 font-semibold text-cocoa transition hover:border-cocoa/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cocoa/40 focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+      >
+        Back to home
+      </a>
+    </div>
+  </div>
+</div>
+
 <script>
   // Progressive enhancement: submit via fetch so the visitor stays on the page
   // and sees a friendly confirmation instead of a raw JSON response.
@@ -117,6 +147,33 @@ const btnSkin = playful
     const label = btn.querySelector<HTMLElement>('[data-btn-label]') ?? btn;
 
     const sheetLog = form.dataset.sheetLog;
+
+    // Success pop-up wiring
+    const modal = form.parentElement?.querySelector<HTMLElement>('[data-success-modal]')
+      ?? document.querySelector<HTMLElement>('[data-success-modal]');
+    const againBtn = modal?.querySelector<HTMLButtonElement>('[data-modal-again]');
+    let lastFocused: HTMLElement | null = null;
+    const openModal = () => {
+      if (!modal) return;
+      lastFocused = document.activeElement as HTMLElement;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      againBtn?.focus();
+    };
+    const closeModal = () => {
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      lastFocused?.focus?.();
+    };
+    againBtn?.addEventListener('click', () => {
+      closeModal();
+      form.querySelector<HTMLElement>('input[name="name"]')?.focus();
+    });
+    modal?.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) closeModal();
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -133,8 +190,10 @@ const btnSkin = playful
         const res = await fetch(form.action, { method: 'POST', body: data });
         if (res.ok) {
           form.reset();
-          if (status) status.textContent = 'Thank you! Mimi will be in touch soon 💛';
-          label.textContent = 'Sent ✓';
+          if (status) status.textContent = '';
+          label.textContent = original;
+          btn.disabled = false;
+          openModal();
         } else {
           throw new Error('bad response');
         }
