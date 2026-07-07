@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mimi's Chocolate Bites Build Report — July 6, 2026</title>
+<style>
+  :root {
+    --ink: #2a1a10;
+    --navy: #3a2216;      /* cocoa stands in for navy */
+    --gold: #c9975a;
+    --paper: #ffffff;
+    --soft: #fbf4ea;      /* brand cream */
+    --line: #e6d7c3;
+    --muted: #7a5138;
+    --blush: #e79bab;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Avenir Next', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--ink); background: var(--paper);
+    font-size: 10.5pt; line-height: 1.5;
+  }
+  .page { padding: 48px 56px; }
+  header.masthead {
+    background: var(--navy); color: #fff;
+    padding: 44px 56px 36px;
+  }
+  .masthead .kicker { text-transform: uppercase; letter-spacing: 3px; font-size: 8.5pt; color: var(--gold); font-weight: 600; }
+  .masthead h1 { font-size: 26pt; font-weight: 700; margin: 6px 0 4px; }
+  .masthead .sub { font-size: 11pt; color: #e6d0bb; }
+  .stats { display: flex; gap: 14px; margin: 26px 0 6px; }
+  .stat {
+    flex: 1; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.18);
+    border-radius: 8px; padding: 12px 14px;
+  }
+  .stat .n { font-size: 17pt; font-weight: 700; color: var(--gold); }
+  .stat .l { font-size: 8pt; text-transform: uppercase; letter-spacing: 1.2px; color: #e6d0bb; }
+  h2 {
+    font-size: 14pt; color: var(--navy); margin: 26px 0 10px;
+    padding-bottom: 6px; border-bottom: 2px solid var(--gold);
+  }
+  h3 { font-size: 11pt; color: var(--navy); margin: 14px 0 4px; }
+  p { margin: 6px 0; }
+  ul { margin: 4px 0 10px 18px; }
+  li { margin: 2.5px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 9.5pt; }
+  th { background: var(--soft); text-align: left; padding: 7px 10px; border-bottom: 2px solid var(--line); font-size: 8.5pt; text-transform: uppercase; letter-spacing: 1px; color: var(--navy); }
+  td { padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .pill { display: inline-block; border-radius: 10px; padding: 1px 8px; font-size: 8pt; font-weight: 600; }
+  .pill.high { background: #f6e3e1; color: #8c2f26; }
+  .pill.fixed { background: #e3efe4; color: #2c5f34; }
+  .two-col { display: flex; gap: 28px; }
+  .two-col > div { flex: 1; }
+  .note { color: var(--muted); font-size: 9pt; }
+  code { font-family: 'SF Mono', Menlo, monospace; font-size: 8.5pt; background: var(--soft); padding: 1px 4px; border-radius: 3px; }
+  footer { margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 8.5pt; display: flex; justify-content: space-between; }
+  .avoid-break { break-inside: avoid; }
+  @page { size: Letter; margin: 0; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="kicker">Mimi's Chocolate Bites · Internal Build Report</div>
+  <h1>Print Collateral &amp; a Reviews Page</h1>
+  <div class="sub">July 6, 2026 · branches <b>reviews-page</b> (pushed) + new <b>mimis-print</b> repo (local)</div>
+  <div class="stats">
+    <div class="stat"><div class="n">4</div><div class="l">Print PDFs</div></div>
+    <div class="stat"><div class="n">46</div><div class="l">Fillable invoice fields</div></div>
+    <div class="stat"><div class="n">1</div><div class="l">New site page</div></div>
+    <div class="stat"><div class="n">2</div><div class="l">Repos committed</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">Merged to main</div></div>
+  </div>
+</header>
+
+<div class="page">
+
+<h2>What happened</h2>
+<p>Two bodies of work for Mimi's home chocolate business. First, a print collateral kit in a new <code>mimis-print</code> workspace: a two-sided business card with a QR code to the website, a 5&times;7 counter sign explaining base-price-plus-quote pricing, and a US-Letter invoice that is a genuinely fillable PDF form. Second, a <code>/reviews</code> page for the website, built on its own branch as an idea for later &mdash; nothing touched the live site. Every piece reuses the brand tokens straight from the site source (cocoa, cream, blush, gold; Parisienne, Fraunces, Nunito) so print and web match exactly.</p>
+
+<h2>Shipped, by area</h2>
+
+<div class="two-col">
+<div>
+<h3>Business card (3.5&times;2 in + bleed, front/back)</h3>
+<ul>
+  <li>Cream front: logo, script wordmark, "Made with Love"</li>
+  <li>Cocoa back: QR code to mimischocolatebites.com in a cream tile, @mimischocolatebites handle, site URL</li>
+  <li>QR generated as vector SVG in brand cocoa, so it stays crisp at any print size</li>
+</ul>
+
+<h3>Pricing sign (5&times;7 in, fits a standard frame)</h3>
+<ul>
+  <li>Gold double frame, script "A Note on Pricing" headline</li>
+  <li>Copy rewritten in original wording: listed prices are starting points; final quote follows theme, colors, design details, personal touches, and add-ons</li>
+  <li>IG handle + site URL footer</li>
+</ul>
+
+<h3>Fillable invoice (US Letter)</h3>
+<ul>
+  <li>46 real AcroForm fields: invoice no./date, bill-to, occasion and theme, 8 line-item rows, notes, payment, subtotal through total due</li>
+  <li>Works in macOS Preview, Acrobat, and phone PDF viewers; prints clean for handwriting too</li>
+  <li>Field coordinates in <code>make-invoice.mjs</code> mirror the inch-positioned zones in <code>invoice.html</code>, so design and form stay in lockstep</li>
+</ul>
+</div>
+
+<div>
+<h3>Website: /reviews page (branch only)</h3>
+<ul>
+  <li>"Kind words from sweet people" in the Rich &amp; Moody style: raining cake pops, cream review cards, five blush hearts instead of stars</li>
+  <li>Card grid collapses to one column on phones; same Back-link treatment as /contact</li>
+  <li>"Enjoyed your bites?" CTA: gold <b>Leave a review</b> button plus a <b>DM us instead</b> Instagram button</li>
+  <li>All six reviews are sample copy, labeled in the code; <code>REVIEW_URL</code> points at /contact until Mimi has a Google review link</li>
+  <li>Not linked from the landing yet &mdash; a design call for when it ships</li>
+</ul>
+
+<h3>Pipeline &amp; housekeeping</h3>
+<ul>
+  <li>New <code>mimis-print</code> repo: HTML &rarr; Playwright PDF render, Ghostscript previews, pdf-lib form pass, README</li>
+  <li>Deliverable PDFs committed alongside source so nothing depends on a rebuild</li>
+  <li>Session memory updated: print project, reviews branch, and the direct-upload deploy gotcha below</li>
+</ul>
+</div>
+</div>
+
+<h2>Verification</h2>
+<p>The invoice was proof-tested by programmatically filling all field types and re-rendering &mdash; every entry landed inside its styled zone (<code>build/_filled-test.pdf</code>, fake data). The business card was confirmed as a true two-page PDF with both sides rendered. The reviews page passed an <code>astro build</code> and was screenshotted at desktop (1280px) and phone (390px) widths from the built output. No automated review swept this session; it is design work, not logic.</p>
+
+<h2 class="avoid-break">Deliberately not built (on the roadmap)</h2>
+<table class="avoid-break">
+  <tr><th>Item</th><th>Priority</th></tr>
+  <tr><td>Swap sample reviews for real ones + set up a Google Business profile so "Leave a review" has a real target</td><td>High &mdash; before /reviews ships</td></tr>
+  <tr><td>Price-list card in the same style, once Mimi lands her package prices</td><td>Medium</td></tr>
+  <tr><td>Phone number on the card back (site is inquiry-form-only today; needs Mimi's call)</td><td>Medium</td></tr>
+  <tr><td>Link /reviews from the landing without crowding the one-screen hero</td><td>Medium &mdash; ships with the page</td></tr>
+  <tr><td>CMYK export of card + sign if the print shop requires it (Ghostscript step exists in rhr-banners)</td><td>Low &mdash; shop-dependent</td></tr>
+  <tr><td>CGC portal invoicing add-on (branded invoices, marketing collateral, accounting rollups) with Mimi's as pilot client</td><td>Later iteration &mdash; after core portal ships</td></tr>
+</table>
+
+<h2>Paper trail</h2>
+<ul>
+  <li><code>~/DEVELOPMENT/mimis-print/</code> &mdash; card, sign, invoice source + <code>build/</code> PDFs and previews</li>
+  <li><code>~/DEVELOPMENT/mimis-print/README.md</code> &mdash; rebuild commands and pipeline notes</li>
+  <li><code>src/pages/reviews.astro</code> on branch <code>reviews-page</code> &mdash; placeholder markers in the frontmatter comment</li>
+  <li>Deploy note: Cloudflare Pages is direct-upload, so pushed branches deploy nothing; preview via <code>wrangler pages deploy dist --branch=reviews-page</code></li>
+</ul>
+
+<footer>
+  <span>mimis-chocolate-bites · reviews-page @ 9c107f4 &nbsp;|&nbsp; mimis-print @ b5352cb (local)</span>
+  <span>Report generated July 6, 2026</span>
+</footer>
+
+</div>
+</body>
+</html>
