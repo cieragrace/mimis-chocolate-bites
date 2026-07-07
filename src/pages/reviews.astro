@@ -1,0 +1,171 @@
+---
+/**
+ * REVIEWS page — "sweet words" from customers, moody styling to match /contact.
+ * Reached directly (/reviews); not linked from the landing yet — that's a
+ * decision for when this branch ships.
+ *
+ * ── PLACEHOLDERS ──────────────────────────────────────────────────────────
+ * Every review below is SAMPLE COPY so the layout can be judged. Swap in real
+ * reviews (and delete any leftovers) before this page ever goes live.
+ * REVIEW_URL currently points at the contact form; replace it with Mimi's
+ * Google review link (or wherever she wants reviews collected) when she has one.
+ */
+import '../styles/global.css';
+import Seo from '../components/Seo.astro';
+import RainField from '../components/RainField.astro';
+import Truffle from '../components/Truffle.astro';
+
+const IG_URL = 'https://instagram.com/mimischocolatebites';
+const REVIEW_URL = '/contact'; // TODO: swap for Google review link when Mimi has one
+
+// PLACEHOLDER reviews — replace with real ones before launch.
+const reviews = [
+  {
+    quote:
+      'The cake pop bouquet stole the show at my daughter’s baby shower. Almost too pretty to eat — almost.',
+    name: 'Sample Review',
+    detail: 'Baby shower · Cake pops',
+  },
+  {
+    quote:
+      'Rich, silky, clearly made by hand. The gift box was wrapped so beautifully I saved the ribbon.',
+    name: 'Sample Review',
+    detail: 'Gift box',
+  },
+  {
+    quote:
+      'Mimi matched our wedding colors down to the sprinkles. Guests are still asking where the chocolate came from.',
+    name: 'Sample Review',
+    detail: 'Wedding favors',
+  },
+  {
+    quote:
+      'Ordered on a whim for a birthday — now it’s a tradition. The chocolate bites disappear in minutes.',
+    name: 'Sample Review',
+    detail: 'Birthday · Chocolate bites',
+  },
+  {
+    quote:
+      'Sweet, personal, and delicious. You can tell every single piece is made with love.',
+    name: 'Sample Review',
+    detail: 'Custom order',
+  },
+  {
+    quote:
+      'The strawberries were dipped fresh the morning of our anniversary dinner. Perfection.',
+    name: 'Sample Review',
+    detail: 'Anniversary',
+  },
+];
+
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#241009]';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <Seo
+      title="Reviews — Mimi's Chocolate Bites"
+      description="Sweet words from Mimi's customers — handmade chocolate bites, cake pops & gift boxes in Colorado."
+      path="/reviews"
+    />
+  </head>
+  <body class="bg-[#241009]">
+    <div class="relative min-h-[100svh] bg-[#241009] text-cream">
+      <RainField />
+
+      <main class="relative z-10 mx-auto max-w-5xl px-6 pb-16 pt-6">
+        {/* back link, same treatment as /contact */}
+        <a
+          href="/"
+          class={`inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold text-cream/70 transition hover:text-blush focus-visible:ring-gold ${focusRing}`}
+        >
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          Back
+        </a>
+
+        {/* heading */}
+        <header class="mt-4 text-center">
+          <span
+            class="inline-flex items-center gap-2 rounded-full border border-gold/40 px-5 py-2 text-[13px] font-semibold uppercase tracking-[0.25em] text-gold"
+          >
+            <svg class="h-4 w-4 shrink-0 text-blush" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+              ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+            /></svg>
+            Sweet words
+          </span>
+          <h1 class="mt-5 font-serif text-3xl leading-tight text-cream sm:text-4xl lg:text-5xl">
+            Kind words from<br class="sm:hidden" /> sweet people
+          </h1>
+          <p class="mx-auto mt-4 max-w-md text-lg leading-relaxed text-cream/70">
+            A few notes from celebrations we&rsquo;ve been lucky to be part of.
+          </p>
+        </header>
+
+        {/* review cards */}
+        <ul class="mt-12 grid list-none gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {reviews.map((r) => (
+            <li
+              class="flex flex-col rounded-[var(--radius-card)] bg-cream p-6 text-cocoa shadow-2xl ring-1 ring-gold/25"
+            >
+              {/* five hearts instead of five stars */}
+              <div class="flex gap-1 text-blush" aria-label="5 out of 5 hearts">
+                {Array.from({ length: 5 }).map(() => (
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                    ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                  /></svg>
+                ))}
+              </div>
+              <blockquote class="mt-4 flex-1 font-serif text-[17px] italic leading-relaxed text-cocoa">
+                &ldquo;{r.quote}&rdquo;
+              </blockquote>
+              <footer class="mt-5 flex items-center gap-2.5">
+                <Truffle class="h-3 w-3 shrink-0 opacity-80" />
+                <div>
+                  <p class="text-sm font-bold text-choc">{r.name}</p>
+                  <p class="text-xs font-semibold uppercase tracking-[0.18em] text-cocoa-soft">{r.detail}</p>
+                </div>
+              </footer>
+            </li>
+          ))}
+        </ul>
+
+        {/* leave-a-review CTA */}
+        <section class="mt-14 text-center">
+          <h2 class="font-serif text-2xl text-cream sm:text-3xl">Enjoyed your bites?</h2>
+          <p class="mx-auto mt-3 max-w-md text-cream/70">
+            We&rsquo;d love to hear about it &mdash; your sweet words help other celebrations find us.
+          </p>
+          <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href={REVIEW_URL}
+              class={`inline-flex items-center gap-2 rounded-full bg-gold px-8 py-3.5 font-bold text-cocoa shadow-lg transition hover:-translate-y-0.5 hover:brightness-105 focus-visible:ring-cream ${focusRing}`}
+            >
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              /></svg>
+              Leave a review
+            </a>
+            <a
+              href={IG_URL}
+              target="_blank"
+              rel="noopener"
+              aria-label="DM Mimi's Chocolate Bites on Instagram (opens in a new tab)"
+              class={`inline-flex items-center gap-2 rounded-full border-2 border-cream/25 px-6 py-3.5 font-semibold text-cream transition hover:border-blush hover:text-blush focus-visible:ring-blush ${focusRing}`}
+            >
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5.5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none" />
+              </svg>
+              DM us instead
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
