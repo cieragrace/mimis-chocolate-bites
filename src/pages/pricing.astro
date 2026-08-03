@@ -1,0 +1,327 @@
+---
+/**
+ * PRICING page — a responsive web version of Mimi's own "Treat Packages"
+ * flyer. Reached directly (/pricing); not linked from the landing yet.
+ *
+ * ── DESIGN NOTE ───────────────────────────────────────────────────────────
+ * MIMI DESIGNED THE FLYER. This page is a re-layout of it, not a redesign:
+ * the chocolate drip, the script "Treat Packages" wordmark, the berry ribbon
+ * name banners, heart bullets, the decor strip and the specialty ribbon are
+ * all hers and should survive any future mobile/layout work. What changed is
+ * only the *arrangement* — the three packages stack on phones instead of
+ * sitting in a fixed 3-up grid, and the footer wraps.
+ *
+ * The flyer lives on a cream background, so the packages sit on a cream panel
+ * inside the site's moody frame rather than recoloring her work.
+ *
+ * PRICES ARE REAL — from Mimi's flyer (Mini $30 / Standard $85 / Deluxe $150).
+ * The Standard tier genuinely lists "12 of your choice" twice (two separate
+ * dozen selections, 36 total); that's her copy, not a duplication bug.
+ */
+import '../styles/global.css';
+import Seo from '../components/Seo.astro';
+import RainField from '../components/RainField.astro';
+import CakePop from '../components/CakePop.astro';
+
+const IG_URL = 'https://instagram.com/mimischocolatebites';
+
+// Berry pink from the flyer's ribbons and hearts — deeper than brand blush.
+const BERRY = '#c43e63';
+
+const packages = [
+  {
+    tier: 'Mini',
+    price: '$30',
+    size: 'One dozen treats',
+    note: '(mix & match)',
+    items: ['4 Cake Pops', '4 Chocolate Covered Pretzels', '4 Chocolate Covered Oreos'],
+  },
+  {
+    tier: 'Standard',
+    price: '$85',
+    size: 'Three dozen treats',
+    note: null,
+    items: [
+      '12 of your choice Oreos, pretzel rods/twists or Krispies',
+      '12 of your choice Oreos, pretzel rods/twists or Krispies',
+      '12 Cake Pops',
+    ],
+  },
+  {
+    tier: 'Deluxe',
+    price: '$150',
+    size: 'Five dozen treats',
+    note: null,
+    items: ['20 Cake Pops', '20 Chocolate Covered Pretzels', '20 Chocolate Covered Oreos'],
+  },
+];
+
+// Chocolate drips along the top of the cream panel — stem + bulb per drip,
+// matching the flyer's uneven, hand-poured look.
+const drips = [
+  { x: 60, r: 14, len: 30 },
+  { x: 160, r: 9, len: 16 },
+  { x: 250, r: 16, len: 44 },
+  { x: 360, r: 10, len: 22 },
+  { x: 470, r: 13, len: 34 },
+  { x: 580, r: 8, len: 14 },
+  { x: 690, r: 15, len: 40 },
+  { x: 800, r: 11, len: 24 },
+  { x: 910, r: 14, len: 32 },
+  { x: 1010, r: 9, len: 18 },
+  { x: 1120, r: 16, len: 42 },
+];
+
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#241009]';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <Seo
+      title="Treat Packages — Mimi's Chocolate Bites"
+      description="Mimi's treat packages — cake pops, chocolate covered pretzels & Oreos. Mini $30, Standard $85, Deluxe $150. Made fresh, pick up in Denver."
+      path="/pricing"
+    />
+  </head>
+  <body class="bg-[#241009]">
+    <div class="relative min-h-[100svh] bg-[#241009] text-cream">
+      <RainField />
+
+      <main class="relative z-10 mx-auto max-w-4xl px-4 pb-16 pt-6 sm:px-6">
+        {/* back link, same treatment as /contact and /reviews */}
+        <a
+          href="/"
+          class={`inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold text-cream/70 transition hover:text-blush focus-visible:ring-gold ${focusRing}`}
+        >
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          Back
+        </a>
+
+        {/* ── Mimi's flyer, re-laid-out ──────────────────────────────── */}
+        <div
+          class="relative mt-4 overflow-hidden rounded-[var(--radius-card)] bg-cream text-cocoa shadow-2xl ring-1 ring-gold/25"
+        >
+          {/* chocolate drip */}
+          <svg
+            class="block h-14 w-full sm:h-[4.5rem]"
+            viewBox="0 0 1200 78"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <rect x="0" y="0" width="1200" height="32" fill="#3a2216" />
+            {drips.map((d) => (
+              <g fill="#3a2216">
+                <rect x={d.x - d.r * 0.92} y="26" width={d.r * 1.84} height={d.len} rx={d.r * 0.92} />
+                <circle cx={d.x} cy={28 + d.len} r={d.r} />
+              </g>
+            ))}
+          </svg>
+
+          <div class="px-5 pb-8 pt-2 sm:px-8 sm:pb-10">
+            {/* masthead */}
+            <header class="text-center">
+              <img
+                src="/img/logo.png"
+                alt="Mimi's Chocolate Bites"
+                class="mx-auto h-24 w-auto sm:h-28"
+              />
+              <h1 class="mt-1 font-script text-5xl leading-none text-cocoa sm:text-6xl lg:text-7xl">
+                Treat Packages
+              </h1>
+              <div class="mt-5 flex items-center justify-center gap-3">
+                <span class="h-px w-12 sm:w-16" style={`background:${BERRY};opacity:.55`}></span>
+                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
+                  ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                /></svg>
+                <span class="h-px w-12 sm:w-16" style={`background:${BERRY};opacity:.55`}></span>
+              </div>
+              <p
+                class="mt-4 text-[13px] font-bold uppercase tracking-[0.18em] text-choc sm:text-base sm:tracking-[0.22em]"
+              >
+                Sweet treats. Made with love.
+              </p>
+            </header>
+
+            {/* three packages — 3-up on desktop, stacked on phones */}
+            <ul class="mt-12 grid list-none gap-12 sm:gap-6 lg:grid-cols-3">
+              {packages.map((p) => (
+                <li
+                  class="relative rounded-2xl border px-5 pb-7 pt-10"
+                  style={`border-color:${BERRY}33`}
+                >
+                  {/* ribbon name banner, notched at both ends like the flyer */}
+                  <h2
+                    class="absolute left-1/2 top-0 w-[max-content] max-w-[92%] -translate-x-1/2 -translate-y-1/2 px-7 py-1.5 text-center text-lg font-bold uppercase tracking-[0.16em] text-cream sm:text-xl"
+                    style={`background:${BERRY};clip-path:polygon(0 0,100% 0,calc(100% - 12px) 50%,100% 100%,0 100%,12px 50%)`}
+                  >
+                    {p.tier}
+                  </h2>
+
+                  <p class="text-center font-serif text-5xl leading-none text-cocoa">{p.price}</p>
+                  <p class="mt-3 text-center text-[13px] font-bold uppercase tracking-[0.12em] text-choc">
+                    {p.size}
+                    {p.note && <span class="mt-0.5 block font-semibold tracking-[0.08em]">{p.note}</span>}
+                  </p>
+
+                  <div class="my-5 flex items-center justify-center gap-3">
+                    <span class="h-px w-8" style={`background:${BERRY};opacity:.4`}></span>
+                    <svg class="h-3 w-3 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
+                      ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                    /></svg>
+                    <span class="h-px w-8" style={`background:${BERRY};opacity:.4`}></span>
+                  </div>
+
+                  <ul class="mx-auto flex max-w-xs list-none flex-col gap-3">
+                    {p.items.map((item) => (
+                      <li class="flex items-start gap-2.5 text-[15px] leading-snug text-cocoa sm:text-base">
+                        <svg class="mt-1 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
+                          ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                        /></svg>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+
+            {/* basic decor strip */}
+            <section class="mt-10 rounded-2xl border px-5 py-6" style={`border-color:${BERRY}33`}>
+              <h2
+                class="text-center text-base font-bold uppercase tracking-[0.14em] sm:text-lg"
+                style={`color:${BERRY}`}
+              >
+                Basic decor includes:
+              </h2>
+              <ul
+                class="mt-5 flex list-none flex-col items-center gap-5 sm:flex-row sm:justify-center sm:gap-0"
+              >
+                <li class="flex items-center gap-3 sm:flex-1 sm:justify-center">
+                  {/* dipped — a chocolate pour */}
+                  <svg class="h-10 w-10 shrink-0" viewBox="0 0 40 40" aria-hidden="true">
+                    <rect x="8" y="9" width="24" height="13" rx="6.5" fill="#3a2216" />
+                    <rect x="11" y="18" width="5" height="8" rx="2.5" fill="#3a2216" />
+                    <circle cx="13.5" cy="26" r="3.5" fill="#3a2216" />
+                    <rect x="17.5" y="18" width="5.5" height="12" rx="2.75" fill="#3a2216" />
+                    <circle cx="20.25" cy="30" r="4" fill="#3a2216" />
+                    <rect x="25" y="18" width="4.5" height="6" rx="2.25" fill="#3a2216" />
+                    <circle cx="27.25" cy="24" r="3" fill="#3a2216" />
+                  </svg>
+                  <span class="text-sm font-bold uppercase tracking-[0.14em] text-cocoa">Dipped</span>
+                </li>
+                <li class="hidden h-10 w-px shrink-0 sm:block" style={`background:${BERRY};opacity:.3`}></li>
+                <li class="flex items-center gap-3 sm:flex-1 sm:justify-center">
+                  {/* drizzled — a squiggle */}
+                  <svg class="h-10 w-10 shrink-0" viewBox="0 0 40 40" aria-hidden="true">
+                    <circle cx="20" cy="20" r="15" fill="none" stroke="#3a2216" stroke-width="1.2" opacity=".35" />
+                    <path
+                      d="M11 25c4-2 4-6 8-6s4 4 8 2M11 20c4-2 4-6 8-6s4 4 8 2"
+                      fill="none"
+                      stroke="#3a2216"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  <span class="text-sm font-bold uppercase tracking-[0.14em] text-cocoa">Drizzled</span>
+                </li>
+                <li class="hidden h-10 w-px shrink-0 sm:block" style={`background:${BERRY};opacity:.3`}></li>
+                <li class="flex items-center gap-3 sm:flex-1 sm:justify-center">
+                  {/* sprinkles — dotted circle */}
+                  <svg class="h-10 w-10 shrink-0" viewBox="0 0 40 40" aria-hidden="true">
+                    <circle cx="20" cy="20" r="15" fill="none" stroke="#3a2216" stroke-width="1.2" opacity=".35" />
+                    {[
+                      [20, 11], [26, 13], [29, 19], [26, 26], [20, 28], [13, 26], [11, 19], [14, 13],
+                      [20, 17], [24, 20], [20, 23], [16, 20],
+                    ].map(([cx, cy]) => (
+                      <circle cx={cx} cy={cy} r="1.5" fill={BERRY} />
+                    ))}
+                  </svg>
+                  <span class="text-center text-sm font-bold uppercase leading-tight tracking-[0.14em] text-cocoa">
+                    Sprinkles<span class="sm:block"> if desired</span>
+                  </span>
+                </li>
+              </ul>
+            </section>
+
+            {/* specialty ribbon */}
+            <p
+              class="mx-auto mt-8 max-w-2xl rounded-full px-6 py-3 text-center text-sm font-bold uppercase tracking-[0.12em] text-cream sm:text-base"
+              style={`background:${BERRY}`}
+            >
+              <svg class="mr-2 inline-block h-4 w-4 align-[-2px]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              /></svg>
+              Specialty flavors &amp; custom themes available!
+            </p>
+
+            {/* footer strip — wraps to as many rows as it needs on a phone */}
+            <ul
+              class="mt-8 flex list-none flex-wrap items-center justify-center gap-x-5 gap-y-3 text-center text-xs font-bold uppercase tracking-[0.1em] text-choc sm:text-[13px]"
+            >
+              <li>
+                <a
+                  href={IG_URL}
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Mimi's Chocolate Bites on Instagram (opens in a new tab)"
+                  class="inline-flex items-center gap-2 transition hover:text-[#c43e63] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                >
+                  <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <rect x="2" y="2" width="20" height="20" rx="5.5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none" />
+                  </svg>
+                  @mimischocolatebites
+                </a>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
+                  ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                /></svg>
+                Made fresh. Made for you.
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M12 21s7-5.6 7-11a7 7 0 10-14 0c0 5.4 7 11 7 11z" />
+                  <circle cx="12" cy="10" r="2.5" />
+                </svg>
+                Pick up in Denver
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* CTA — off the flyer, into the inquiry form */}
+        <section class="mt-10 text-center">
+          <div class="flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="/contact"
+              class={`inline-flex items-center gap-2 rounded-full bg-gold px-8 py-3.5 font-bold text-cocoa shadow-lg transition hover:-translate-y-0.5 hover:brightness-105 focus-visible:ring-cream ${focusRing}`}
+            >
+              <CakePop class="-ml-1 h-6 w-auto shrink-0 drop-shadow-sm" />
+              Order a package
+            </a>
+            <a
+              href={IG_URL}
+              target="_blank"
+              rel="noopener"
+              aria-label="DM Mimi's Chocolate Bites on Instagram (opens in a new tab)"
+              class={`inline-flex items-center gap-2 rounded-full border-2 border-cream/25 px-6 py-3.5 font-semibold text-cream transition hover:border-blush hover:text-blush focus-visible:ring-blush ${focusRing}`}
+            >
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5.5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none" />
+              </svg>
+              DM us instead
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
