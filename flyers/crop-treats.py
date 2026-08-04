@@ -99,7 +99,39 @@ def isolate_on_brown(img, box, card=DOZEN_CARD, tol=26, scale=3):
     return tile.resize((w * scale, h * scale), Image.LANCZOS)
 
 
-def lift(img, box, keys, scale=1, strays=None):
+def drop_small_blobs(tile, min_height=34):
+    """Erase leftover opaque specks that are too short to be food.
+
+    Lets the packages-flyer boxes be drawn generously: any line of her card
+    text or border dash caught in the crop is only a few px tall and gets
+    cleared, while the treats — all far taller — survive. Without this, a box
+    roomy enough to not clip the cake pop also swallows the bullet above it.
+    """
+    w, h = tile.size
+    px = tile.load()
+    seen = [[False] * w for _ in range(h)]
+    for sy in range(h):
+        for sx in range(w):
+            if px[sx, sy][3] == 0 or seen[sy][sx]:
+                continue
+            blob, stack = [], [(sx, sy)]
+            seen[sy][sx] = True
+            while stack:
+                x, y = stack.pop()
+                blob.append((x, y))
+                for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                    if 0 <= nx < w and 0 <= ny < h and px[nx, ny][3] > 0 and not seen[ny][nx]:
+                        seen[ny][nx] = True
+                        stack.append((nx, ny))
+            top = min(y for _, y in blob)
+            bottom = max(y for _, y in blob)
+            if bottom - top < min_height:
+                for x, y in blob:
+                    px[x, y] = (*px[x, y][:3], 0)
+    return tile
+
+
+def lift(img, box, keys, scale=1, strays=None, despeckle=False):
     """Crop `box`, knock out any colour in `keys`, drop `strays`, trim, scale."""
     tile = img.crop(box).convert('RGBA')
     px = tile.load()
@@ -111,6 +143,8 @@ def lift(img, box, keys, scale=1, strays=None):
                 strays and strays(x, y, w, h)
             ):
                 px[x, y] = (*colour, 0)
+    if despeckle:
+        tile = drop_small_blobs(tile)
     tile = tile.crop(tile.getbbox())
     if scale != 1:
         tile = tile.resize((tile.width * scale, tile.height * scale), Image.LANCZOS)
@@ -151,12 +185,15 @@ def main():
     # This flyer is 1024x1536, so no upscaling needed.
     packages = Image.open(PACKAGES).convert('RGB')
     pkg_keys = [(PKG_CREAM, 30), (PKG_BORDER, 30), ((255, 250, 245), 14)]
+    # Roomy boxes on purpose — despeckle clears the card text and border dashes
+    # that come with the extra margin, and the old tight boxes were shaving the
+    # top off each cake pop.
     for name, box in {
-        'pkg-mini': (38, 1085, 315, 1266),
-        'pkg-standard': (352, 1120, 612, 1284),
-        'pkg-deluxe': (658, 1085, 935, 1266),
+        'pkg-mini': (54, 1062, 324, 1272),
+        'pkg-standard': (378, 1100, 622, 1310),
+        'pkg-deluxe': (690, 1062, 940, 1272),
     }.items():
-        lift(packages, box, pkg_keys).save(OUT / f'{name}.png')
+        lift(packages, box, pkg_keys, despeckle=True).save(OUT / f'{name}.png')
 
     # ── Treat Packages: her three "basic decor" illustrations ─────────────
     # Boxes stop short of the strip's own border rule (y=1398) and, for the
