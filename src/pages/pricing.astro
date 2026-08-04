@@ -32,15 +32,17 @@ import '../styles/global.css';
 import Seo from '../components/Seo.astro';
 import RainField from '../components/RainField.astro';
 import CakePop from '../components/CakePop.astro';
-import TreatIllustration from '../components/TreatIllustration.astro';
 
 const IG_URL = 'https://instagram.com/mimischocolatebites';
 
 // Sampled straight off Mimi's flyers so the page matches her artwork exactly:
 // ribbon/heart berry, the pink flyer's panel, its dark cards and title pink.
 const BERRY = '#c8465e';
-const DOZEN_CARD = '#3b2613';
-const DOZEN_TITLE = '#ef8692';
+// The brown her By-the-Dozen product shots are photographed on. The bottom
+// section's cards use exactly this so the photos sit on it seamlessly — change
+// one and the other has to change with it.
+const PHOTO_BROWN = '#3d2613';
+const ACCENT_PINK = '#ef8692';
 
 const packages = [
   {
@@ -70,11 +72,9 @@ const packages = [
   },
 ];
 
-// SECTION 2 — Mimi's "By the Dozen" flyer. REAL prices, in her order.
-// That flyer is pink with dark-chocolate cards (the packages one is cream), so
-// this section keeps its own palette rather than being flattened to match.
-const PINK_PANEL = '#f7ded6';
-
+// SECTION 2 — Mimi's "By the Dozen" flyer: her prices and her product photos,
+// but presented in the SAME cream/ribbon treatment as the packages section
+// above rather than her pink flyer's own colorway.
 const byTheDozen = [
   { item: 'Oreo', half: '$15', dozen: '$25', addOn: null, icon: 'oreo' },
   { item: 'Rice Krispies', half: '$22', dozen: '$32', addOn: null, icon: 'krispie' },
@@ -328,8 +328,7 @@ const focusRing =
         {/* ── SECTION 2 — Mimi's pink "By the Dozen" flyer ───────────── */}
         <div
           id="by-the-dozen"
-          class="relative mt-8 scroll-mt-6 overflow-hidden rounded-[var(--radius-card)] text-cocoa shadow-2xl ring-1 ring-gold/25"
-          style={`background:${PINK_PANEL}`}
+          class="relative mt-8 scroll-mt-6 overflow-hidden rounded-[var(--radius-card)] bg-cream text-cocoa shadow-2xl ring-1 ring-gold/25"
         >
           {/* her drip again — this flyer has one too */}
           <svg
@@ -354,76 +353,71 @@ const focusRing =
                 alt="Mimi's Chocolate Bites"
                 class="mx-auto h-24 w-auto sm:h-28"
               />
-              <p
-                class="mt-3 text-center text-[13px] font-bold uppercase tracking-[0.18em] text-cocoa sm:text-base sm:tracking-[0.2em]"
-              >
-                Sweet treats. Made with love.
-                <svg class="ml-1.5 inline-block h-3.5 w-3.5 align-[-1px]" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
+              <h2 class="mt-1 font-script text-5xl leading-none text-cocoa sm:text-6xl lg:text-7xl">
+                By the Dozen
+              </h2>
+              <div class="mt-5 flex items-center justify-center gap-3">
+                <span class="h-px w-12 sm:w-16" style={`background:${BERRY};opacity:.55`}></span>
+                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
                   ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
                 /></svg>
+                <span class="h-px w-12 sm:w-16" style={`background:${BERRY};opacity:.55`}></span>
+              </div>
+              <p
+                class="mt-4 text-[13px] font-bold uppercase tracking-[0.18em] text-choc sm:text-base sm:tracking-[0.22em]"
+              >
+                Mix, match, or keep it simple.
               </p>
-              {/* her bold caps wordmark with the berry underline */}
-              <h2 class="mt-6 inline-block text-3xl font-extrabold uppercase tracking-[0.06em] text-cocoa sm:text-4xl">
-                By the Dozen
-                <span class="mt-1.5 block h-[3px] w-full rounded-full" style={`background:${BERRY}`}></span>
-              </h2>
             </header>
 
-            {/* dark chocolate treat cards, 2-up on desktop and stacked on phones */}
+            {/* Same card anatomy as the packages above — ribbon banner, big
+                price, heart bullets, her photo at the bottom — but these cards
+                are the exact brown her product shots are photographed on
+                (PHOTO_BROWN), so each photo blends into its card instead of
+                sitting there as a visible rectangle. Cream type, pink accents.
+                Two-up, not four: "Pretzel Rods/Knots" overruns a quarter-width
+                ribbon. */}
             <ul class="mt-9 grid list-none gap-5 sm:grid-cols-2">
               {byTheDozen.map((row) => (
                 <li
                   class="flex items-center gap-4 rounded-2xl px-5 py-5 text-cream shadow-lg"
-                  style={`background:${DOZEN_CARD}`}
+                  style={`background:${PHOTO_BROWN}`}
                 >
                   <div class="min-w-0 flex-1">
                     <h3
                       class="text-xl font-extrabold uppercase italic leading-tight tracking-[0.02em] sm:text-2xl"
-                      style={`color:${DOZEN_TITLE}`}
+                      style={`color:${ACCENT_PINK}`}
                     >
                       {row.item}
                     </h3>
-                    <dl class="mt-3 flex flex-col gap-1.5 text-[15px] text-cream/90">
+                    <dl class="mt-3 flex flex-col gap-1.5 text-[15px] sm:text-base">
                       <div class="flex items-baseline gap-2">
-                        <dt class="font-semibold">half dozen &mdash;</dt>
-                        <dd class="font-bold text-cream">{row.half}</dd>
+                        <dt>half dozen-</dt>
+                        <dd class="font-bold">{row.half}</dd>
                       </div>
                       <div class="flex items-baseline gap-2">
-                        <dt class="font-semibold">dozen &mdash;</dt>
-                        <dd class="font-bold text-cream">{row.dozen}</dd>
+                        <dt>dozen-</dt>
+                        <dd class="font-bold">{row.dozen}</dd>
                       </div>
                       {row.addOn && (
-                        <div class="mt-0.5 text-sm font-semibold" style={`color:${DOZEN_TITLE}`}>
+                        <div class="mt-0.5 text-sm font-semibold" style={`color:${ACCENT_PINK}`}>
                           {row.addOn}
                         </div>
                       )}
                     </dl>
                   </div>
 
-                  {/* redrawn from her flyer so they stay sharp at any size */}
-                  <TreatIllustration name={row.icon} class="h-24 w-24 shrink-0 sm:h-28 sm:w-28" />
+                  {/* Mimi's own photo — the card is the exact brown it was shot
+                      on, so it reads as part of the card, the way her flyer does */}
+                  <img
+                    src={`/img/treats/${row.icon}.png`}
+                    alt=""
+                    aria-hidden="true"
+                    class="h-24 w-auto shrink-0 sm:h-28"
+                  />
                 </li>
               ))}
             </ul>
-
-            {/* her footer: Denver ribbon over the site url */}
-            <div class="mt-9 text-center">
-              <p
-                class="inline-flex items-center gap-3 rounded-full px-7 py-2 text-sm font-bold uppercase tracking-[0.12em] text-cocoa sm:text-base"
-                style={`background:${BERRY}33`}
-              >
-                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
-                  ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                /></svg>
-                Denver, CO
-                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
-                  ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                /></svg>
-              </p>
-              <p class="mt-4 text-sm font-bold tracking-[0.04em] text-choc sm:text-base">
-                www.mimischocolatebites.com
-              </p>
-            </div>
           </div>
         </div>
 
