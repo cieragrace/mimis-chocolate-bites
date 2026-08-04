@@ -15,9 +15,11 @@
  *   by-the-dozen.png     512×572 of 640 — keeps the "Denver, CO" ribbon,
  *     drops the www line.
  *
- * Both flyers render full column width so they match. The by-the-dozen
- * source is only 512px wide, so it upscales a touch soft on desktop — a
- * higher-res export from Mimi would fix that if it ever bothers anyone.
+ * Phones: the flyers stack, both full width. Desktop: side by side in a
+ * 2-up grid — that keeps each near/below its native pixel width (the
+ * by-the-dozen source is only 512px wide, so full-column desktop rendering
+ * stretched it soft). Their aspect ratios differ, so the shorter one is
+ * vertically centered next to the taller one.
  *
  * The flyers are images-of-text, so each <img> carries full pricing in its
  * alt — that's the screen-reader and SEO copy for this page. Prices change →
@@ -100,23 +102,25 @@ const dozenAlt =
         </nav>
 
         {/* ── Mimi's flyers, as she made them ────────────────────────── */}
-        <img
-          id="packages"
-          src="/img/flyers/treat-packages.png"
-          alt={packagesAlt}
-          width="1024"
-          height="1406"
-          class="mt-6 block w-full scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25"
-        />
+        <div class="mt-6 grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-6">
+          <img
+            id="packages"
+            src="/img/flyers/treat-packages.png"
+            alt={packagesAlt}
+            width="1024"
+            height="1406"
+            class="block w-full scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25"
+          />
 
-        <img
-          id="by-the-dozen"
-          src="/img/flyers/by-the-dozen.png"
-          alt={dozenAlt}
-          width="512"
-          height="572"
-          class="mt-8 block w-full scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25"
-        />
+          <img
+            id="by-the-dozen"
+            src="/img/flyers/by-the-dozen.png"
+            alt={dozenAlt}
+            width="512"
+            height="572"
+            class="block w-full scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25"
+          />
+        </div>
 
         {/* the flyers' cropped footer strip, rebuilt as real links:
             website line → Instagram + the order form */}
