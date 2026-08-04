@@ -1,0 +1,211 @@
+---
+/**
+ * The four By-the-Dozen treats, drawn to match Mimi's flyer artwork.
+ *
+ * Her "By the Dozen" flyer is only 512x640, so cropping her photos out of it
+ * gave soft, upscaled images. These are redrawn from that artwork as vectors
+ * instead: same treats, same angles, same colours, but crisp at any size.
+ * Treat her flyer as the reference — if these drift from how her treats
+ * actually look, the flyer in flyers/ is the thing to match.
+ *
+ * Gradient ids are namespaced per treat so four of these on one page can't
+ * collide (a duplicated id makes one of them paint as nothing).
+ */
+interface Props {
+  name: 'oreo' | 'krispie' | 'cakesicle' | 'pretzel';
+  class?: string;
+}
+
+const { name, class: className = '' } = Astro.props;
+const id = (part: string) => `${name}-${part}`;
+---
+
+<svg
+  class={className}
+  viewBox="0 0 120 120"
+  fill="none"
+  aria-hidden="true"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  {name === 'oreo' && (
+    <g>
+      <defs>
+        <linearGradient id={id('top')} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#4a2e1b" />
+          <stop offset="1" stop-color="#301b0f" />
+        </linearGradient>
+        <linearGradient id={id('side')} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#20110a" />
+          <stop offset="0.45" stop-color="#38210f" />
+          <stop offset="1" stop-color="#1c0f08" />
+        </linearGradient>
+        <linearGradient id={id('cream')} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#e2d3bd" />
+          <stop offset="0.4" stop-color="#faf3e8" />
+          <stop offset="1" stop-color="#dccdb6" />
+        </linearGradient>
+      </defs>
+
+      <ellipse cx="60" cy="99" rx="40" ry="7" fill="#12261a" opacity="0.001" />
+      <ellipse cx="60" cy="98" rx="38" ry="6" fill="#000" opacity="0.22" />
+
+      {/* bottom wafer */}
+      <rect x="19" y="72" width="82" height="14" fill={`url(#${id('side')})`} />
+      <ellipse cx="60" cy="86" rx="41" ry="13" fill="#20110a" />
+
+      {/* cream filling */}
+      <rect x="19" y="60" width="82" height="13" fill={`url(#${id('cream')})`} />
+      <ellipse cx="60" cy="73" rx="41" ry="12" fill="#f3ead9" />
+
+      {/* top wafer */}
+      <rect x="19" y="46" width="82" height="15" fill={`url(#${id('side')})`} />
+      <ellipse cx="60" cy="46" rx="41" ry="14" fill={`url(#${id('top')})`} />
+
+      {/* embossed rim + crumb texture on the top wafer */}
+      <ellipse cx="60" cy="46" rx="33" ry="10.5" fill="none" stroke="#573620" stroke-width="1.6" opacity=".8" />
+      <g fill="#5c3a22" opacity=".85">
+        {[
+          [46, 41], [58, 38], [70, 41], [78, 46], [70, 51], [58, 54], [46, 51], [38, 46],
+          [52, 44], [64, 44], [58, 47], [50, 48], [66, 48], [43, 45], [75, 45],
+        ].map(([cx, cy]) => <circle cx={cx} cy={cy} r="2.1" />)}
+      </g>
+      <g fill="#22120a" opacity=".7">
+        {[[52, 40], [66, 42], [72, 48], [54, 51], [40, 48], [62, 50], [44, 43]].map(([cx, cy]) => (
+          <circle cx={cx} cy={cy} r="1.5" />
+        ))}
+      </g>
+      <ellipse cx="47" cy="40" rx="14" ry="4" fill="#fff" opacity=".07" />
+    </g>
+  )}
+
+  {name === 'krispie' && (
+    <g>
+      <defs>
+        <linearGradient id={id('choc')} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#5a3620" />
+          <stop offset="1" stop-color="#38200f" />
+        </linearGradient>
+      </defs>
+
+      <ellipse cx="62" cy="96" rx="36" ry="6" fill="#000" opacity=".22" />
+
+      {/* crisped-rice body — two visible faces */}
+      <path d="M24 48 L60 64 L60 92 L24 76 Z" fill="#7c5130" />
+      <path d="M60 64 L100 46 L100 74 L60 92 Z" fill="#8e5f3a" />
+      {/* chocolate top */}
+      <path d="M24 48 L64 30 L100 46 L60 64 Z" fill={`url(#${id('choc')})`} />
+      {/* chocolate spilling over the front edges */}
+      <path d="M24 48 L60 64 L60 71 L24 55 Z" fill="#3f2411" />
+      <path d="M60 64 L100 46 L100 53 L60 71 Z" fill="#4d2c15" />
+      <path d="M33 55 q3 6 0 10 q-4-3-4-8 z" fill="#3f2411" />
+      <path d="M78 60 q4 5 1 10 q-5-3-5-8 z" fill="#4d2c15" />
+
+      {/* puffed rice showing through the sides */}
+      <g opacity=".55">
+        {[
+          [32, 62], [40, 68], [48, 72], [36, 76], [45, 80], [30, 70],
+          [70, 70], [80, 66], [90, 62], [74, 78], [86, 74], [66, 80],
+        ].map(([cx, cy]) => <ellipse cx={cx} cy={cy} rx="3.2" ry="2.2" fill="#c99a68" />)}
+      </g>
+
+      {/* her pink drizzle across the top */}
+      <g stroke="#ef8fa4" stroke-width="2.6" stroke-linecap="round" fill="none">
+        <path d="M34 49 q10 6 18 2 t16 3" />
+        <path d="M44 43 q10 6 18 2 t16 3" />
+        <path d="M56 37 q9 5 17 2 t14 3" />
+      </g>
+      <path d="M28 46 L64 32 L96 46" stroke="#fff" stroke-width="1.2" opacity=".12" fill="none" />
+    </g>
+  )}
+
+  {name === 'cakesicle' && (
+    <g>
+      <defs>
+        <linearGradient id={id('pink')} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#f4a3b6" />
+          <stop offset="0.55" stop-color="#ea8299" />
+          <stop offset="1" stop-color="#d96b85" />
+        </linearGradient>
+        <linearGradient id={id('stick')} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#e8cda3" />
+          <stop offset="1" stop-color="#c9a271" />
+        </linearGradient>
+      </defs>
+
+      <ellipse cx="62" cy="112" rx="20" ry="4" fill="#000" opacity=".2" />
+
+      {/* stick */}
+      <rect x="52" y="84" width="14" height="30" rx="7" fill={`url(#${id('stick')})`} transform="rotate(9 59 99)" />
+
+      {/* glazed body, tilted like hers */}
+      <g transform="rotate(9 60 50)">
+        <rect x="28" y="10" width="64" height="82" rx="24" fill={`url(#${id('pink')})`} />
+        {/* chocolate dipped edge down the left side */}
+        <path
+          d="M52 10 h-0.5 A24 24 0 0 0 28 34 v34 a24 24 0 0 0 10 19 l10-6 A20 20 0 0 1 42 62 V36 A20 20 0 0 1 58 16 Z"
+          fill="#3f2411"
+        />
+        {/* chocolate drizzle */}
+        <g stroke="#4a2c18" stroke-width="3.2" stroke-linecap="round" fill="none" opacity=".9">
+          <path d="M34 40 q14 8 28 0 t26 -4" />
+          <path d="M32 56 q14 8 28 0 t28 -3" />
+          <path d="M36 72 q14 8 28 0 t24 -5" />
+        </g>
+        {/* sprinkles along the dipped edge */}
+        <g fill="#fbf4ea">
+          {[[36, 26], [33, 36], [32, 47], [34, 58], [37, 69], [42, 78], [41, 20], [30, 42], [31, 63]].map(
+            ([cx, cy]) => <circle cx={cx} cy={cy} r="1.9" />
+          )}
+        </g>
+        <rect x="70" y="20" width="12" height="46" rx="6" fill="#fff" opacity=".18" />
+      </g>
+    </g>
+  )}
+
+  {name === 'pretzel' && (
+    <g>
+      <defs>
+        {/* keep every stop clear of the card brown (#3b2613) or the lower
+            half of the pretzel disappears into the card and it reads as a blob */}
+        <linearGradient id={id('dough')} x1="0" y1="0" x2="0.4" y2="1">
+          <stop offset="0" stop-color="#b07a44" />
+          <stop offset="0.5" stop-color="#8b5a30" />
+          <stop offset="1" stop-color="#6d4423" />
+        </linearGradient>
+      </defs>
+
+      <ellipse cx="60" cy="102" rx="36" ry="6" fill="#000" opacity=".22" />
+
+      {/* stroke stays well under the loop radius, and the loops sit far
+          enough apart to keep their holes open instead of merging */}
+      <g
+        stroke={`url(#${id('dough')})`}
+        stroke-width="11"
+        stroke-linecap="round"
+        fill="none"
+      >
+        <circle cx="33" cy="75" r="18" />
+        <circle cx="87" cy="75" r="18" />
+        {/* the two arms crossing over each other at the top */}
+        <path d="M21 64 C 22 26, 50 14, 66 40" />
+        <path d="M99 64 C 98 26, 70 14, 54 40" />
+      </g>
+
+      {/* glossy top light along the same strokes */}
+      <g stroke="#cf9a5f" stroke-width="3.2" stroke-linecap="round" fill="none" opacity=".5">
+        <path d="M18 70 A18 18 0 0 1 28 58" />
+        <path d="M72 70 A18 18 0 0 1 82 58" />
+        <path d="M24 56 C 26 30, 48 18, 60 36" />
+      </g>
+
+      {/* sprinkles */}
+      <g fill="#fbf4ea">
+        {[
+          [26, 62], [40, 66], [33, 90], [20, 78], [46, 80], [28, 72],
+          [80, 62], [94, 68], [87, 90], [100, 78], [74, 80], [92, 58],
+          [30, 40], [46, 28], [60, 38], [74, 28], [88, 44],
+        ].map(([cx, cy]) => <circle cx={cx} cy={cy} r="2" />)}
+      </g>
+    </g>
+  )}
+</svg>

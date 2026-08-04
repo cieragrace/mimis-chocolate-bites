@@ -22,7 +22,9 @@ OUT = HERE.parent / 'public' / 'img' / 'treats'
 DOZEN = HERE / '9753E63E-A751-464A-B6DF-6B3FC431339F.PNG'  # pink "By the Dozen"
 PACKAGES = HERE / '4F6B7A88-21B0-44DC-B5D1-E66FC18517F5.PNG'  # cream "Treat Packages"
 
-# Background colours sampled from each flyer.
+# Background colours sampled from each flyer. DOZEN_PANEL is kept for reference
+# — that flyer is the drawing reference for TreatIllustration.astro, not a crop
+# source, since it's too low-res to crop cleanly.
 DOZEN_PANEL = (247, 222, 214)
 PKG_CREAM = (248, 237, 226)
 PKG_BORDER = (220, 158, 140)  # the thin card outline on the packages flyer
@@ -53,30 +55,11 @@ def lift(img, box, keys, scale=1, strays=None):
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
 
-    # ── By the Dozen: one photo per treat ──────────────────────────────────
-    # That flyer is only 512x640, so these come out small and get upscaled 3x.
-    # Boxes leave a couple of px of margin past each treat's true edge — these
-    # are photos of rounded objects, so a box drawn flush to the edge shaves a
-    # visible flat off the bottom of the Oreo or the side of the cakesicle.
-    dozen = Image.open(DOZEN).convert('RGB')
-    dozen_keys = [(DOZEN_PANEL, 26)]
-    for name, box in {
-        'oreo': (176, 371, 234, 426),
-        'krispie': (384, 380, 447, 431),
-        'pretzel': (276, 492, 339, 549),
-    }.items():
-        lift(dozen, box, dozen_keys, scale=3).save(OUT / f'{name}.png')
-
-    # A stray bit of the RICE KRISPIES title sits above the cakesicle and keys
-    # to neither background colour, so cut that corner specifically. Don't trim
-    # the right side here — her pink swirl line is already outside the box, and
-    # cutting inward clipped the pop.
-    def cakesicle_strays(x, y, w, h):
-        return x < w * 0.28 and y < h * 0.13
-
-    lift(
-        dozen, (198, 463, 241, 535), dozen_keys, scale=3, strays=cakesicle_strays
-    ).save(OUT / 'cakesicle.png')
+    # NOTE: the four By-the-Dozen treats are deliberately NOT cropped here.
+    # That flyer is only 512x640, so crops of it looked soft once upscaled;
+    # they're redrawn as vectors in src/components/TreatIllustration.astro
+    # using the flyer as the reference. The packages flyer is 1024x1536, so
+    # its crops below are sharp enough to use directly.
 
     # ── Treat Packages: the treat cluster on each tier's card ──────────────
     # This flyer is 1024x1536, so no upscaling needed.
