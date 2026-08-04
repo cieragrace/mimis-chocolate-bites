@@ -55,24 +55,27 @@ def main():
 
     # ── By the Dozen: one photo per treat ──────────────────────────────────
     # That flyer is only 512x640, so these come out small and get upscaled 3x.
+    # Boxes leave a couple of px of margin past each treat's true edge — these
+    # are photos of rounded objects, so a box drawn flush to the edge shaves a
+    # visible flat off the bottom of the Oreo or the side of the cakesicle.
     dozen = Image.open(DOZEN).convert('RGB')
     dozen_keys = [(DOZEN_PANEL, 26)]
     for name, box in {
-        'oreo': (179, 363, 232, 423),
+        'oreo': (176, 371, 234, 426),
         'krispie': (384, 380, 447, 431),
         'pretzel': (276, 492, 339, 549),
     }.items():
         lift(dozen, box, dozen_keys, scale=3).save(OUT / f'{name}.png')
 
-    # The cakesicle sits against one of her pink swirl lines, with a stray bit
-    # of title lettering above it — neither keys out by colour, so cut them.
+    # A stray bit of the RICE KRISPIES title sits above the cakesicle and keys
+    # to neither background colour, so cut that corner specifically. Don't trim
+    # the right side here — her pink swirl line is already outside the box, and
+    # cutting inward clipped the pop.
     def cakesicle_strays(x, y, w, h):
-        return x > w * 0.78 or (x > w * 0.60 and y > h * 0.78) or (
-            x < w * 0.30 and y < h * 0.15
-        )
+        return x < w * 0.28 and y < h * 0.13
 
     lift(
-        dozen, (201, 467, 249, 537), dozen_keys, scale=3, strays=cakesicle_strays
+        dozen, (198, 463, 241, 535), dozen_keys, scale=3, strays=cakesicle_strays
     ).save(OUT / 'cakesicle.png')
 
     # ── Treat Packages: the treat cluster on each tier's card ──────────────
@@ -85,6 +88,17 @@ def main():
         'pkg-deluxe': (658, 1085, 935, 1266),
     }.items():
         lift(packages, box, pkg_keys).save(OUT / f'{name}.png')
+
+    # ── Treat Packages: her three "basic decor" illustrations ─────────────
+    # Boxes stop short of the strip's own border rule (y=1398) and, for the
+    # drizzle, of the "BASIC DECOR INCLUDES:" lettering above it (ends y=1324).
+    # Keying the cream hollows each circle out, leaving her ring + artwork.
+    for name, box in {
+        'decor-dipped': (163, 1296, 270, 1396),
+        'decor-drizzled': (443, 1326, 511, 1396),
+        'decor-sprinkles': (696, 1326, 772, 1396),
+    }.items():
+        lift(packages, box, pkg_keys, scale=2).save(OUT / f'{name}.png')
 
     for f in sorted(OUT.iterdir()):
         print(f.name, Image.open(f).size)

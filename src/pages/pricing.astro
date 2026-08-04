@@ -256,46 +256,19 @@ const focusRing =
               <ul
                 class="mt-5 flex list-none flex-col items-center gap-5 sm:flex-row sm:justify-center sm:gap-0"
               >
+                {/* her own decor illustrations, lifted off the packages flyer */}
                 <li class="flex items-center gap-3 sm:flex-1 sm:justify-center">
-                  {/* dipped — a chocolate pour */}
-                  <svg class="h-10 w-10 shrink-0" viewBox="0 0 40 40" aria-hidden="true">
-                    <rect x="8" y="9" width="24" height="13" rx="6.5" fill="#3a2216" />
-                    <rect x="11" y="18" width="5" height="8" rx="2.5" fill="#3a2216" />
-                    <circle cx="13.5" cy="26" r="3.5" fill="#3a2216" />
-                    <rect x="17.5" y="18" width="5.5" height="12" rx="2.75" fill="#3a2216" />
-                    <circle cx="20.25" cy="30" r="4" fill="#3a2216" />
-                    <rect x="25" y="18" width="4.5" height="6" rx="2.25" fill="#3a2216" />
-                    <circle cx="27.25" cy="24" r="3" fill="#3a2216" />
-                  </svg>
+                  <img src="/img/treats/decor-dipped.png" alt="" aria-hidden="true" class="h-12 w-auto shrink-0" />
                   <span class="text-sm font-bold uppercase tracking-[0.14em] text-cocoa">Dipped</span>
                 </li>
                 <li class="hidden h-10 w-px shrink-0 sm:block" style={`background:${BERRY};opacity:.3`}></li>
                 <li class="flex items-center gap-3 sm:flex-1 sm:justify-center">
-                  {/* drizzled — a squiggle */}
-                  <svg class="h-10 w-10 shrink-0" viewBox="0 0 40 40" aria-hidden="true">
-                    <circle cx="20" cy="20" r="15" fill="none" stroke="#3a2216" stroke-width="1.2" opacity=".35" />
-                    <path
-                      d="M11 25c4-2 4-6 8-6s4 4 8 2M11 20c4-2 4-6 8-6s4 4 8 2"
-                      fill="none"
-                      stroke="#3a2216"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                    />
-                  </svg>
+                  <img src="/img/treats/decor-drizzled.png" alt="" aria-hidden="true" class="h-11 w-auto shrink-0" />
                   <span class="text-sm font-bold uppercase tracking-[0.14em] text-cocoa">Drizzled</span>
                 </li>
                 <li class="hidden h-10 w-px shrink-0 sm:block" style={`background:${BERRY};opacity:.3`}></li>
                 <li class="flex items-center gap-3 sm:flex-1 sm:justify-center">
-                  {/* sprinkles — dotted circle */}
-                  <svg class="h-10 w-10 shrink-0" viewBox="0 0 40 40" aria-hidden="true">
-                    <circle cx="20" cy="20" r="15" fill="none" stroke="#3a2216" stroke-width="1.2" opacity=".35" />
-                    {[
-                      [20, 11], [26, 13], [29, 19], [26, 26], [20, 28], [13, 26], [11, 19], [14, 13],
-                      [20, 17], [24, 20], [20, 23], [16, 20],
-                    ].map(([cx, cy]) => (
-                      <circle cx={cx} cy={cy} r="1.5" fill={BERRY} />
-                    ))}
-                  </svg>
+                  <img src="/img/treats/decor-sprinkles.png" alt="" aria-hidden="true" class="h-11 w-auto shrink-0" />
                   <span class="text-center text-sm font-bold uppercase leading-tight tracking-[0.14em] text-cocoa">
                     Sprinkles<span class="sm:block"> if desired</span>
                   </span>
