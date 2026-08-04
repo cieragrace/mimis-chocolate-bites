@@ -206,8 +206,32 @@ def main():
     }.items():
         lift(packages, box, pkg_keys, scale=2).save(OUT / f'{name}.png')
 
+    # ── Treat Packages: the chocolate drip across the top ─────────────────
+    # Her drip is glossy, with highlights and uneven pours; the SVG version we
+    # drew instead read as flat blobs. Take a slice of hers from the left of
+    # the flyer — clear of the logo badge, which overlaps the drip in the
+    # middle — and mirror-tile it into a band wide enough for the page. Mirror
+    # rather than repeat so the tile edges meet exactly and no seam shows.
+    # Height matters: her longest pour reaches y≈240, and a shorter slab slices
+    # the tips off flat. The slab also catches one of her pink outline hearts,
+    # which is too tall for despeckle to clear, so key that colour as well.
+    slab = packages.crop((0, 0, 340, 250)).convert('RGBA')
+    px = slab.load()
+    for y in range(slab.height):
+        for x in range(slab.width):
+            colour = px[x, y][:3]
+            if near(colour, PKG_CREAM, 22) or near(colour, (200, 70, 94), 65):
+                px[x, y] = (*colour, 0)
+    slab = drop_small_blobs(slab, min_height=12)  # her scattered cocoa dots
+    band = Image.new('RGBA', (slab.width * 4, slab.height), (0, 0, 0, 0))
+    for i in range(4):
+        piece = slab if i % 2 == 0 else slab.transpose(Image.FLIP_LEFT_RIGHT)
+        band.alpha_composite(piece, (i * slab.width, 0))
+    band.save(OUT.parent / 'drip.png')
+
     for f in sorted(OUT.iterdir()):
         print(f.name, Image.open(f).size)
+    print('drip.png', Image.open(OUT.parent / 'drip.png').size)
 
 
 if __name__ == '__main__':

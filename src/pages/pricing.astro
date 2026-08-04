@@ -88,22 +88,6 @@ const byTheDozen = [
   },
 ];
 
-// Chocolate drips along the top of the cream panel — stem + bulb per drip,
-// matching the flyer's uneven, hand-poured look.
-const drips = [
-  { x: 60, r: 14, len: 30 },
-  { x: 160, r: 9, len: 16 },
-  { x: 250, r: 16, len: 44 },
-  { x: 360, r: 10, len: 22 },
-  { x: 470, r: 13, len: 34 },
-  { x: 580, r: 8, len: 14 },
-  { x: 690, r: 15, len: 40 },
-  { x: 800, r: 11, len: 24 },
-  { x: 910, r: 14, len: 32 },
-  { x: 1010, r: 9, len: 18 },
-  { x: 1120, r: 16, len: 42 },
-];
-
 const focusRing =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#241009]';
 ---
@@ -154,21 +138,8 @@ const focusRing =
           id="packages"
           class="relative mt-6 scroll-mt-6 overflow-hidden rounded-[var(--radius-card)] bg-cream text-cocoa shadow-2xl ring-1 ring-gold/25"
         >
-          {/* chocolate drip */}
-          <svg
-            class="block h-14 w-full sm:h-[4.5rem]"
-            viewBox="0 0 1200 78"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <rect x="0" y="0" width="1200" height="32" fill="#3a2216" />
-            {drips.map((d) => (
-              <g fill="#3a2216">
-                <rect x={d.x - d.r * 0.92} y="26" width={d.r * 1.84} height={d.len} rx={d.r * 0.92} />
-                <circle cx={d.x} cy={28 + d.len} r={d.r} />
-              </g>
-            ))}
-          </svg>
+          {/* Mimi's own chocolate drip, mirror-tiled off her flyer */}
+          <img src="/img/drip.png" alt="" aria-hidden="true" class="block w-full" />
 
           <div class="px-5 pb-8 pt-2 sm:px-8 sm:pb-10">
             {/* masthead */}
@@ -331,20 +302,7 @@ const focusRing =
           class="relative mt-8 scroll-mt-6 overflow-hidden rounded-[var(--radius-card)] bg-cream text-cocoa shadow-2xl ring-1 ring-gold/25"
         >
           {/* her drip again — this flyer has one too */}
-          <svg
-            class="block h-14 w-full sm:h-[4.5rem]"
-            viewBox="0 0 1200 78"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <rect x="0" y="0" width="1200" height="32" fill="#3a2216" />
-            {drips.map((d) => (
-              <g fill="#3a2216">
-                <rect x={d.x - d.r * 0.92} y="26" width={d.r * 1.84} height={d.len} rx={d.r * 0.92} />
-                <circle cx={d.x} cy={28 + d.len} r={d.r} />
-              </g>
-            ))}
-          </svg>
+          <img src="/img/drip.png" alt="" aria-hidden="true" class="block w-full" />
 
           <div class="px-5 pb-8 pt-2 sm:px-8 sm:pb-10">
             <header class="text-center">
