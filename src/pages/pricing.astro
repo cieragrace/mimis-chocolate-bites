@@ -1,22 +1,30 @@
 ---
 /**
- * PRICING page — a responsive web version of Mimi's own "Treat Packages"
- * flyer. Reached directly (/pricing); not linked from the landing yet.
+ * PRICING page — TWO sections, one per pricing doc Mimi sent:
+ *   1. "Treat Packages"  (her flyer — REAL prices, built)
+ *   2. "By the Dozen"    (her second doc — NOT RECEIVED YET, see below)
  *
  * ── DESIGN NOTE ───────────────────────────────────────────────────────────
  * MIMI DESIGNED THE FLYER. This page is a re-layout of it, not a redesign:
- * the chocolate drip, the script "Treat Packages" wordmark, the berry ribbon
- * name banners, heart bullets, the decor strip and the specialty ribbon are
- * all hers and should survive any future mobile/layout work. What changed is
- * only the *arrangement* — the three packages stack on phones instead of
- * sitting in a fixed 3-up grid, and the footer wraps.
+ * the chocolate drip, the script wordmark, the berry ribbon name banners,
+ * heart bullets, the decor strip and the specialty ribbon are all hers and
+ * should survive any future mobile/layout work. What changed is only the
+ * *arrangement* — the three packages stack on phones instead of sitting in a
+ * fixed 3-up grid, and the footer wraps.
  *
- * The flyer lives on a cream background, so the packages sit on a cream panel
+ * The flyer lives on a cream background, so both sections sit on cream panels
  * inside the site's moody frame rather than recoloring her work.
  *
- * PRICES ARE REAL — from Mimi's flyer (Mini $30 / Standard $85 / Deluxe $150).
- * The Standard tier genuinely lists "12 of your choice" twice (two separate
- * dozen selections, 36 total); that's her copy, not a duplication bug.
+ * PACKAGE PRICES ARE REAL — Mini $30 / Standard $85 / Deluxe $150. The
+ * Standard tier genuinely lists "12 of your choice" twice (two separate dozen
+ * selections, 36 total); that's her copy, not a duplication bug.
+ *
+ * ── SECTION 2 IS AWAITING REAL NUMBERS ────────────────────────────────────
+ * Mimi's second pricing doc was sent as a Gmail attachment we couldn't open,
+ * so the per-dozen rows below carry NO invented prices — each shows an em dash
+ * and the section renders a visible "prices coming" banner while DOZEN_DRAFT
+ * is true. Fill in `byTheDozen` from her doc, adjust the item list to match
+ * it, then set DOZEN_DRAFT to false. Do not guess these numbers.
  */
 import '../styles/global.css';
 import Seo from '../components/Seo.astro';
@@ -56,6 +64,20 @@ const packages = [
   },
 ];
 
+// SECTION 2 — per-dozen pricing from Mimi's second doc. Flip to false once
+// her real numbers are in; it only controls the "prices coming" banner.
+const DOZEN_DRAFT = true;
+
+// Item names use Mimi's own vocabulary from the flyer so her second doc maps
+// straight onto them. `price: null` renders an em dash — never a guess.
+const byTheDozen = [
+  { item: 'Cake Pops', price: null, unit: 'per dozen' },
+  { item: 'Chocolate Covered Pretzels', price: null, unit: 'per dozen', note: 'rods or twists' },
+  { item: 'Chocolate Covered Oreos', price: null, unit: 'per dozen' },
+  { item: 'Chocolate Covered Krispies', price: null, unit: 'per dozen' },
+  { item: 'Specialty flavors & custom themes', price: null, unit: 'quoted per order' },
+];
+
 // Chocolate drips along the top of the cream panel — stem + bulb per drip,
 // matching the flyer's uneven, hand-poured look.
 const drips = [
@@ -80,8 +102,8 @@ const focusRing =
 <html lang="en">
   <head>
     <Seo
-      title="Treat Packages — Mimi's Chocolate Bites"
-      description="Mimi's treat packages — cake pops, chocolate covered pretzels & Oreos. Mini $30, Standard $85, Deluxe $150. Made fresh, pick up in Denver."
+      title="Pricing — Mimi's Chocolate Bites"
+      description="Treat packages and per-dozen pricing — cake pops, chocolate covered pretzels, Oreos & Krispies. Mini $30, Standard $85, Deluxe $150. Made fresh, pick up in Denver."
       path="/pricing"
     />
   </head>
@@ -101,9 +123,26 @@ const focusRing =
           Back
         </a>
 
-        {/* ── Mimi's flyer, re-laid-out ──────────────────────────────── */}
+        {/* jump between the two pricing sections */}
+        <nav class="mt-4 flex flex-wrap justify-center gap-2 text-sm" aria-label="Pricing sections">
+          <a
+            href="#packages"
+            class={`rounded-full border border-gold/40 px-5 py-2 font-semibold text-gold transition hover:border-gold hover:text-cream focus-visible:ring-gold ${focusRing}`}
+          >
+            Treat packages
+          </a>
+          <a
+            href="#by-the-dozen"
+            class={`rounded-full border border-gold/40 px-5 py-2 font-semibold text-gold transition hover:border-gold hover:text-cream focus-visible:ring-gold ${focusRing}`}
+          >
+            By the dozen
+          </a>
+        </nav>
+
+        {/* ── SECTION 1 — Mimi's flyer, re-laid-out ──────────────────── */}
         <div
-          class="relative mt-4 overflow-hidden rounded-[var(--radius-card)] bg-cream text-cocoa shadow-2xl ring-1 ring-gold/25"
+          id="packages"
+          class="relative mt-6 scroll-mt-6 overflow-hidden rounded-[var(--radius-card)] bg-cream text-cocoa shadow-2xl ring-1 ring-gold/25"
         >
           {/* chocolate drip */}
           <svg
@@ -295,6 +334,74 @@ const focusRing =
           </div>
         </div>
 
+        {/* ── SECTION 2 — per-dozen pricing (awaiting Mimi's numbers) ── */}
+        <div
+          id="by-the-dozen"
+          class="relative mt-8 scroll-mt-6 overflow-hidden rounded-[var(--radius-card)] bg-cream px-5 pb-8 pt-8 text-cocoa shadow-2xl ring-1 ring-gold/25 sm:px-8 sm:pb-10"
+        >
+          <header class="text-center">
+            <h2 class="font-script text-5xl leading-none text-cocoa sm:text-6xl">By the Dozen</h2>
+            <div class="mt-5 flex items-center justify-center gap-3">
+              <span class="h-px w-12 sm:w-16" style={`background:${BERRY};opacity:.55`}></span>
+              <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
+                ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              /></svg>
+              <span class="h-px w-12 sm:w-16" style={`background:${BERRY};opacity:.55`}></span>
+            </div>
+            <p
+              class="mt-4 text-[13px] font-bold uppercase tracking-[0.18em] text-choc sm:text-base sm:tracking-[0.22em]"
+            >
+              Mix, match, or keep it simple.
+            </p>
+          </header>
+
+          {DOZEN_DRAFT && (
+            <p
+              class="mx-auto mt-7 max-w-xl rounded-2xl border px-5 py-3 text-center text-sm font-semibold"
+              style={`border-color:${BERRY}55;color:${BERRY}`}
+            >
+              Prices coming &mdash; waiting on Mimi&rsquo;s per&#8209;dozen sheet.
+            </p>
+          )}
+
+          {/* price rows — leader dots on desktop, stacked pairs on phones */}
+          <ul class="mx-auto mt-8 flex max-w-2xl list-none flex-col">
+            {byTheDozen.map((row, i) => (
+              <li
+                class={`flex items-start gap-3 py-4 ${i > 0 ? 'border-t' : ''}`}
+                style={i > 0 ? `border-color:${BERRY}22` : undefined}
+              >
+                <svg class="mt-1.5 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
+                  ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                /></svg>
+                {/* name · leader · price — the leader rule only earns its keep on desktop */}
+                <div class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span class="text-[17px] font-semibold text-cocoa">
+                    {row.item}
+                    {row.note && (
+                      <span class="ml-2 text-sm font-normal text-cocoa-soft">({row.note})</span>
+                    )}
+                  </span>
+                  <span
+                    class="hidden h-px min-w-6 flex-1 self-center sm:block"
+                    style={`background:${BERRY}33`}
+                  ></span>
+                  <span class="ml-auto flex items-baseline gap-2 whitespace-nowrap">
+                    <span class="font-serif text-2xl text-cocoa">{row.price ?? '$—'}</span>
+                    <span class="text-xs font-bold uppercase tracking-[0.12em] text-cocoa-soft">{row.unit}</span>
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <p class="mx-auto mt-8 max-w-xl text-center text-[15px] leading-relaxed text-cocoa-soft">
+            Every order is handcrafted around <em class="not-italic" style={`color:${BERRY}`}>your</em> celebration, so
+            these are starting points &mdash; your final quote comes together once we&rsquo;ve talked through your
+            theme, colors and any add&#8209;ons you&rsquo;d love.
+          </p>
+        </div>
+
         {/* CTA — off the flyer, into the inquiry form */}
         <section class="mt-10 text-center">
           <div class="flex flex-wrap items-center justify-center gap-3">
@@ -303,7 +410,7 @@ const focusRing =
               class={`inline-flex items-center gap-2 rounded-full bg-gold px-8 py-3.5 font-bold text-cocoa shadow-lg transition hover:-translate-y-0.5 hover:brightness-105 focus-visible:ring-cream ${focusRing}`}
             >
               <CakePop class="-ml-1 h-6 w-auto shrink-0 drop-shadow-sm" />
-              Order a package
+              Order your treats
             </a>
             <a
               href={IG_URL}
