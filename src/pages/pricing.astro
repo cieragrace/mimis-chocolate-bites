@@ -15,8 +15,9 @@
  *   by-the-dozen.png     512×572 of 640 — keeps the "Denver, CO" ribbon,
  *     drops the www line.
  *
- * The by-the-dozen flyer is only 512px wide, so it's capped at max-w-[512px]
- * to stay sharp; the packages flyer (1024px) can fill the column.
+ * Both flyers render full column width so they match. The by-the-dozen
+ * source is only 512px wide, so it upscales a touch soft on desktop — a
+ * higher-res export from Mimi would fix that if it ever bothers anyone.
  *
  * The flyers are images-of-text, so each <img> carries full pricing in its
  * alt — that's the screen-reader and SEO copy for this page. Prices change →
@@ -114,7 +115,7 @@ const dozenAlt =
           alt={dozenAlt}
           width="512"
           height="572"
-          class="mx-auto mt-8 block w-full max-w-[512px] scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25"
+          class="mt-8 block w-full scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25"
         />
 
         {/* the flyers' cropped footer strip, rebuilt as real links:
