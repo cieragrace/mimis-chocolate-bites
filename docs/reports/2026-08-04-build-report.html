@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mimi's Chocolate Bites Build Report — August 4, 2026</title>
+<style>
+  :root {
+    --ink: #2a1a10;
+    --navy: #241009;
+    --gold: #c9975a;
+    --paper: #ffffff;
+    --soft: #fbf4ea;
+    --line: #e2d5c2;
+    --muted: #6b5a4c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Avenir Next', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--ink); background: var(--paper);
+    font-size: 10.5pt; line-height: 1.5;
+  }
+  .page { padding: 48px 56px; }
+  header.masthead {
+    background: var(--navy); color: #fff;
+    padding: 44px 56px 36px;
+  }
+  .masthead .kicker { text-transform: uppercase; letter-spacing: 3px; font-size: 8.5pt; color: var(--gold); font-weight: 600; }
+  .masthead h1 { font-size: 26pt; font-weight: 700; margin: 6px 0 4px; }
+  .masthead .sub { font-size: 11pt; color: #e0d2c4; }
+  .stats { display: flex; gap: 14px; margin: 26px 0 6px; }
+  .stat {
+    flex: 1; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.18);
+    border-radius: 8px; padding: 12px 14px;
+  }
+  .stat .n { font-size: 17pt; font-weight: 700; color: var(--gold); }
+  .stat .l { font-size: 8pt; text-transform: uppercase; letter-spacing: 1.2px; color: #e0d2c4; }
+  h2 {
+    font-size: 14pt; color: var(--navy); margin: 26px 0 10px;
+    padding-bottom: 6px; border-bottom: 2px solid var(--gold);
+  }
+  h3 { font-size: 11pt; color: var(--navy); margin: 14px 0 4px; }
+  p { margin: 6px 0; }
+  ul { margin: 4px 0 10px 18px; }
+  li { margin: 2.5px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 9.5pt; }
+  th { background: var(--soft); text-align: left; padding: 7px 10px; border-bottom: 2px solid var(--line); font-size: 8.5pt; text-transform: uppercase; letter-spacing: 1px; color: var(--navy); }
+  td { padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .pill { display: inline-block; border-radius: 10px; padding: 1px 8px; font-size: 8pt; font-weight: 600; }
+  .pill.high { background: #f6e3e1; color: #8c2f26; }
+  .pill.fixed { background: #e3efe4; color: #2c5f34; }
+  .two-col { display: flex; gap: 28px; }
+  .two-col > div { flex: 1; }
+  .note { color: var(--muted); font-size: 9pt; }
+  code { font-family: 'SF Mono', Menlo, monospace; font-size: 8.5pt; background: var(--soft); padding: 1px 4px; border-radius: 3px; }
+  footer { margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 8.5pt; display: flex; justify-content: space-between; }
+  .avoid-break { break-inside: avoid; }
+  @page { size: Letter; margin: 0; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="kicker">Mimi's Chocolate Bites · Internal Build Report</div>
+  <h1>Pricing Goes Live, Flyers and All</h1>
+  <div class="sub">August 4, 2026 · branch <b>pricing-iteration-2</b> merged to <b>main</b> · commits 2fa1fdb → 4cedae6 · deployed to production</div>
+  <div class="stats">
+    <div class="stat"><div class="n">5</div><div class="l">Commits</div></div>
+    <div class="stat"><div class="n">−242</div><div class="l">Net lines</div></div>
+    <div class="stat"><div class="n">2</div><div class="l">Prod deploys</div></div>
+    <div class="stat"><div class="n">2</div><div class="l">Flyers embedded</div></div>
+    <div class="stat"><div class="n">1st</div><div class="l">Push of main</div></div>
+  </div>
+</header>
+
+<div class="page">
+
+<h2>What happened</h2>
+<p>The pricing page got its second iteration and its public debut. Iteration 1 had rebuilt Mimi's two flyers as HTML; the call this session was to show her actual artwork instead. The page now embeds both flyers as images inside the site's moody frame, cropped only to remove the printed <code>www.mimischocolatebites.com</code> strips, which are replaced by real links to Instagram and the order form. After side-by-side desktop layout and equal-width phone stacking were verified in both viewports, the branch was merged to main and deployed to mimischocolatebites.com, with a new See pricing button on the landing page so visitors can actually find it. Every change was screenshot-verified locally before deploying, and the live domain was curl-checked after.</p>
+
+<h2>Shipped, by area</h2>
+
+<div class="two-col">
+<div>
+<h3>/pricing (iteration 2)</h3>
+<ul>
+  <li>Both flyers embedded as images, replacing 325 lines of HTML re-layout with 67</li>
+  <li>Website-URL strips cropped off each flyer (sips, top-anchored); originals in <code>flyers/</code> untouched</li>
+  <li>Themed header, jump pills, and CTA row: Order your treats → /contact, DM us instead → Instagram</li>
+  <li><b>Fixed:</b> By the Dozen flyer stretching soft at full column width; desktop is now a side-by-side grid that keeps the 512px source at native size</li>
+  <li>Phones stack both flyers edge-to-edge at identical widths</li>
+  <li>Full pricing written into each image's alt text for screen readers and search</li>
+</ul>
+</div>
+
+<div>
+<h3>Landing page</h3>
+<ul>
+  <li>See pricing button added between Place an inquiry and Follow, price-tag icon, outline style</li>
+  <li>One-screen no-scroll layout verified intact on phone and desktop</li>
+</ul>
+
+<h3>Repo &amp; deploys</h3>
+<ul>
+  <li>pricing-iteration-2 merged to main with a merge commit; main pushed to GitHub for the first time (remote previously held only feature branches)</li>
+  <li><b>Fixed:</b> branch preview that never built; the Pages project is direct-upload, not Git-connected, so previews and production both ship via <code>wrangler pages deploy</code></li>
+  <li>Two production deploys, both verified live on the custom domain</li>
+</ul>
+</div>
+</div>
+
+<h2 class="avoid-break">Deliberately not built (on the roadmap)</h2>
+<table class="avoid-break">
+  <tr><th>Item</th><th>Priority</th></tr>
+  <tr><td>Add /pricing to <code>sitemap.xml</code></td><td>High</td></tr>
+  <tr><td>Hi-res By the Dozen flyer from Mimi (current source is 512px; sharp at today's sizes, no headroom)</td><td>Medium</td></tr>
+  <tr><td>Hi-res transparent logo export from Mimi (long-standing)</td><td>Medium</td></tr>
+  <tr><td>SMS nudge for new inquiries (Gmail filter → carrier email-to-text)</td><td>Low</td></tr>
+</table>
+
+<h2>Paper trail</h2>
+<ul>
+  <li><code>src/pages/pricing.astro</code> — header comment documents the crop lines and the alt-text rule for future price changes</li>
+  <li><code>flyers/</code> — Mimi's original flyer PNGs, unmodified</li>
+  <li><code>public/img/flyers/</code> — the cropped web versions the page serves</li>
+  <li>Branches <code>pricing-page</code> (iteration 1) and <code>pricing-iteration-2</code> both preserved on GitHub</li>
+</ul>
+
+<footer>
+  <span>mimis-chocolate-bites · github.com/cieragrace/mimis-chocolate-bites · main @ 4cedae6</span>
+  <span>Report generated August 4, 2026</span>
+</footer>
+
+</div>
+</body>
+</html>
