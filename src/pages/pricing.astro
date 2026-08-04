@@ -1,32 +1,26 @@
 ---
 /**
- * PRICING page — TWO sections, one per pricing doc Mimi sent:
- *   1. "Treat Packages"  (her flyer — REAL prices, built)
- *   2. "By the Dozen"    (her second doc — NOT RECEIVED YET, see below)
+ * PRICING page — ITERATION 2: Mimi's flyers shown AS-IS, as images.
  *
- * ── DESIGN NOTE ───────────────────────────────────────────────────────────
- * MIMI DESIGNED THE FLYER. This page is a re-layout of it, not a redesign:
- * the chocolate drip, the script wordmark, the berry ribbon name banners,
- * heart bullets, the decor strip and the specialty ribbon are all hers and
- * should survive any future mobile/layout work. What changed is only the
- * *arrangement* — the three packages stack on phones instead of sitting in a
- * fixed 3-up grid, and the footer wraps.
+ * Iteration 1 rebuilt both flyers in HTML; this version embeds her actual
+ * artwork instead (public/img/flyers/, cropped from flyers/*.PNG). The ONLY
+ * edit to her work is the crop: each flyer's bottom strip carried
+ * "www.mimischocolatebites.com", which is pointless on the site itself — so
+ * that strip is cut and its job is done by real links instead (Instagram +
+ * the /contact order form), in the site's moody theme.
  *
- * The flyer lives on a cream background, so both sections sit on cream panels
- * inside the site's moody frame rather than recoloring her work.
+ * Crop lines (top-anchored, from the original PNGs):
+ *   treat-packages.png  1024×1406 of 1536 — keeps the specialty ribbon, drops
+ *     the footer row (IG handle / made fresh / pick up in Denver / www).
+ *   by-the-dozen.png     512×572 of 640 — keeps the "Denver, CO" ribbon,
+ *     drops the www line.
  *
- * PACKAGE PRICES ARE REAL — Mini $30 / Standard $85 / Deluxe $150. The
- * Standard tier genuinely lists "12 of your choice" twice (two separate dozen
- * selections, 36 total); that's her copy, not a duplication bug.
+ * The by-the-dozen flyer is only 512px wide, so it's capped at max-w-[512px]
+ * to stay sharp; the packages flyer (1024px) can fill the column.
  *
- * BY-THE-DOZEN PRICES ARE REAL TOO, off her second flyer. Note that flyer sells
- * a different list than the packages one — no cake pops; it's Oreo, Rice
- * Krispies, Cakesicles and Pretzel Rods/Knots, each at a half-dozen and a dozen
- * price, with a caramel add-on on the pretzels only.
- *
- * Her two flyers are deliberately different colorways (packages = cream,
- * by-the-dozen = pink with dark chocolate cards), so the two panels keep their
- * own palettes instead of being homogenized.
+ * The flyers are images-of-text, so each <img> carries full pricing in its
+ * alt — that's the screen-reader and SEO copy for this page. Prices change →
+ * update the alt when you swap the flyer.
  */
 import '../styles/global.css';
 import Seo from '../components/Seo.astro';
@@ -35,61 +29,14 @@ import CakePop from '../components/CakePop.astro';
 
 const IG_URL = 'https://instagram.com/mimischocolatebites';
 
-// Sampled straight off Mimi's flyers so the page matches her artwork exactly:
-// ribbon/heart berry, the pink flyer's panel, its dark cards and title pink.
-const BERRY = '#c8465e';
-// The brown her By-the-Dozen product shots are photographed on. The bottom
-// section's cards use exactly this so the photos sit on it seamlessly — change
-// one and the other has to change with it.
-const PHOTO_BROWN = '#3d2613';
-const ACCENT_PINK = '#ef8692';
-
-const packages = [
-  {
-    tier: 'Mini',
-    price: '$30',
-    size: 'One dozen treats',
-    note: '(mix & match)',
-    items: ['4 Cake Pops', '4 Chocolate Covered Pretzels', '4 Chocolate Covered Oreos'],
-  },
-  {
-    tier: 'Standard',
-    price: '$85',
-    size: 'Three dozen treats',
-    note: null,
-    items: [
-      '12 of your choice Oreos, pretzel rods/twists or Krispies',
-      '12 of your choice Oreos, pretzel rods/twists or Krispies',
-      '12 Cake Pops',
-    ],
-  },
-  {
-    tier: 'Deluxe',
-    price: '$150',
-    size: 'Five dozen treats',
-    note: null,
-    items: ['20 Cake Pops', '20 Chocolate Covered Pretzels', '20 Chocolate Covered Oreos'],
-  },
-];
-
-// SECTION 2 — Mimi's "By the Dozen" flyer: her prices and her product photos,
-// but presented in the SAME cream/ribbon treatment as the packages section
-// above rather than her pink flyer's own colorway.
-const byTheDozen = [
-  { item: 'Oreo', half: '$15', dozen: '$25', addOn: null, icon: 'oreo' },
-  { item: 'Rice Krispies', half: '$22', dozen: '$32', addOn: null, icon: 'krispie' },
-  { item: 'Cakesicles', half: '$24', dozen: '$36', addOn: null, icon: 'cakesicle' },
-  {
-    item: 'Pretzel Rods/Knots',
-    half: '$15',
-    dozen: '$25',
-    addOn: '$2+ add caramel',
-    icon: 'pretzel',
-  },
-];
-
 const focusRing =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#241009]';
+
+const packagesAlt =
+  "Treat Packages flyer — sweet treats, made with love. Mini: $30 for one dozen treats, mix and match — 4 cake pops, 4 chocolate covered pretzels, 4 chocolate covered Oreos. Standard: $85 for three dozen treats — two dozen of your choice of Oreos, pretzel rods/twists or Krispies, plus 12 cake pops. Deluxe: $150 for five dozen treats — 20 cake pops, 20 chocolate covered pretzels, 20 chocolate covered Oreos. Basic decor includes dipped, drizzled, and sprinkles if desired. Specialty flavors and custom themes available.";
+
+const dozenAlt =
+  'By the Dozen flyer — Oreo: half dozen $15, dozen $25. Rice Krispies: half dozen $22, dozen $32. Cakesicles: half dozen $24, dozen $36. Pretzel rods/knots: half dozen $15, dozen $25, add caramel for $2 and up. Denver, CO.';
 ---
 
 <!doctype html>
@@ -106,7 +53,7 @@ const focusRing =
       <RainField />
 
       <main class="relative z-10 mx-auto max-w-4xl px-4 pb-16 pt-6 sm:px-6">
-        {/* back link, same treatment as /contact and /reviews */}
+        {/* back link, same treatment as /contact */}
         <a
           href="/"
           class={`inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold text-cream/70 transition hover:text-blush focus-visible:ring-gold ${focusRing}`}
@@ -117,8 +64,26 @@ const focusRing =
           Back
         </a>
 
-        {/* jump between the two pricing sections */}
-        <nav class="mt-4 flex flex-wrap justify-center gap-2 text-sm" aria-label="Pricing sections">
+        {/* page header, same anatomy as the landing hero */}
+        <header class="mt-4 text-center">
+          <span
+            class="inline-flex items-center gap-2 rounded-full border border-gold/40 px-5 py-2 text-[13px] font-semibold uppercase tracking-[0.25em] text-gold"
+          >
+            <svg class="h-4 w-4 shrink-0 text-blush" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+              ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+            /></svg>
+            Pricing
+          </span>
+          <h1 class="mt-4 font-serif text-3xl leading-tight text-cream sm:text-4xl">
+            Sweet treats, sweet prices.
+          </h1>
+          <p class="mt-3 text-cream/70">
+            Straight from Mimi's kitchen — packages for a crowd, or treats by the dozen.
+          </p>
+        </header>
+
+        {/* jump between the two flyers */}
+        <nav class="mt-6 flex flex-wrap justify-center gap-2 text-sm" aria-label="Pricing sections">
           <a
             href="#packages"
             class={`rounded-full border border-gold/40 px-5 py-2 font-semibold text-gold transition hover:border-gold hover:text-cream focus-visible:ring-gold ${focusRing}`}
@@ -133,255 +98,32 @@ const focusRing =
           </a>
         </nav>
 
-        {/* ── SECTION 1 — Mimi's flyer, re-laid-out ──────────────────── */}
-        <div
+        {/* ── Mimi's flyers, as she made them ────────────────────────── */}
+        <img
           id="packages"
-          class="relative mt-6 scroll-mt-6 overflow-hidden rounded-[var(--radius-card)] bg-cream text-cocoa shadow-2xl ring-1 ring-gold/25"
-        >
-          {/* Mimi's own chocolate drip, mirror-tiled off her flyer */}
-          <img src="/img/drip.png" alt="" aria-hidden="true" class="block w-full" />
+          src="/img/flyers/treat-packages.png"
+          alt={packagesAlt}
+          width="1024"
+          height="1406"
+          class="mt-6 block w-full scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25"
+        />
 
-          <div class="px-5 pb-8 pt-2 sm:px-8 sm:pb-10">
-            {/* masthead */}
-            <header class="text-center">
-              <img
-                src="/img/logo.png"
-                alt="Mimi's Chocolate Bites"
-                class="mx-auto h-24 w-auto sm:h-28"
-              />
-              <h1 class="mt-1 font-script text-5xl leading-none text-cocoa sm:text-6xl lg:text-7xl">
-                Treat Packages
-              </h1>
-              <div class="mt-5 flex items-center justify-center gap-3">
-                <span class="h-px w-12 sm:w-16" style={`background:${BERRY};opacity:.55`}></span>
-                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
-                  ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                /></svg>
-                <span class="h-px w-12 sm:w-16" style={`background:${BERRY};opacity:.55`}></span>
-              </div>
-              <p
-                class="mt-4 text-[13px] font-bold uppercase tracking-[0.18em] text-choc sm:text-base sm:tracking-[0.22em]"
-              >
-                Sweet treats. Made with love.
-              </p>
-            </header>
-
-            {/* three packages — 3-up on desktop, stacked on phones */}
-            <ul class="mt-12 grid list-none gap-12 sm:gap-6 lg:grid-cols-3">
-              {packages.map((p) => (
-                <li
-                  class="relative flex flex-col rounded-2xl border px-5 pb-7 pt-10"
-                  style={`border-color:${BERRY}33`}
-                >
-                  {/* ribbon name banner, notched at both ends like the flyer */}
-                  <h2
-                    class="absolute left-1/2 top-0 w-[max-content] max-w-[92%] -translate-x-1/2 -translate-y-1/2 px-7 py-1.5 text-center text-lg font-bold uppercase tracking-[0.16em] text-cream sm:text-xl"
-                    style={`background:${BERRY};clip-path:polygon(0 0,100% 0,calc(100% - 12px) 50%,100% 100%,0 100%,12px 50%)`}
-                  >
-                    {p.tier}
-                  </h2>
-
-                  <p class="text-center font-serif text-5xl leading-none text-cocoa">{p.price}</p>
-                  <p class="mt-3 text-center text-[13px] font-bold uppercase tracking-[0.12em] text-choc">
-                    {p.size}
-                    {p.note && <span class="mt-0.5 block font-semibold tracking-[0.08em]">{p.note}</span>}
-                  </p>
-
-                  <div class="my-5 flex items-center justify-center gap-3">
-                    <span class="h-px w-8" style={`background:${BERRY};opacity:.4`}></span>
-                    <svg class="h-3 w-3 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
-                      ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                    /></svg>
-                    <span class="h-px w-8" style={`background:${BERRY};opacity:.4`}></span>
-                  </div>
-
-                  <ul class="mx-auto flex max-w-xs list-none flex-col gap-3">
-                    {p.items.map((item) => (
-                      <li class="flex items-start gap-2.5 text-[15px] leading-snug text-cocoa sm:text-base">
-                        <svg class="mt-1 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
-                          ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                        /></svg>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* her treat photo, lifted off the flyer card it came from */}
-                  <img
-                    src={`/img/treats/pkg-${p.tier.toLowerCase()}.png`}
-                    alt=""
-                    aria-hidden="true"
-                    class="mx-auto mt-auto w-40 max-w-full pt-6"
-                  />
-                </li>
-              ))}
-            </ul>
-
-            {/* basic decor strip */}
-            <section class="mt-10 rounded-2xl border px-5 py-6" style={`border-color:${BERRY}33`}>
-              <h2
-                class="text-center text-base font-bold uppercase tracking-[0.14em] sm:text-lg"
-                style={`color:${BERRY}`}
-              >
-                Basic decor includes:
-              </h2>
-              <ul
-                class="mt-5 flex list-none flex-col items-center gap-5 sm:flex-row sm:justify-center sm:gap-0"
-              >
-                {/* her own decor illustrations, lifted off the packages flyer */}
-                <li class="flex items-center gap-3 sm:flex-1 sm:justify-center">
-                  <img src="/img/treats/decor-dipped.png" alt="" aria-hidden="true" class="h-12 w-auto shrink-0" />
-                  <span class="text-sm font-bold uppercase tracking-[0.14em] text-cocoa">Dipped</span>
-                </li>
-                <li class="hidden h-10 w-px shrink-0 sm:block" style={`background:${BERRY};opacity:.3`}></li>
-                <li class="flex items-center gap-3 sm:flex-1 sm:justify-center">
-                  <img src="/img/treats/decor-drizzled.png" alt="" aria-hidden="true" class="h-11 w-auto shrink-0" />
-                  <span class="text-sm font-bold uppercase tracking-[0.14em] text-cocoa">Drizzled</span>
-                </li>
-                <li class="hidden h-10 w-px shrink-0 sm:block" style={`background:${BERRY};opacity:.3`}></li>
-                <li class="flex items-center gap-3 sm:flex-1 sm:justify-center">
-                  <img src="/img/treats/decor-sprinkles.png" alt="" aria-hidden="true" class="h-11 w-auto shrink-0" />
-                  <span class="text-center text-sm font-bold uppercase leading-tight tracking-[0.14em] text-cocoa">
-                    Sprinkles<span class="sm:block"> if desired</span>
-                  </span>
-                </li>
-              </ul>
-            </section>
-
-            {/* specialty ribbon */}
-            <p
-              class="mx-auto mt-8 max-w-2xl rounded-full px-6 py-3 text-center text-sm font-bold uppercase tracking-[0.12em] text-cream sm:text-base"
-              style={`background:${BERRY}`}
-            >
-              <svg class="mr-2 inline-block h-4 w-4 align-[-2px]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-              /></svg>
-              Specialty flavors &amp; custom themes available!
-            </p>
-
-            {/* footer strip — wraps to as many rows as it needs on a phone */}
-            <ul
-              class="mt-8 flex list-none flex-wrap items-center justify-center gap-x-5 gap-y-3 text-center text-xs font-bold uppercase tracking-[0.1em] text-choc sm:text-[13px]"
-            >
-              <li>
-                <a
-                  href={IG_URL}
-                  target="_blank"
-                  rel="noopener"
-                  aria-label="Mimi's Chocolate Bites on Instagram (opens in a new tab)"
-                  class="inline-flex items-center gap-2 transition hover:text-[#c43e63] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-                >
-                  <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <rect x="2" y="2" width="20" height="20" rx="5.5" />
-                    <circle cx="12" cy="12" r="4" />
-                    <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none" />
-                  </svg>
-                  @mimischocolatebites
-                </a>
-              </li>
-              <li class="flex items-center gap-2">
-                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
-                  ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                /></svg>
-                Made fresh. Made for you.
-              </li>
-              <li class="flex items-center gap-2">
-                <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <path d="M12 21s7-5.6 7-11a7 7 0 10-14 0c0 5.4 7 11 7 11z" />
-                  <circle cx="12" cy="10" r="2.5" />
-                </svg>
-                Pick up in Denver
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* ── SECTION 2 — Mimi's pink "By the Dozen" flyer ───────────── */}
-        <div
+        <img
           id="by-the-dozen"
-          class="relative mt-8 scroll-mt-6 overflow-hidden rounded-[var(--radius-card)] bg-cream text-cocoa shadow-2xl ring-1 ring-gold/25"
-        >
-          {/* her drip again — this flyer has one too */}
-          <img src="/img/drip.png" alt="" aria-hidden="true" class="block w-full" />
+          src="/img/flyers/by-the-dozen.png"
+          alt={dozenAlt}
+          width="512"
+          height="572"
+          class="mx-auto mt-8 block w-full max-w-[512px] scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25"
+        />
 
-          <div class="px-5 pb-8 pt-2 sm:px-8 sm:pb-10">
-            <header class="text-center">
-              <img
-                src="/img/logo.png"
-                alt="Mimi's Chocolate Bites"
-                class="mx-auto h-24 w-auto sm:h-28"
-              />
-              <h2 class="mt-1 font-script text-5xl leading-none text-cocoa sm:text-6xl lg:text-7xl">
-                By the Dozen
-              </h2>
-              <div class="mt-5 flex items-center justify-center gap-3">
-                <span class="h-px w-12 sm:w-16" style={`background:${BERRY};opacity:.55`}></span>
-                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill={BERRY} aria-hidden="true"
-                  ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                /></svg>
-                <span class="h-px w-12 sm:w-16" style={`background:${BERRY};opacity:.55`}></span>
-              </div>
-              <p
-                class="mt-4 text-[13px] font-bold uppercase tracking-[0.18em] text-choc sm:text-base sm:tracking-[0.22em]"
-              >
-                Mix, match, or keep it simple.
-              </p>
-            </header>
-
-            {/* Same card anatomy as the packages above — ribbon banner, big
-                price, heart bullets, her photo at the bottom — but these cards
-                are the exact brown her product shots are photographed on
-                (PHOTO_BROWN), so each photo blends into its card instead of
-                sitting there as a visible rectangle. Cream type, pink accents.
-                Two-up, not four: "Pretzel Rods/Knots" overruns a quarter-width
-                ribbon. */}
-            <ul class="mt-9 grid list-none gap-5 sm:grid-cols-2">
-              {byTheDozen.map((row) => (
-                <li
-                  class="flex items-center gap-4 rounded-2xl px-5 py-5 text-cream shadow-lg"
-                  style={`background:${PHOTO_BROWN}`}
-                >
-                  <div class="min-w-0 flex-1">
-                    <h3
-                      class="text-xl font-extrabold uppercase italic leading-tight tracking-[0.02em] sm:text-2xl"
-                      style={`color:${ACCENT_PINK}`}
-                    >
-                      {row.item}
-                    </h3>
-                    <dl class="mt-3 flex flex-col gap-1.5 text-[15px] sm:text-base">
-                      <div class="flex items-baseline gap-2">
-                        <dt>half dozen-</dt>
-                        <dd class="font-bold">{row.half}</dd>
-                      </div>
-                      <div class="flex items-baseline gap-2">
-                        <dt>dozen-</dt>
-                        <dd class="font-bold">{row.dozen}</dd>
-                      </div>
-                      {row.addOn && (
-                        <div class="mt-0.5 text-sm font-semibold" style={`color:${ACCENT_PINK}`}>
-                          {row.addOn}
-                        </div>
-                      )}
-                    </dl>
-                  </div>
-
-                  {/* Mimi's own photo — the card is the exact brown it was shot
-                      on, so it reads as part of the card, the way her flyer does */}
-                  <img
-                    src={`/img/treats/${row.icon}.png`}
-                    alt=""
-                    aria-hidden="true"
-                    class="h-24 w-auto shrink-0 sm:h-28"
-                  />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* CTA — off the flyer, into the inquiry form */}
+        {/* the flyers' cropped footer strip, rebuilt as real links:
+            website line → Instagram + the order form */}
         <section class="mt-10 text-center">
-          <div class="flex flex-wrap items-center justify-center gap-3">
+          <p class="text-sm font-bold uppercase tracking-[0.18em] text-gold/80">
+            Made fresh. Made for you. &middot; Pick up in Denver
+          </p>
+          <div class="mt-5 flex flex-wrap items-center justify-center gap-3">
             <a
               href="/contact"
               class={`inline-flex items-center gap-2 rounded-full bg-gold px-8 py-3.5 font-bold text-cocoa shadow-lg transition hover:-translate-y-0.5 hover:brightness-105 focus-visible:ring-cream ${focusRing}`}
