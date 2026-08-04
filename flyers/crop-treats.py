@@ -21,6 +21,11 @@ OUT = HERE.parent / 'public' / 'img' / 'treats'
 
 DOZEN = HERE / '9753E63E-A751-464A-B6DF-6B3FC431339F.PNG'  # pink "By the Dozen"
 PACKAGES = HERE / '4F6B7A88-21B0-44DC-B5D1-E66FC18517F5.PNG'  # cream "Treat Packages"
+# 948465AB-….PNG is her 2026-08 revision of the packages flyer (new badge art,
+# layout shifted ~70px down; pricing unchanged). The pricing page's
+# public/img/flyers/treat-packages.png is now cropped from IT (top 1024×1476).
+# The treat/decor/drip boxes below still key off the ORIGINAL flyer — its
+# treat regions are identical and these boxes were hand-tuned to it.
 
 # Background colours sampled from each flyer. DOZEN_PANEL is kept for reference
 # — that flyer is the drawing reference for TreatIllustration.astro, not a crop
