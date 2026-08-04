@@ -35,39 +35,6 @@ body {
   font-family: var(--font-sans);
 }
 
-/* ── Playful version: floating / bobbing candy ──────────────────── */
-@keyframes bob {
-  0%,
-  100% {
-    transform: translateY(0) rotate(var(--r, 0deg));
-  }
-  50% {
-    transform: translateY(-18px) rotate(var(--r, 0deg));
-  }
-}
-
-@keyframes drift {
-  0% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  50% {
-    transform: translate(14px, -22px) rotate(8deg);
-  }
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-}
-
-@keyframes wiggle {
-  0%,
-  100% {
-    transform: rotate(-6deg);
-  }
-  50% {
-    transform: rotate(6deg);
-  }
-}
-
 /* cake pops raining down from above the screen, tumbling as they fall */
 @keyframes cakerain {
   0% {
@@ -82,22 +49,7 @@ body {
   animation: cakerain linear infinite;
 }
 
-.animate-bob {
-  animation: bob 4s ease-in-out infinite;
-}
-.animate-drift {
-  animation: drift 9s ease-in-out infinite;
-}
-.animate-wiggle {
-  animation: wiggle 2.8s ease-in-out infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .animate-bob,
-  .animate-drift,
-  .animate-wiggle {
-    animation: none;
-  }
   /* keep raining pops parked off-screen when motion is reduced */
   .animate-rain {
     animation: none;

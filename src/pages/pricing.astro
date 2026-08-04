@@ -1,0 +1,158 @@
+---
+/**
+ * PRICING page — ITERATION 2: Mimi's flyers shown AS-IS, as images.
+ *
+ * Iteration 1 rebuilt both flyers in HTML; this version embeds her actual
+ * artwork instead (public/img/flyers/, cropped from flyers/*.PNG). The ONLY
+ * edit to her work is the crop: each flyer's bottom strip carried
+ * "www.mimischocolatebites.com", which is pointless on the site itself — so
+ * that strip is cut and its job is done by real links instead (Instagram +
+ * the /contact order form), in the site's moody theme.
+ *
+ * Crop lines (top-anchored, from the original PNGs):
+ *   treat-packages.png  1024×1406 of 1536 — keeps the specialty ribbon, drops
+ *     the footer row (IG handle / made fresh / pick up in Denver / www).
+ *   by-the-dozen.png     512×572 of 640 — keeps the "Denver, CO" ribbon,
+ *     drops the www line.
+ *
+ * Phones: the flyers stack, both full width. Desktop: side by side in a
+ * 2-up grid — that keeps each near/below its native pixel width (the
+ * by-the-dozen source is only 512px wide, so full-column desktop rendering
+ * stretched it soft). Their aspect ratios differ, so the shorter one is
+ * vertically centered next to the taller one.
+ *
+ * The flyers are images-of-text, so each <img> carries full pricing in its
+ * alt — that's the screen-reader and SEO copy for this page. Prices change →
+ * update the alt when you swap the flyer.
+ */
+import '../styles/global.css';
+import Seo from '../components/Seo.astro';
+import RainField from '../components/RainField.astro';
+import CakePop from '../components/CakePop.astro';
+
+const IG_URL = 'https://instagram.com/mimischocolatebites';
+
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#241009]';
+
+const packagesAlt =
+  "Treat Packages flyer — sweet treats, made with love. Mini: $30 for one dozen treats, mix and match — 4 cake pops, 4 chocolate covered pretzels, 4 chocolate covered Oreos. Standard: $85 for three dozen treats — two dozen of your choice of Oreos, pretzel rods/twists or Krispies, plus 12 cake pops. Deluxe: $150 for five dozen treats — 20 cake pops, 20 chocolate covered pretzels, 20 chocolate covered Oreos. Basic decor includes dipped, drizzled, and sprinkles if desired. Specialty flavors and custom themes available.";
+
+const dozenAlt =
+  'By the Dozen flyer — Oreo: half dozen $15, dozen $25. Rice Krispies: half dozen $22, dozen $32. Cakesicles: half dozen $24, dozen $36. Pretzel rods/knots: half dozen $15, dozen $25, add caramel for $2 and up. Denver, CO.';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <Seo
+      title="Pricing — Mimi's Chocolate Bites"
+      description="Treat packages and per-dozen pricing — cake pops, chocolate covered pretzels, Oreos & Krispies. Mini $30, Standard $85, Deluxe $150. Made fresh, pick up in Denver."
+      path="/pricing"
+    />
+  </head>
+  <body class="bg-[#241009]">
+    <div class="relative min-h-[100svh] bg-[#241009] text-cream">
+      <RainField />
+
+      <main class="relative z-10 mx-auto max-w-4xl px-4 pb-16 pt-6 sm:px-6">
+        {/* back link, same treatment as /contact */}
+        <a
+          href="/"
+          class={`inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold text-cream/70 transition hover:text-blush focus-visible:ring-gold ${focusRing}`}
+        >
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          Back
+        </a>
+
+        {/* page header, same anatomy as the landing hero */}
+        <header class="mt-4 text-center">
+          <span
+            class="inline-flex items-center gap-2 rounded-full border border-gold/40 px-5 py-2 text-[13px] font-semibold uppercase tracking-[0.25em] text-gold"
+          >
+            <svg class="h-4 w-4 shrink-0 text-blush" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+              ><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+            /></svg>
+            Pricing
+          </span>
+          <h1 class="mt-4 font-serif text-3xl leading-tight text-cream sm:text-4xl">
+            Sweet treats, sweet prices.
+          </h1>
+          <p class="mt-3 text-cream/70">
+            Straight from Mimi's kitchen — packages for a crowd, or treats by the dozen.
+          </p>
+        </header>
+
+        {/* jump between the two flyers */}
+        <nav class="mt-6 flex flex-wrap justify-center gap-2 text-sm" aria-label="Pricing sections">
+          <a
+            href="#packages"
+            class={`rounded-full border border-gold/40 px-5 py-2 font-semibold text-gold transition hover:border-gold hover:text-cream focus-visible:ring-gold ${focusRing}`}
+          >
+            Treat packages
+          </a>
+          <a
+            href="#by-the-dozen"
+            class={`rounded-full border border-gold/40 px-5 py-2 font-semibold text-gold transition hover:border-gold hover:text-cream focus-visible:ring-gold ${focusRing}`}
+          >
+            By the dozen
+          </a>
+        </nav>
+
+        {/* ── Mimi's flyers, as she made them ────────────────────────── */}
+        <div class="mt-6 grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-6">
+          <img
+            id="packages"
+            src="/img/flyers/treat-packages.png"
+            alt={packagesAlt}
+            width="1024"
+            height="1406"
+            class="block w-full scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25"
+          />
+
+          <img
+            id="by-the-dozen"
+            src="/img/flyers/by-the-dozen.png"
+            alt={dozenAlt}
+            width="512"
+            height="572"
+            class="block w-full scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25"
+          />
+        </div>
+
+        {/* the flyers' cropped footer strip, rebuilt as real links:
+            website line → Instagram + the order form */}
+        <section class="mt-10 text-center">
+          <p class="text-sm font-bold uppercase tracking-[0.18em] text-gold/80">
+            Made fresh. Made for you. &middot; Pick up in Denver
+          </p>
+          <div class="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="/contact"
+              class={`inline-flex items-center gap-2 rounded-full bg-gold px-8 py-3.5 font-bold text-cocoa shadow-lg transition hover:-translate-y-0.5 hover:brightness-105 focus-visible:ring-cream ${focusRing}`}
+            >
+              <CakePop class="-ml-1 h-6 w-auto shrink-0 drop-shadow-sm" />
+              Order your treats
+            </a>
+            <a
+              href={IG_URL}
+              target="_blank"
+              rel="noopener"
+              aria-label="DM Mimi's Chocolate Bites on Instagram (opens in a new tab)"
+              class={`inline-flex items-center gap-2 rounded-full border-2 border-cream/25 px-6 py-3.5 font-semibold text-cream transition hover:border-blush hover:text-blush focus-visible:ring-blush ${focusRing}`}
+            >
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5.5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none" />
+              </svg>
+              DM us instead
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

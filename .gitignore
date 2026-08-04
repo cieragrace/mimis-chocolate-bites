@@ -17,3 +17,4 @@ dist/
 # playwright / temp
 .playwright-mcp/
 _preview_on_dark.jpg
+.vercel

@@ -1,0 +1,34 @@
+---
+/**
+ * Fixed full-viewport layer of cake pops raining down (moody palette).
+ * Shared by the landing and the contact page. Sits at z-0; page content
+ * should sit at z-10 above it. Respects prefers-reduced-motion (global.css).
+ */
+import CakePop from './CakePop.astro';
+
+// [left%, width, ball, drip, dur(s), delay(s)] — negative delays so the sky is
+// already full at load. Lighter/warmer pops to read against the dark chocolate.
+const rain = [
+  { l: 4, w: 40, ball: '#e79bab', drip: '#fff5f7', dur: 9, delay: 0 },
+  { l: 14, w: 30, ball: '#c9975a', drip: '#fff', dur: 12, delay: -3 },
+  { l: 23, w: 48, ball: '#f6d7de', drip: '#e79bab', dur: 8, delay: -6 },
+  { l: 33, w: 32, ball: '#efa0b2', drip: '#fff5f7', dur: 11, delay: -1.5 },
+  { l: 42, w: 44, ball: '#f3e6d5', drip: '#c9975a', dur: 10, delay: -8 },
+  { l: 51, w: 28, ball: '#e79bab', drip: '#fff', dur: 13, delay: -4 },
+  { l: 60, w: 46, ball: '#c9975a', drip: '#fff5f7', dur: 8.5, delay: -2 },
+  { l: 69, w: 32, ball: '#f6d7de', drip: '#e79bab', dur: 11.5, delay: -7 },
+  { l: 78, w: 40, ball: '#efa0b2', drip: '#fff', dur: 9.5, delay: -5 },
+  { l: 87, w: 30, ball: '#f3e6d5', drip: '#e79bab', dur: 12.5, delay: -0.5 },
+  { l: 94, w: 44, ball: '#e79bab', drip: '#fff5f7', dur: 10.5, delay: -9 },
+];
+---
+<div class="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
+  {rain.map((p) => (
+    <div
+      class="absolute top-0 animate-rain"
+      style={`left:${p.l}%;width:${p.w}px;animation-duration:${p.dur}s;animation-delay:${p.delay}s`}
+    >
+      <CakePop ball={p.ball} drip={p.drip} class="h-auto w-full opacity-80 drop-shadow-md" />
+    </div>
+  ))}
+</div>

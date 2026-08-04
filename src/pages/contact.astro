@@ -1,0 +1,51 @@
+---
+/**
+ * CONTACT page — the inquiry form, moody styling. Reached from the landing's
+ * "Place an inquiry" button. Scrolls if the form is taller than the screen.
+ */
+import '../styles/global.css';
+import Seo from '../components/Seo.astro';
+import InquiryForm from '../components/InquiryForm.astro';
+import RainField from '../components/RainField.astro';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <Seo
+      title="Contact — Mimi's Chocolate Bites"
+      description="Send Mimi a note — orders, events, or just a question. Handmade chocolate bites & cake pops in Colorado."
+      path="/contact"
+    />
+  </head>
+  <body class="bg-[#241009]">
+    <div class="relative flex min-h-[100svh] flex-col bg-[#241009] text-cream">
+      <RainField />
+
+      {/* form card — Back tucked in the corner, logo on top, then form */}
+      <main class="relative z-10 flex flex-1 items-center justify-center px-6 pb-4 pt-11">
+        <div class="relative w-full max-w-xl rounded-[var(--radius-card)] bg-cream p-6 shadow-2xl ring-1 ring-gold/25 sm:p-9">
+          <a
+            href="/"
+            class="absolute left-2 top-2 inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold text-cocoa-soft transition hover:text-blush focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+          >
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+            Back
+          </a>
+          <img
+            src="/img/logo.png"
+            alt="Mimi's Chocolate Bites"
+            class="mx-auto mb-3 h-32 w-auto sm:h-36"
+          />
+          <h1 class="mb-5 text-center font-serif text-2xl leading-tight text-cocoa sm:text-3xl">
+            Sweeten your day
+            <span class="mt-0.5 block text-base font-normal text-cocoa-soft sm:text-lg">send Mimi a note</span>
+          </h1>
+          <InquiryForm theme="moody" />
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

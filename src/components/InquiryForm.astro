@@ -16,15 +16,22 @@ interface Props {
 }
 const { theme = 'simple' } = Astro.props;
 
+import CakePop from './CakePop.astro';
+
 const WEB3FORMS_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY || '';
 const isLive = WEB3FORMS_KEY.length > 10;
+
+// Optional Google Apps Script Web App URL. When set, each inquiry is also
+// appended as a row to a Google Sheet (for later reporting). Purely additive —
+// the email via Web3Forms is unaffected if this is empty or fails.
+const SHEET_LOG_URL = import.meta.env.PUBLIC_SHEET_LOG_URL || '';
 
 const playful = theme === 'playful';
 const moody = theme === 'moody';
 const cool = theme === 'cool';
 
 const fieldBase =
-  'w-full rounded-2xl border bg-white/90 px-4 py-3 text-cocoa placeholder-cocoa-soft/50 outline-none transition focus:ring-2';
+  'w-full rounded-2xl border bg-white/90 px-4 py-2.5 text-cocoa placeholder-cocoa-soft outline-none transition focus:ring-2';
 const fieldSkin = playful
   ? 'border-blush/50 focus:border-blush focus:ring-blush/40'
   : moody
@@ -32,7 +39,7 @@ const fieldSkin = playful
     : cool
       ? 'border-[#bcd6cc] focus:border-[#2f6f66] focus:ring-[#2f6f66]/25'
       : 'border-cream-deep focus:border-choc focus:ring-choc/25';
-const labelSkin = 'mb-1.5 block text-sm font-semibold text-cocoa';
+const labelSkin = 'mb-1 block text-sm font-semibold text-cocoa';
 const btnSkin = playful
   ? 'bg-blush text-white hover:brightness-105 hover:-translate-y-0.5'
   : moody
@@ -44,36 +51,39 @@ const btnSkin = playful
 
 <form
   class="mx-auto w-full max-w-md text-left"
-  action="https://api.web3forms.com/api/submit"
+  action="https://api.web3forms.com/submit"
   method="POST"
   data-inquiry-form
+  data-sheet-log={SHEET_LOG_URL}
 >
   <input type="hidden" name="access_key" value={WEB3FORMS_KEY} />
   <input type="hidden" name="subject" value="New inquiry — Mimi's Chocolate Bites" />
   <input type="hidden" name="from_name" value="Mimi's Chocolate Bites website" />
   {/* honeypot */}
-  <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" />
+  <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
-  <div class="grid gap-4">
+  <div class="grid gap-2.5">
+    <p class="-mb-1 text-xs text-cocoa-soft"><span class="text-blush">*</span> Required</p>
     <div>
-      <label class={labelSkin} for="name">Your name</label>
-      <input class={`${fieldBase} ${fieldSkin}`} id="name" name="name" type="text" required placeholder="Jane Doe" />
+      <label class={labelSkin} for="name">Your name <span class="text-blush" aria-hidden="true">*</span></label>
+      <input class={`${fieldBase} ${fieldSkin}`} id="name" name="name" type="text" autocomplete="name" required placeholder="Jane Doe" />
     </div>
     <div>
       <label class={labelSkin} for="phone">Phone</label>
       <input class={`${fieldBase} ${fieldSkin}`} id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(555) 123-4567" />
     </div>
     <div>
-      <label class={labelSkin} for="email">Email</label>
-      <input class={`${fieldBase} ${fieldSkin}`} id="email" name="email" type="email" required placeholder="you@email.com" />
+      <label class={labelSkin} for="email">Email <span class="text-blush" aria-hidden="true">*</span></label>
+      <input class={`${fieldBase} ${fieldSkin}`} id="email" name="email" type="email" autocomplete="email" required placeholder="you@email.com" />
     </div>
     <div>
-      <label class={labelSkin} for="message">Tell Mimi about your event or order</label>
-      <p class="mb-1.5 text-xs italic text-cocoa-soft/80">
-        (Please note your estimated # of guests and the date of your event.)
+      <label class={labelSkin} for="message">Tell Mimi about your event or order <span class="text-blush" aria-hidden="true">*</span></label>
+      <p class="mb-1 text-xs italic text-cocoa-soft">
+        (Please include your guest count &amp; event date.)
       </p>
       <textarea
-        class={`${fieldBase} ${fieldSkin} min-h-28 resize-y`}
+        rows="2"
+        class={`${fieldBase} ${fieldSkin} min-h-16 max-h-[40vh] resize-y`}
         id="message"
         name="message"
         required
@@ -82,18 +92,49 @@ const btnSkin = playful
 
     <button
       type="submit"
-      class={`inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-base font-bold shadow-md transition ${btnSkin}`}
+      class={`inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-base font-bold shadow-md transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cocoa/60 focus-visible:ring-offset-2 focus-visible:ring-offset-cream disabled:cursor-not-allowed ${btnSkin}`}
       data-submit
       disabled={!isLive}
     >
-      {isLive ? 'Send my inquiry' : 'Demo — form goes live once connected'}
+      <CakePop class="-ml-0.5 h-6 w-auto shrink-0 drop-shadow-sm" />
+      <span data-btn-label>{isLive ? 'Submit' : 'Testing 123...'}</span>
     </button>
 
     <p class="text-center text-sm text-cocoa-soft" data-form-status aria-live="polite">
-      {isLive ? 'Mimi usually replies within a day 💛' : ''}
+      {isLive ? 'Mimi usually replies within a day.' : ''}
     </p>
   </div>
 </form>
+
+{/* Success pop-up — shown after a successful submit */}
+<div
+  data-success-modal
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-cocoa/70 px-6 backdrop-blur-sm"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="success-title"
+>
+  <div class="w-full max-w-sm rounded-3xl bg-cream p-8 text-center shadow-2xl">
+    <CakePop class="mx-auto mb-3 h-14 w-auto drop-shadow-sm" />
+    <h2 id="success-title" class="font-serif text-2xl font-bold text-cocoa">Thank you!</h2>
+    <p class="mt-2 text-cocoa-soft">Mimi will be in touch soon.</p>
+    <div class="mt-6 flex flex-col gap-2.5">
+      <button
+        type="button"
+        data-modal-again
+        class={`inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-bold shadow-md transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cocoa/60 focus-visible:ring-offset-2 focus-visible:ring-offset-cream ${btnSkin}`}
+      >
+        Place another inquiry
+      </button>
+      <a
+        href="/"
+        class="rounded-full border-2 border-cocoa/20 px-6 py-3 font-semibold text-cocoa transition hover:border-cocoa/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cocoa/40 focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+      >
+        Back to home
+      </a>
+    </div>
+  </div>
+</div>
 
 <script>
   // Progressive enhancement: submit via fetch so the visitor stays on the page
@@ -102,25 +143,64 @@ const btnSkin = playful
     const status = form.querySelector<HTMLElement>('[data-form-status]');
     const btn = form.querySelector<HTMLButtonElement>('[data-submit]');
     if (!btn || btn.disabled) return; // demo mode: leave inert
+    // Update only the label span so the treat icon stays put through state changes.
+    const label = btn.querySelector<HTMLElement>('[data-btn-label]') ?? btn;
+
+    const sheetLog = form.dataset.sheetLog;
+
+    // Success pop-up wiring
+    const modal = form.parentElement?.querySelector<HTMLElement>('[data-success-modal]')
+      ?? document.querySelector<HTMLElement>('[data-success-modal]');
+    const againBtn = modal?.querySelector<HTMLButtonElement>('[data-modal-again]');
+    let lastFocused: HTMLElement | null = null;
+    const openModal = () => {
+      if (!modal) return;
+      lastFocused = document.activeElement as HTMLElement;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      againBtn?.focus();
+    };
+    const closeModal = () => {
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      lastFocused?.focus?.();
+    };
+    againBtn?.addEventListener('click', () => {
+      closeModal();
+      form.querySelector<HTMLElement>('input[name="name"]')?.focus();
+    });
+    modal?.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) closeModal();
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const original = btn.textContent;
+      const original = label.textContent;
       btn.disabled = true;
-      btn.textContent = 'Sending…';
+      label.textContent = 'Sending…';
+      const data = new FormData(form);
+      // Fire-and-forget log to the Google Sheet (no-cors: we don't read the
+      // response). Never blocks or fails the email path below.
+      if (sheetLog) {
+        fetch(sheetLog, { method: 'POST', mode: 'no-cors', body: data }).catch(() => {});
+      }
       try {
-        const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+        const res = await fetch(form.action, { method: 'POST', body: data });
         if (res.ok) {
           form.reset();
-          if (status) status.textContent = 'Thank you! Mimi will be in touch soon 💛';
-          btn.textContent = 'Sent ✓';
+          if (status) status.textContent = '';
+          label.textContent = original;
+          btn.disabled = false;
+          openModal();
         } else {
           throw new Error('bad response');
         }
       } catch {
         if (status) status.textContent = 'Something went wrong — please DM @mimischocolatebites instead.';
         btn.disabled = false;
-        btn.textContent = original;
+        label.textContent = original;
       }
     });
   });

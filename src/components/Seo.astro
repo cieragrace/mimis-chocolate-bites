@@ -1,0 +1,61 @@
+---
+/**
+ * Shared <head> metadata: charset/viewport, description, canonical, favicons,
+ * theme-color, Open Graph + Twitter cards, and (optionally) LocalBusiness
+ * JSON-LD for SEO + AI answer engines. Render as the FIRST child of <head>.
+ */
+interface Props {
+  title: string;
+  description: string;
+  path?: string; // e.g. '/', '/contact'
+  jsonld?: boolean; // include structured data (home page)
+}
+const SITE = 'https://mimischocolatebites.com';
+const IG = 'https://instagram.com/mimischocolatebites';
+const { title, description, path = '/', jsonld = false } = Astro.props;
+const url = SITE + path;
+const ogImage = `${SITE}/img/og-image.png`;
+
+const structured = {
+  '@context': 'https://schema.org',
+  '@type': 'Bakery',
+  name: "Mimi's Chocolate Bites",
+  description,
+  image: ogImage,
+  url: SITE,
+  sameAs: [IG],
+  servesCuisine: 'Desserts, Chocolate',
+  areaServed: { '@type': 'State', name: 'Colorado' },
+  makesOffer: ['Chocolate bites', 'Cake pops', 'Gift boxes', 'Custom orders'].map((n) => ({
+    '@type': 'Offer',
+    itemOffered: { '@type': 'Product', name: n },
+  })),
+};
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={url} />
+
+<link rel="icon" type="image/png" href="/img/logo.png" />
+<link rel="apple-touch-icon" href="/img/logo.png" />
+<meta name="theme-color" content="#241009" />
+
+{/* Open Graph */}
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Mimi's Chocolate Bites" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={url} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:alt" content="Mimi's Chocolate Bites logo" />
+
+{/* Twitter */}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+{jsonld && <script type="application/ld+json" set:html={JSON.stringify(structured)} />}
