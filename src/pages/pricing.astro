@@ -103,14 +103,16 @@ const dozenAlt =
         </nav>
 
         {/* ── Mimi's flyers, as she made them ────────────────────────── */}
-        <div class="mt-6 grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-6">
+        {/* desktop: shorter by-the-dozen flyer first (left), both flush at
+            the bottom edge; phones keep packages first, stacked */}
+        <div class="mt-6 grid gap-8 lg:grid-cols-2 lg:items-end lg:gap-6">
           <img
             id="packages"
             src="/img/flyers/treat-packages.png"
             alt={packagesAlt}
             width="1024"
             height="1476"
-            class="block w-full scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25"
+            class="block w-full scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25 lg:order-2"
           />
 
           <img
@@ -119,7 +121,7 @@ const dozenAlt =
             alt={dozenAlt}
             width="512"
             height="572"
-            class="block w-full scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25"
+            class="block w-full scroll-mt-6 rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25 lg:order-1"
           />
         </div>
 
