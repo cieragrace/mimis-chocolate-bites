@@ -68,26 +68,72 @@ const btnSkin = playful
       <label class={labelSkin} for="name">Your name <span class="text-blush" aria-hidden="true">*</span></label>
       <input class={`${fieldBase} ${fieldSkin}`} id="name" name="name" type="text" autocomplete="name" required placeholder="Jane Doe" />
     </div>
-    <div>
-      <label class={labelSkin} for="phone">Phone</label>
-      <input class={`${fieldBase} ${fieldSkin}`} id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(555) 123-4567" />
+    <div class="grid gap-2.5 sm:grid-cols-2">
+      <div>
+        <label class={labelSkin} for="email">Email <span class="text-blush" aria-hidden="true">*</span></label>
+        <input class={`${fieldBase} ${fieldSkin}`} id="email" name="email" type="email" autocomplete="email" required placeholder="you@email.com" />
+      </div>
+      <div>
+        <label class={labelSkin} for="phone">Phone</label>
+        <input class={`${fieldBase} ${fieldSkin}`} id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(555) 123-4567" />
+      </div>
+    </div>
+    <div class="grid gap-2.5 sm:grid-cols-2">
+      <div>
+        <label class={labelSkin} for="occasion">Occasion</label>
+        <input class={`${fieldBase} ${fieldSkin}`} id="occasion" name="Occasion" type="text" placeholder="Birthday, baby shower…" />
+      </div>
+      <div>
+        <label class={labelSkin} for="date-needed">Date needed</label>
+        <input class={`${fieldBase} ${fieldSkin}`} id="date-needed" name="Date needed" type="date" />
+      </div>
+    </div>
+    <div class="grid gap-2.5 sm:grid-cols-2">
+      <div>
+        <label class={labelSkin} for="treat-type">Treat type</label>
+        <input class={`${fieldBase} ${fieldSkin}`} id="treat-type" name="Treat type" type="text" placeholder="Cake pops, Oreos, pretzels…" />
+      </div>
+      <div>
+        <label class={labelSkin} for="quantity">Quantity</label>
+        <input class={`${fieldBase} ${fieldSkin}`} id="quantity" name="Quantity" type="text" placeholder="e.g. 2 dozen" />
+      </div>
+    </div>
+    <div class="grid gap-2.5 sm:grid-cols-2">
+      <div>
+        <label class={labelSkin} for="chocolate-pref">Chocolate preference</label>
+        <input class={`${fieldBase} ${fieldSkin}`} id="chocolate-pref" name="Chocolate preference" type="text" placeholder="Milk, dark, white…" />
+      </div>
+      <div>
+        <label class={labelSkin} for="theme">Toppings / colors / theme</label>
+        <input class={`${fieldBase} ${fieldSkin}`} id="theme" name="Toppings / colors / theme" type="text" placeholder="Sprinkles, pink &amp; gold…" />
+      </div>
+    </div>
+    <div class="grid gap-2.5 sm:grid-cols-2">
+      <div>
+        <label class={labelSkin} for="packaging">Packaging preference</label>
+        <input class={`${fieldBase} ${fieldSkin}`} id="packaging" name="Packaging preference" type="text" placeholder="Individually wrapped, gift box…" />
+      </div>
+      <div>
+        <label class={labelSkin} for="pickup-delivery">Pickup / delivery</label>
+        <select class={`${fieldBase} ${fieldSkin}`} id="pickup-delivery" name="Pickup or delivery">
+          <option value="">No preference yet</option>
+          <option>Pickup</option>
+          <option>Delivery</option>
+        </select>
+      </div>
     </div>
     <div>
-      <label class={labelSkin} for="email">Email <span class="text-blush" aria-hidden="true">*</span></label>
-      <input class={`${fieldBase} ${fieldSkin}`} id="email" name="email" type="email" autocomplete="email" required placeholder="you@email.com" />
+      <label class={labelSkin} for="budget">Budget</label>
+      <input class={`${fieldBase} ${fieldSkin}`} id="budget" name="Budget" type="text" placeholder="$" />
     </div>
     <div>
-      <label class={labelSkin} for="message">Tell Mimi about your event or order <span class="text-blush" aria-hidden="true">*</span></label>
-      <p class="mb-1 text-xs italic text-cocoa-soft">
-        (Please include your guest count &amp; event date.)
-      </p>
+      <label class={labelSkin} for="notes">Special notes</label>
       <textarea
         rows="2"
         class={`${fieldBase} ${fieldSkin} min-h-16 max-h-[40vh] resize-y`}
-        id="message"
-        name="message"
-        required
-        placeholder="Tell Mimi about your order, event, or question…"></textarea>
+        id="notes"
+        name="Special notes"
+        placeholder="Anything else Mimi should know…"></textarea>
     </div>
 
     <button
@@ -102,6 +148,13 @@ const btnSkin = playful
 
     <p class="text-center text-sm text-cocoa-soft" data-form-status aria-live="polite">
       {isLive ? 'Mimi usually replies within a day.' : ''}
+    </p>
+
+    {/* Colorado Cottage Foods Act disclosure — Mimi's exact wording, keep verbatim */}
+    <p class="mt-1 text-xs italic leading-relaxed text-cocoa-soft">
+      *These products are produced in a home kitchen that is not subject to state licensure
+      or inspection and that may also process common food allergies such as tree nuts,
+      peanuts, eggs, soy, wheat, milk, fish and crustacean shellfish.
     </p>
   </div>
 </form>
