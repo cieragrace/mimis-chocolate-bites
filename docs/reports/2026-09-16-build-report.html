@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mimi's Build Report — September 16, 2026</title>
+<style>
+  :root {
+    --ink: #2a1a10;
+    --navy: #241009;
+    --gold: #c9975a;
+    --paper: #ffffff;
+    --soft: #fbf4ea;
+    --line: #e2d5c2;
+    --muted: #6b5a4c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Avenir Next', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--ink); background: var(--paper);
+    font-size: 10.5pt; line-height: 1.5;
+  }
+  .page { padding: 48px 56px; }
+  header.masthead {
+    background: var(--navy); color: #fff;
+    padding: 44px 56px 36px;
+  }
+  .masthead .kicker { text-transform: uppercase; letter-spacing: 3px; font-size: 8.5pt; color: var(--gold); font-weight: 600; }
+  .masthead h1 { font-size: 26pt; font-weight: 700; margin: 6px 0 4px; }
+  .masthead .sub { font-size: 11pt; color: #e0cdb9; }
+  .stats { display: flex; gap: 14px; margin: 26px 0 6px; }
+  .stat {
+    flex: 1; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.18);
+    border-radius: 8px; padding: 12px 14px;
+  }
+  .stat .n { font-size: 17pt; font-weight: 700; color: var(--gold); }
+  .stat .l { font-size: 8pt; text-transform: uppercase; letter-spacing: 1.2px; color: #e0cdb9; }
+  h2 {
+    font-size: 14pt; color: var(--navy); margin: 26px 0 10px;
+    padding-bottom: 6px; border-bottom: 2px solid var(--gold);
+  }
+  h3 { font-size: 11pt; color: var(--navy); margin: 14px 0 4px; }
+  p { margin: 6px 0; }
+  ul { margin: 4px 0 10px 18px; }
+  li { margin: 2.5px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 9.5pt; }
+  th { background: var(--soft); text-align: left; padding: 7px 10px; border-bottom: 2px solid var(--line); font-size: 8.5pt; text-transform: uppercase; letter-spacing: 1px; color: var(--navy); }
+  td { padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .pill { display: inline-block; border-radius: 10px; padding: 1px 8px; font-size: 8pt; font-weight: 600; }
+  .pill.high { background: #f6e3e1; color: #8c2f26; }
+  .pill.med { background: #f4ecd9; color: #7a5c1e; }
+  .pill.low { background: #e9e5dd; color: #55503f; }
+  .pill.fixed { background: #e3efe4; color: #2c5f34; }
+  .two-col { display: flex; gap: 28px; }
+  .two-col > div { flex: 1; }
+  .note { color: var(--muted); font-size: 9pt; }
+  code { font-family: 'SF Mono', Menlo, monospace; font-size: 8.5pt; background: var(--soft); padding: 1px 4px; border-radius: 3px; }
+  footer { margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 8.5pt; display: flex; justify-content: space-between; }
+  .avoid-break { break-inside: avoid; }
+  @page { size: Letter; margin: 0; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="kicker">Mimi's Chocolate Bites · Internal Build Report</div>
+  <h1>Order Form v2, Fall Flavors &amp; the Sticker Plan</h1>
+  <div class="sub">September 16, 2026 · main · 74d6f42 → f9f723c · pushed + 9 production deploys</div>
+  <div class="stats">
+    <div class="stat"><div class="n">13</div><div class="l">Commits (site + print)</div></div>
+    <div class="stat"><div class="n">+192</div><div class="l">Lines (site, net −23)</div></div>
+    <div class="stat"><div class="n">9</div><div class="l">Prod deploys, all verified</div></div>
+    <div class="stat"><div class="n">12</div><div class="l">Flavor options live</div></div>
+    <div class="stat"><div class="n">6</div><div class="l">Dozen-menu tiles</div></div>
+  </div>
+</header>
+
+<div class="page">
+
+<h2>What happened</h2>
+<p>
+Mimi supplied a full order-form field spec, a revised six-tile By the Dozen flyer, and a printed
+fall production sheet. The contact form was rebuilt from a 4-field note into a structured order
+form, iterated live across nine deploys as the treat-group layout settled (chocolate preference
+moved into the treat group, back out, then back in once premade flavors gave the grouping its
+final shape). Every deploy was built locally, screenshot-checked in a real browser, shipped to
+Cloudflare Pages, and curl-verified against the production domain. A mock order was submitted
+end to end to confirm what lands in Mimi's inbox, and the Colorado cottage-food label problem
+got a researched fix with a visual 2&Prime; sticker mock-up.
+</p>
+
+<div class="two-col">
+<div>
+<h3>Order form (/contact)</h3>
+<ul>
+  <li>Rebuilt to Mimi's 12-field spec; only name and email required</li>
+  <li>Repeatable treat groups: type dropdown, quantity, premade flavor, "or build your own" chocolate + toppings; "+ Add another treat" clones the whole group (max 6, &times; to remove)</li>
+  <li>Premade flavor menu from her fall sheet: 10 flavors + Gluten Free + Build my own; Biscoff Cookie Butter swapped in for Caramel Apple</li>
+  <li>Colorado cottage-food disclosure, her wording verbatim, in fine print under Submit</li>
+  <li>Empty optional fields stripped before send so order emails stay clean</li>
+  <li>Treat fields renumbered per group ("Treat 1", "Treat 1 quantity", &hellip;) in the email</li>
+  <li>Card widened to <code>max-w-2xl</code>; placeholders no longer clip</li>
+  <li><b>Fixed:</b> browser autofill prepending "+1" to phone numbers (<code>autocomplete="tel-national"</code>)</li>
+</ul>
+</div>
+<div>
+<h3>Pricing page (/pricing)</h3>
+<ul>
+  <li>New six-tile By the Dozen flyer live: adds Strawberries ($18/$32) and Marshmallows ($16/$28)</li>
+  <li>Same crop treatment as before: www strip removed, Denver CO ribbon kept (512&times;620 of 640); original archived in <code>flyers/</code></li>
+  <li>Alt-text pricing rewritten for all six tiles (screen readers + SEO)</li>
+  <li>Side-by-side flyers now render the same height: grid columns proportional to each flyer's aspect ratio</li>
+</ul>
+<h3>Print (mimis-print)</h3>
+<ul>
+  <li>2&Prime; sticker system preview: pretty front sticker + fine-print back label (round and 2&times;3&Prime; options) carrying every required label element</li>
+  <li>Researched CO Cottage Foods Act labeling: "legible print" only, no minimum font size; point-of-sale sign uses a shorter statement than the package label</li>
+</ul>
+<h3>Verification</h3>
+<ul>
+  <li>Mock order submitted through the live form; order-email preview mocked for Ciera</li>
+  <li>All nine deploys verified on mimischocolatebites.com after cache settle</li>
+</ul>
+</div>
+</div>
+
+<h2 class="avoid-break">Deliberately not built</h2>
+<table>
+  <tr><th>Item</th><th>Why it waited</th><th>Priority</th></tr>
+  <tr><td>Full premade-flavor list swap</td><td>Mimi is sending the complete list; current menu is her fall sheet plus verbal additions</td><td><span class="pill high">HIGH</span></td></tr>
+  <tr><td>Print-ready sticker PDFs</td><td>Blocked on Mimi's street address and real per-flavor ingredient lists; then wires into <code>render.mjs</code></td><td><span class="pill high">HIGH</span></td></tr>
+  <tr><td>Treat photos on the site</td><td>Placeholder tiles remain; needs real product photography</td><td><span class="pill med">MED</span></td></tr>
+  <tr><td>SMS order nudge</td><td>Gmail filter to carrier email-to-text; plan exists, not set up</td><td><span class="pill med">MED</span></td></tr>
+  <tr><td>Reviews page</td><td>Parked on branch until Mimi has a Google review link</td><td><span class="pill low">LOW</span></td></tr>
+</table>
+<p class="note">One process miss worth recording: a live test order reached Mimi's inbox seconds before Ciera asked to hold it. It was loudly labeled as a test. Future previews use the local email mock instead of the live form.</p>
+
+<h2 class="avoid-break">Paper trail</h2>
+<ul>
+  <li><code>mimis-chocolate-bites/src/components/InquiryForm.astro</code> — the whole form v2</li>
+  <li><code>mimis-chocolate-bites/flyers/by-the-dozen-2026-09.png</code> — untouched new flyer source</li>
+  <li><code>mimis-print/sticker-preview.html</code> — 2&Prime; sticker system, actual size + zoom</li>
+  <li><code>mimis-chocolate-bites/docs/reports/2026-09-16-build-report.html</code> — this report's source</li>
+</ul>
+
+<footer>
+  <div>cieragrace/mimis-chocolate-bites · main @ f9f723c &nbsp;|&nbsp; mimis-print · main @ e7c81a2</div>
+  <div>Report generated September 16, 2026</div>
+</footer>
+
+</div>
+</body>
+</html>
