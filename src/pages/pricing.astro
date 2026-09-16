@@ -104,9 +104,12 @@ const dozenAlt =
         </nav>
 
         {/* ── Mimi's flyers, as she made them ────────────────────────── */}
-        {/* desktop: shorter by-the-dozen flyer first (left), both flush at
-            the bottom edge; phones keep packages first, stacked */}
-        <div class="mt-6 grid gap-8 lg:grid-cols-2 lg:items-end lg:gap-6">
+        {/* desktop: by-the-dozen first (left), packages right. The column
+            widths are proportional to each flyer's aspect ratio
+            (512/620 : 1024/1476), so both render the SAME height side by
+            side. Re-derive these fr values if a flyer's dimensions change.
+            Phones keep packages first, stacked full width. */}
+        <div class="mt-6 grid gap-8 lg:grid-cols-[8258fr_6938fr] lg:gap-6">
           <img
             id="packages"
             src="/img/flyers/treat-packages.png"

@@ -88,16 +88,43 @@ const btnSkin = playful
         <input class={`${fieldBase} ${fieldSkin}`} id="date-needed" name="Date needed" type="date" />
       </div>
     </div>
-    <div class="grid gap-2.5 sm:grid-cols-2">
-      <div>
-        <label class={labelSkin} for="treat-type">Treat type</label>
-        <input class={`${fieldBase} ${fieldSkin}`} id="treat-type" name="Treat type" type="text" placeholder="Cake pops, Oreos, pretzels…" />
-      </div>
-      <div>
-        <label class={labelSkin} for="quantity">Quantity</label>
-        <input class={`${fieldBase} ${fieldSkin}`} id="quantity" name="Quantity" type="text" placeholder="e.g. 2 dozen" />
+    {/* Treats — repeatable rows so one order can mix kinds (cake pops + Oreos + …).
+        JS renumbers names to "Treat 1"/"Treat 1 quantity" etc. for the email. */}
+    <div class="grid gap-2.5" data-treat-rows>
+      <div class="grid gap-2.5 sm:grid-cols-2" data-treat-row>
+        <div>
+          <label class={labelSkin} for="treat-1">Treat type</label>
+          <select class={`${fieldBase} ${fieldSkin}`} id="treat-1" name="Treat 1">
+            <option value="">Choose a treat</option>
+            <option>Cake pops</option>
+            <option>Cakesicles</option>
+            <option>Chocolate covered Oreos</option>
+            <option>Chocolate covered strawberries</option>
+            <option>Chocolate covered pretzels</option>
+            <option>Rice Krispies</option>
+            <option>Marshmallows</option>
+            <option>Something else</option>
+          </select>
+        </div>
+        <div>
+          <label class={labelSkin} for="treat-1-qty">Quantity</label>
+          <div class="flex gap-2">
+            <input class={`${fieldBase} ${fieldSkin}`} id="treat-1-qty" name="Treat 1 quantity" type="text" placeholder="e.g. 2 dozen" />
+            <button
+              type="button"
+              data-remove-row
+              aria-label="Remove this treat"
+              class="hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-cocoa/20 text-lg font-bold text-cocoa-soft transition hover:border-blush hover:text-blush focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blush"
+            >&times;</button>
+          </div>
+        </div>
       </div>
     </div>
+    <button
+      type="button"
+      data-add-treat
+      class="hidden -mt-0.5 justify-self-start text-sm font-bold text-cocoa underline-offset-2 transition hover:text-blush hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blush"
+    >+ Add another treat</button>
     <div class="grid gap-2.5 sm:grid-cols-2">
       <div>
         <label class={labelSkin} for="chocolate-pref">Chocolate preference</label>
@@ -190,6 +217,54 @@ const btnSkin = playful
 </div>
 
 <script>
+  // Repeatable treat rows: "+ Add another treat" clones the first row so one
+  // order can mix kinds. JS-only feature — the button stays hidden without it.
+  document.querySelectorAll<HTMLFormElement>('[data-inquiry-form]').forEach((form) => {
+    const container = form.querySelector<HTMLElement>('[data-treat-rows]');
+    const addBtn = form.querySelector<HTMLButtonElement>('[data-add-treat]');
+    if (!container || !addBtn) return;
+    const MAX_ROWS = 6;
+    const rows = () => Array.from(container.querySelectorAll<HTMLElement>('[data-treat-row]'));
+
+    const renumber = () => {
+      rows().forEach((row, i) => {
+        const n = i + 1;
+        const select = row.querySelector('select');
+        const qty = row.querySelector('input');
+        const [selectLabel, qtyLabel] = Array.from(row.querySelectorAll('label'));
+        if (select) { select.id = `treat-${n}`; select.name = `Treat ${n}`; }
+        if (qty) { qty.id = `treat-${n}-qty`; qty.name = `Treat ${n} quantity`; }
+        if (selectLabel) selectLabel.htmlFor = `treat-${n}`;
+        if (qtyLabel) qtyLabel.htmlFor = `treat-${n}-qty`;
+        // first row can't be removed; clones can
+        const remove = row.querySelector<HTMLElement>('[data-remove-row]');
+        remove?.classList.toggle('hidden', i === 0);
+        remove?.classList.toggle('inline-flex', i !== 0);
+      });
+      addBtn.classList.toggle('hidden', rows().length >= MAX_ROWS);
+    };
+
+    addBtn.classList.remove('hidden');
+    addBtn.addEventListener('click', () => {
+      if (rows().length >= MAX_ROWS) return;
+      const clone = rows()[0].cloneNode(true) as HTMLElement;
+      const select = clone.querySelector('select');
+      const qty = clone.querySelector('input');
+      if (select) select.value = '';
+      if (qty) qty.value = '';
+      container.appendChild(clone);
+      renumber();
+      clone.querySelector('select')?.focus();
+    });
+    container.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('[data-remove-row]');
+      if (!btn) return;
+      btn.closest('[data-treat-row]')?.remove();
+      renumber();
+    });
+    renumber();
+  });
+
   // Progressive enhancement: submit via fetch so the visitor stays on the page
   // and sees a friendly confirmation instead of a raw JSON response.
   document.querySelectorAll<HTMLFormElement>('[data-inquiry-form]').forEach((form) => {
@@ -234,6 +309,10 @@ const btnSkin = playful
       btn.disabled = true;
       label.textContent = 'Sending…';
       const data = new FormData(form);
+      // Drop empty optional fields so the email only lists what was filled in.
+      for (const [key, value] of [...data.entries()]) {
+        if (typeof value === 'string' && value.trim() === '') data.delete(key);
+      }
       // Fire-and-forget log to the Google Sheet (no-cors: we don't read the
       // response). Never blocks or fails the email path below.
       if (sheetLog) {
