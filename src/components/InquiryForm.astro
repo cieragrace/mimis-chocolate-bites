@@ -88,34 +88,68 @@ const btnSkin = playful
         <input class={`${fieldBase} ${fieldSkin}`} id="date-needed" name="Date needed" type="date" />
       </div>
     </div>
-    {/* Treats — repeatable rows so one order can mix kinds (cake pops + Oreos + …).
-        JS renumbers names to "Treat 1"/"Treat 1 quantity" etc. for the email. */}
+    {/* Treats — each repeatable group is ONE treat: type + quantity + premade
+        flavor (fall menu — swap options as it rotates) + build-your-own fields.
+        "+ Add another treat" clones the whole group; JS renumbers names to
+        "Treat 1"/"Treat 1 quantity"/"Treat 1 premade flavor"/… for the email. */}
     <div class="grid gap-2.5" data-treat-rows>
-      <div class="grid gap-2.5 sm:grid-cols-2" data-treat-row>
-        <div>
-          <label class={labelSkin} for="treat-1">Treat type</label>
-          <select class={`${fieldBase} ${fieldSkin}`} id="treat-1" name="Treat 1">
-            <option value="">Choose a treat</option>
-            <option>Cake pops</option>
-            <option>Cakesicles</option>
-            <option>Chocolate covered Oreos</option>
-            <option>Chocolate covered strawberries</option>
-            <option>Chocolate covered pretzels</option>
-            <option>Rice Krispies</option>
-            <option>Marshmallows</option>
-            <option>Something else</option>
-          </select>
+      <div class="grid gap-2.5" data-treat-row>
+        <div class="grid gap-2.5 sm:grid-cols-2">
+          <div>
+            <label class={labelSkin} for="treat-1">Treat type</label>
+            <select class={`${fieldBase} ${fieldSkin}`} id="treat-1" name="Treat 1">
+              <option value="">Choose a treat</option>
+              <option>Cake pops</option>
+              <option>Cakesicles</option>
+              <option>Chocolate covered Oreos</option>
+              <option>Chocolate covered strawberries</option>
+              <option>Chocolate covered pretzels</option>
+              <option>Rice Krispies</option>
+              <option>Marshmallows</option>
+              <option>Something else</option>
+            </select>
+          </div>
+          <div>
+            <label class={labelSkin} for="treat-1-qty">Quantity</label>
+            <div class="flex gap-2">
+              <input class={`${fieldBase} ${fieldSkin}`} id="treat-1-qty" name="Treat 1 quantity" type="text" placeholder="e.g. 2 dozen" />
+              <button
+                type="button"
+                data-remove-row
+                aria-label="Remove this treat"
+                class="hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-cocoa/20 text-lg font-bold text-cocoa-soft transition hover:border-blush hover:text-blush focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blush"
+              >&times;</button>
+            </div>
+          </div>
         </div>
         <div>
-          <label class={labelSkin} for="treat-1-qty">Quantity</label>
-          <div class="flex gap-2">
-            <input class={`${fieldBase} ${fieldSkin}`} id="treat-1-qty" name="Treat 1 quantity" type="text" placeholder="e.g. 2 dozen" />
-            <button
-              type="button"
-              data-remove-row
-              aria-label="Remove this treat"
-              class="hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-cocoa/20 text-lg font-bold text-cocoa-soft transition hover:border-blush hover:text-blush focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blush"
-            >&times;</button>
+          <label class={labelSkin} for="treat-1-flavor">Premade flavor</label>
+          <select class={`${fieldBase} ${fieldSkin}`} id="treat-1-flavor" name="Treat 1 premade flavor">
+            <option value="">Choose a premade flavor</option>
+            <option>Pumpkin Spice</option>
+            <option>Caramel Apple</option>
+            <option>Maple Pecan</option>
+            <option>Snickerdoodle</option>
+            <option>S'mores</option>
+            <option>Cookies &amp; Cream</option>
+            <option>Cookie Monster</option>
+            <option>Salted Caramel Chocolate</option>
+            <option>Chocolate Peanut Butter</option>
+            <option>Orange Spice</option>
+            <option>Build my own</option>
+          </select>
+        </div>
+        <p class="my-0.5 text-center text-xs font-bold uppercase tracking-[0.15em] text-cocoa-soft" aria-hidden="true">
+          — or build your own —
+        </p>
+        <div class="grid gap-2.5 sm:grid-cols-2">
+          <div>
+            <label class={labelSkin} for="treat-1-choc">Chocolate preference</label>
+            <input class={`${fieldBase} ${fieldSkin}`} id="treat-1-choc" name="Treat 1 chocolate preference" type="text" placeholder="Milk, dark, white…" />
+          </div>
+          <div>
+            <label class={labelSkin} for="treat-1-theme">Toppings / colors / theme</label>
+            <input class={`${fieldBase} ${fieldSkin}`} id="treat-1-theme" name="Treat 1 toppings / colors / theme" type="text" placeholder="Sprinkles, pink &amp; gold…" />
           </div>
         </div>
       </div>
@@ -125,37 +159,6 @@ const btnSkin = playful
       data-add-treat
       class="hidden -mt-0.5 justify-self-start text-sm font-bold text-cocoa underline-offset-2 transition hover:text-blush hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blush"
     >+ Add another treat</button>
-    {/* Mimi's premade flavor menu (current: fall list) — swap options as it rotates */}
-    <div>
-      <label class={labelSkin} for="flavor">Premade flavor</label>
-      <select class={`${fieldBase} ${fieldSkin}`} id="flavor" name="Premade flavor">
-        <option value="">Choose a premade flavor</option>
-        <option>Pumpkin Spice</option>
-        <option>Caramel Apple</option>
-        <option>Maple Pecan</option>
-        <option>Snickerdoodle</option>
-        <option>S'mores</option>
-        <option>Cookies &amp; Cream</option>
-        <option>Cookie Monster</option>
-        <option>Salted Caramel Chocolate</option>
-        <option>Chocolate Peanut Butter</option>
-        <option>Orange Spice</option>
-        <option>Build my own</option>
-      </select>
-    </div>
-    <p class="my-0.5 text-center text-xs font-bold uppercase tracking-[0.15em] text-cocoa-soft" aria-hidden="true">
-      — or build your own —
-    </p>
-    <div class="grid gap-2.5 sm:grid-cols-2">
-      <div>
-        <label class={labelSkin} for="chocolate-pref">Chocolate preference</label>
-        <input class={`${fieldBase} ${fieldSkin}`} id="chocolate-pref" name="Chocolate preference" type="text" placeholder="Milk, dark, white…" />
-      </div>
-      <div>
-        <label class={labelSkin} for="theme">Toppings / colors / theme</label>
-        <input class={`${fieldBase} ${fieldSkin}`} id="theme" name="Toppings / colors / theme" type="text" placeholder="Sprinkles, pink &amp; gold…" />
-      </div>
-    </div>
     <div class="grid gap-2.5 sm:grid-cols-2">
       <div>
         <label class={labelSkin} for="packaging">Packaging preference</label>
@@ -250,17 +253,27 @@ const btnSkin = playful
     const renumber = () => {
       rows().forEach((row, i) => {
         const n = i + 1;
-        const select = row.querySelector('select');
-        const qty = row.querySelector('input');
-        const [selectLabel, qtyLabel] = Array.from(row.querySelectorAll('label'));
-        if (select) { select.id = `treat-${n}`; select.name = `Treat ${n}`; }
-        if (qty) { qty.id = `treat-${n}-qty`; qty.name = `Treat ${n} quantity`; }
-        if (selectLabel) selectLabel.htmlFor = `treat-${n}`;
-        if (qtyLabel) qtyLabel.htmlFor = `treat-${n}-qty`;
-        // first row can't be removed; clones can
+        // DOM order within a group: selects [type, flavor], inputs [qty, choc, theme],
+        // labels [type, qty, flavor, choc, theme]
+        const [typeSelect, flavorSelect] = Array.from(row.querySelectorAll('select'));
+        const [qty, choc, theme] = Array.from(row.querySelectorAll('input'));
+        const labels = Array.from(row.querySelectorAll('label'));
+        const wire = (field: HTMLElement | undefined, label: HTMLLabelElement | undefined, id: string, name: string) => {
+          if (field) { field.id = id; (field as HTMLInputElement).name = name; }
+          if (label) label.htmlFor = id;
+        };
+        wire(typeSelect, labels[0], `treat-${n}`, `Treat ${n}`);
+        wire(qty, labels[1], `treat-${n}-qty`, `Treat ${n} quantity`);
+        wire(flavorSelect, labels[2], `treat-${n}-flavor`, `Treat ${n} premade flavor`);
+        wire(choc, labels[3], `treat-${n}-choc`, `Treat ${n} chocolate preference`);
+        wire(theme, labels[4], `treat-${n}-theme`, `Treat ${n} toppings / colors / theme`);
+        // first group can't be removed; clones can, and get a divider on top
         const remove = row.querySelector<HTMLElement>('[data-remove-row]');
         remove?.classList.toggle('hidden', i === 0);
         remove?.classList.toggle('inline-flex', i !== 0);
+        for (const cls of ['border-t', 'border-cocoa/15', 'pt-3', 'mt-0.5']) {
+          row.classList.toggle(cls, i !== 0);
+        }
       });
       addBtn.classList.toggle('hidden', rows().length >= MAX_ROWS);
     };
@@ -269,10 +282,8 @@ const btnSkin = playful
     addBtn.addEventListener('click', () => {
       if (rows().length >= MAX_ROWS) return;
       const clone = rows()[0].cloneNode(true) as HTMLElement;
-      const select = clone.querySelector('select');
-      const qty = clone.querySelector('input');
-      if (select) select.value = '';
-      if (qty) qty.value = '';
+      clone.querySelectorAll('select').forEach((select) => { select.value = ''; });
+      clone.querySelectorAll('input').forEach((input) => { input.value = ''; });
       container.appendChild(clone);
       renumber();
       clone.querySelector('select')?.focus();
