@@ -125,6 +125,25 @@ const btnSkin = playful
       data-add-treat
       class="hidden -mt-0.5 justify-self-start text-sm font-bold text-cocoa underline-offset-2 transition hover:text-blush hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blush"
     >+ Add another treat</button>
+    {/* Mimi's premade flavor menu (current: fall list) — swap options as it rotates */}
+    <div>
+      <label class={labelSkin} for="flavor">Premade flavor</label>
+      <select class={`${fieldBase} ${fieldSkin}`} id="flavor" name="Premade flavor">
+        <option value="">Choose a premade flavor</option>
+        <option>Pumpkin Spice</option>
+        <option>Caramel Apple</option>
+        <option>Maple Pecan</option>
+        <option>Snickerdoodle</option>
+        <option>S'mores</option>
+        <option>Salted Caramel Chocolate</option>
+        <option>Chocolate Peanut Butter</option>
+        <option>Orange Spice</option>
+        <option>Build my own</option>
+      </select>
+    </div>
+    <p class="my-0.5 text-center text-xs font-bold uppercase tracking-[0.15em] text-cocoa-soft" aria-hidden="true">
+      — or build your own —
+    </p>
     <div class="grid gap-2.5 sm:grid-cols-2">
       <div>
         <label class={labelSkin} for="chocolate-pref">Chocolate preference</label>
