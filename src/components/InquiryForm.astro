@@ -88,34 +88,41 @@ const btnSkin = playful
         <input class={`${fieldBase} ${fieldSkin}`} id="date-needed" name="Date needed" type="date" />
       </div>
     </div>
-    {/* Treats — repeatable rows so one order can mix kinds (cake pops + Oreos + …).
-        JS renumbers names to "Treat 1"/"Treat 1 quantity" etc. for the email. */}
+    {/* Treats — repeatable groups so one order can mix kinds (cake pops + Oreos + …).
+        Each group = type + quantity + chocolate preference; JS renumbers names to
+        "Treat 1"/"Treat 1 quantity"/"Treat 1 chocolate preference" for the email. */}
     <div class="grid gap-2.5" data-treat-rows>
-      <div class="grid gap-2.5 sm:grid-cols-2" data-treat-row>
+      <div class="grid gap-2.5" data-treat-row>
         <div>
           <label class={labelSkin} for="treat-1">Treat type</label>
-          <select class={`${fieldBase} ${fieldSkin}`} id="treat-1" name="Treat 1">
-            <option value="">Choose a treat</option>
-            <option>Cake pops</option>
-            <option>Cakesicles</option>
-            <option>Chocolate covered Oreos</option>
-            <option>Chocolate covered strawberries</option>
-            <option>Chocolate covered pretzels</option>
-            <option>Rice Krispies</option>
-            <option>Marshmallows</option>
-            <option>Something else</option>
-          </select>
-        </div>
-        <div>
-          <label class={labelSkin} for="treat-1-qty">Quantity</label>
           <div class="flex gap-2">
-            <input class={`${fieldBase} ${fieldSkin}`} id="treat-1-qty" name="Treat 1 quantity" type="text" placeholder="e.g. 2 dozen" />
+            <select class={`${fieldBase} ${fieldSkin}`} id="treat-1" name="Treat 1">
+              <option value="">Choose a treat</option>
+              <option>Cake pops</option>
+              <option>Cakesicles</option>
+              <option>Chocolate covered Oreos</option>
+              <option>Chocolate covered strawberries</option>
+              <option>Chocolate covered pretzels</option>
+              <option>Rice Krispies</option>
+              <option>Marshmallows</option>
+              <option>Something else</option>
+            </select>
             <button
               type="button"
               data-remove-row
               aria-label="Remove this treat"
               class="hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-cocoa/20 text-lg font-bold text-cocoa-soft transition hover:border-blush hover:text-blush focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blush"
             >&times;</button>
+          </div>
+        </div>
+        <div class="grid gap-2.5 sm:grid-cols-2">
+          <div>
+            <label class={labelSkin} for="treat-1-qty">Quantity</label>
+            <input class={`${fieldBase} ${fieldSkin}`} id="treat-1-qty" name="Treat 1 quantity" type="text" placeholder="e.g. 2 dozen" />
+          </div>
+          <div>
+            <label class={labelSkin} for="treat-1-choc">Chocolate preference</label>
+            <input class={`${fieldBase} ${fieldSkin}`} id="treat-1-choc" name="Treat 1 chocolate preference" type="text" placeholder="Milk, dark, white…" />
           </div>
         </div>
       </div>
@@ -127,19 +134,15 @@ const btnSkin = playful
     >+ Add another treat</button>
     <div class="grid gap-2.5 sm:grid-cols-2">
       <div>
-        <label class={labelSkin} for="chocolate-pref">Chocolate preference</label>
-        <input class={`${fieldBase} ${fieldSkin}`} id="chocolate-pref" name="Chocolate preference" type="text" placeholder="Milk, dark, white…" />
-      </div>
-      <div>
         <label class={labelSkin} for="theme">Toppings / colors / theme</label>
         <input class={`${fieldBase} ${fieldSkin}`} id="theme" name="Toppings / colors / theme" type="text" placeholder="Sprinkles, pink &amp; gold…" />
       </div>
-    </div>
-    <div class="grid gap-2.5 sm:grid-cols-2">
       <div>
         <label class={labelSkin} for="packaging">Packaging preference</label>
         <input class={`${fieldBase} ${fieldSkin}`} id="packaging" name="Packaging preference" type="text" placeholder="Individually wrapped, gift box…" />
       </div>
+    </div>
+    <div class="grid gap-2.5 sm:grid-cols-2">
       <div>
         <label class={labelSkin} for="pickup-delivery">Pickup / delivery</label>
         <select class={`${fieldBase} ${fieldSkin}`} id="pickup-delivery" name="Pickup or delivery">
@@ -148,10 +151,10 @@ const btnSkin = playful
           <option>Delivery</option>
         </select>
       </div>
-    </div>
-    <div>
-      <label class={labelSkin} for="budget">Budget</label>
-      <input class={`${fieldBase} ${fieldSkin}`} id="budget" name="Budget" type="text" placeholder="$" />
+      <div>
+        <label class={labelSkin} for="budget">Budget</label>
+        <input class={`${fieldBase} ${fieldSkin}`} id="budget" name="Budget" type="text" placeholder="$" />
+      </div>
     </div>
     <div>
       <label class={labelSkin} for="notes">Special notes</label>
@@ -230,16 +233,21 @@ const btnSkin = playful
       rows().forEach((row, i) => {
         const n = i + 1;
         const select = row.querySelector('select');
-        const qty = row.querySelector('input');
-        const [selectLabel, qtyLabel] = Array.from(row.querySelectorAll('label'));
+        const [qty, choc] = Array.from(row.querySelectorAll('input'));
+        const [selectLabel, qtyLabel, chocLabel] = Array.from(row.querySelectorAll('label'));
         if (select) { select.id = `treat-${n}`; select.name = `Treat ${n}`; }
         if (qty) { qty.id = `treat-${n}-qty`; qty.name = `Treat ${n} quantity`; }
+        if (choc) { choc.id = `treat-${n}-choc`; choc.name = `Treat ${n} chocolate preference`; }
         if (selectLabel) selectLabel.htmlFor = `treat-${n}`;
         if (qtyLabel) qtyLabel.htmlFor = `treat-${n}-qty`;
-        // first row can't be removed; clones can
+        if (chocLabel) chocLabel.htmlFor = `treat-${n}-choc`;
+        // first group can't be removed; clones can, and get a divider on top
         const remove = row.querySelector<HTMLElement>('[data-remove-row]');
         remove?.classList.toggle('hidden', i === 0);
         remove?.classList.toggle('inline-flex', i !== 0);
+        for (const cls of ['border-t', 'border-cocoa/15', 'pt-3', 'mt-0.5']) {
+          row.classList.toggle(cls, i !== 0);
+        }
       });
       addBtn.classList.toggle('hidden', rows().length >= MAX_ROWS);
     };
@@ -249,9 +257,8 @@ const btnSkin = playful
       if (rows().length >= MAX_ROWS) return;
       const clone = rows()[0].cloneNode(true) as HTMLElement;
       const select = clone.querySelector('select');
-      const qty = clone.querySelector('input');
       if (select) select.value = '';
-      if (qty) qty.value = '';
+      clone.querySelectorAll('input').forEach((input) => { input.value = ''; });
       container.appendChild(clone);
       renumber();
       clone.querySelector('select')?.focus();
