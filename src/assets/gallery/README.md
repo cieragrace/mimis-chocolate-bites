@@ -21,6 +21,3 @@ keyed by the exact filename:
 
 Entries with an `order` come first (1, 2, 3 …); the rest follow by filename.
 
-!! TEMPORARY: the `_placeholder-*.png` files are stand-ins copied from
-public/img/treats/ so the grid can be previewed. DELETE THEM when Mimi's
-real photos/videos land.

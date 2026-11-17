@@ -1,8 +1,50 @@
 {
-  "_example-cake-pops.jpg": {
-    "alt": "A dozen pink and gold cake pops on a cake stand",
-    "caption": "Birthday cake pops for Sophia's party",
-    "order": 1,
-    "hidden": false
+  "2026-07-16-welcome.jpg": {
+    "alt": "Mimi's Chocolate Bites welcome photo — Mimi's Chocolate Bites",
+    "caption": "Welcome to Mimi's Chocolate Bites — every treat handcrafted with love."
+  },
+  "2026-10-11-lemon-cake-pops.mp4": {
+    "alt": "Lemon cake pops dipped in vanilla almond bark with yellow sugar — Mimi's Chocolate Bites",
+    "caption": "Lemon cake pops with vanilla almond bark and yellow finishing sugar."
+  },
+  "2026-10-12-cake-pops-sped-up.mp4": {
+    "alt": "Sped-up video of cake pops being made — Mimi's Chocolate Bites",
+    "caption": "If only cake pops were this fast in real life."
+  },
+  "2026-10-16-volleyball-cake-pops.mp4": {
+    "alt": "Volleyball cake pops with pink ribbons — Mimi's Chocolate Bites",
+    "caption": "Volleyball cake pops for the team, with a pink ribbon for breast cancer awareness."
+  },
+  "2026-10-19-dip-and-stick.mp4": {
+    "alt": "Cake pops being dipped in chocolate and stuck — Mimi's Chocolate Bites",
+    "caption": "Just a quick dip and stick."
+  },
+  "2026-10-24-broncos-cake-pops.mp4": {
+    "alt": "Orange and blue Denver Broncos cake pops — Mimi's Chocolate Bites",
+    "caption": "Broncos-color cake pops for a birthday."
+  },
+  "2026-11-02a-christmas-step-1-cutting.mp4": {
+    "alt": "Cutting Christmas-shaped cake pops — Mimi's Chocolate Bites",
+    "caption": "Christmas step 1: cutting Joy and Santa hat cake pops."
+  },
+  "2026-11-02b-christmas-step-2-sticks.mp4": {
+    "alt": "Adding sticks to Christmas cake pops — Mimi's Chocolate Bites",
+    "caption": "Christmas step 2: stick 'em!"
+  },
+  "2026-11-02c-christmas-step-3-dipped.mp4": {
+    "alt": "Dipping Christmas cake pops in chocolate — Mimi's Chocolate Bites",
+    "caption": "Christmas step 3: dipped. Only decorating left!"
+  },
+  "2026-11-07-christmas-decorating.mp4": {
+    "alt": "Decorating Santa hat and Joy cake pops — Mimi's Chocolate Bites",
+    "caption": "Final step: decorating the Christmas cake pops."
+  },
+  "2026-11-14-fudge-brownie-cake-pops.mp4": {
+    "alt": "Fudge cake pops topped with brownie bits — Mimi's Chocolate Bites",
+    "caption": "Fudge cake pops with brownie bits."
+  },
+  "2026-11-15-good-sticking.mp4": {
+    "alt": "Sticks going into chocolate cake pops — Mimi's Chocolate Bites",
+    "caption": "Good sticking!"
   }
 }
