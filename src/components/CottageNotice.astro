@@ -15,10 +15,10 @@ interface Props {
   tone?: 'dark' | 'form';
   class?: string;
 }
+import { COTTAGE_TEXT as TEXT } from '../data/cottage';
 const { tone = 'dark', class: cls = '' } = Astro.props;
 
-const TEXT =
-  '*These products are produced in a home kitchen that is not subject to state licensure or inspection and that may also process common food allergies such as tree nuts, peanuts, eggs, soy, wheat, milk, fish and crustacean shellfish.';
+
 ---
 
 <p

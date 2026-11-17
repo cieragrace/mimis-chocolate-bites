@@ -4,7 +4,7 @@
  * Moody three-band styling (brown header / beige logo band / brown hero) with
  * four buttons: "Place an inquiry" → /contact, "See pricing" → /pricing,
  * "Gallery" → /gallery, "Follow" → Instagram. The Cottage Foods disclosure
- * sits as tiny fine print pinned to the bottom (CottageNotice).
+ * scrolls in a pink ribbon pinned to the bottom (CottageStripe).
  *
  * min-h-[100svh] + a flex-1 <main> fills exactly one viewport when the content
  * fits (so no scroll on portrait/tablet/desktop, and no iOS address-bar jump).
@@ -19,7 +19,7 @@
 import Truffle from './Truffle.astro';
 import CakePop from './CakePop.astro';
 import RainField from './RainField.astro';
-import CottageNotice from './CottageNotice.astro';
+import CottageStripe from './CottageStripe.astro';
 
 const IG_URL = 'https://instagram.com/mimischocolatebites';
 const offerings = ['Chocolate bites', 'Cake pops', 'Gift boxes', 'Custom orders'];
@@ -125,9 +125,9 @@ const focusRing =
   </main>
   </div>
 
-  {/* Colorado Cottage Foods Act fine print — tiny so the landing stays one screen */}
-  <footer class="relative z-10 shrink-0 px-6 pb-3 pt-2 short:pb-1.5 short:pt-1">
-    <CottageNotice class="mx-auto max-w-3xl text-center text-[10px] leading-snug sm:text-[11px]" />
+  {/* Colorado Cottage Foods Act disclosure — one-line scrolling pink ribbon */}
+  <footer class="relative z-10 shrink-0">
+    <CottageStripe />
   </footer>
 </div>
 

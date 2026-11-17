@@ -1,0 +1,80 @@
+---
+/**
+ * Cottage Foods disclosure as a cute scrolling pink ribbon (marquee) — the
+ * site-wide page footer on the landing, /pricing and /gallery. The form on
+ * /contact keeps the static CottageNotice under Submit.
+ *
+ * Text comes from CottageNotice's single source (COTTAGE_TEXT) — Mimi's exact
+ * wording, never edit it here.
+ *
+ * Accessibility / legibility:
+ *  - Screen readers get the full sentence once (sr-only); the moving copies
+ *    are aria-hidden.
+ *  - Hover or keyboard focus pauses the scroll so it can be read.
+ *  - prefers-reduced-motion: no scrolling — the full text sits static and wraps.
+ *
+ * Seamless loop: the track holds the sentence twice and slides -50%.
+ */
+import { COTTAGE_TEXT } from '../data/cottage';
+
+interface Props {
+  class?: string;
+}
+const { class: cls = '' } = Astro.props;
+---
+
+<div
+  class:list={['cottage-stripe relative w-full overflow-hidden bg-blush-soft text-cocoa', cls]}
+  tabindex="0"
+  aria-label="Cottage food notice"
+>
+  <span class="sr-only">{COTTAGE_TEXT}</span>
+
+  <div class="cottage-track flex w-max items-center" aria-hidden="true">
+    {[0, 1].map(() => (
+      <span class="flex shrink-0 items-center">
+        {[0, 1].map(() => (
+          <>
+            <span class="whitespace-nowrap px-5 font-serif text-[12px] italic sm:text-[13px]">{COTTAGE_TEXT}</span>
+            <svg class="h-3 w-3 shrink-0 text-blush" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+          </>
+        ))}
+      </span>
+    ))}
+  </div>
+
+  {/* reduced-motion fallback: static, wrapped */}
+  <p class="cottage-static hidden px-6 text-center font-serif text-[12px] italic leading-snug" aria-hidden="true">
+    {COTTAGE_TEXT}
+  </p>
+</div>
+
+<style>
+  .cottage-stripe {
+    padding-block: 0.45rem;
+    box-shadow:
+      inset 0 1px 0 rgb(231 155 171 / 0.9),
+      inset 0 -1px 0 rgb(231 155 171 / 0.9);
+  }
+  .cottage-track {
+    animation: cottage-scroll 70s linear infinite;
+  }
+  .cottage-stripe:hover .cottage-track,
+  .cottage-stripe:focus-visible .cottage-track {
+    animation-play-state: paused;
+  }
+  .cottage-stripe:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: -2px;
+  }
+  @keyframes cottage-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cottage-track { display: none; }
+    .cottage-static { display: block; }
+  }
+</style>
