@@ -1,0 +1,29 @@
+---
+/**
+ * Colorado Cottage Foods Act disclosure — the ONE source of truth for this text.
+ * Mimi's exact wording: keep it VERBATIM (leading asterisk, "common food
+ * allergies" phrasing and all). Do not edit grammar or punctuation.
+ *
+ * Used under Submit on the inquiry form (tone="form", on the cream card) and
+ * as fine print at the bottom of the landing, /pricing and /gallery
+ * (tone="dark", on the chocolate background). /contact shows only the form copy.
+ *
+ * tone="dark" uses cream at 55% — low-key but still ~5.6:1 contrast on #241009.
+ * Pass size/margin/width classes via `class`.
+ */
+interface Props {
+  tone?: 'dark' | 'form';
+  class?: string;
+}
+const { tone = 'dark', class: cls = '' } = Astro.props;
+
+const TEXT =
+  '*These products are produced in a home kitchen that is not subject to state licensure or inspection and that may also process common food allergies such as tree nuts, peanuts, eggs, soy, wheat, milk, fish and crustacean shellfish.';
+---
+
+<p
+  class:list={['italic', tone === 'dark' ? 'text-cream/55' : 'text-cocoa-soft', cls]}
+  data-cottage
+>
+  {TEXT}
+</p>

@@ -17,6 +17,7 @@ interface Props {
 const { theme = 'simple' } = Astro.props;
 
 import CakePop from './CakePop.astro';
+import CottageNotice from './CottageNotice.astro';
 
 const WEB3FORMS_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY || '';
 const isLive = WEB3FORMS_KEY.length > 10;
@@ -202,12 +203,8 @@ const btnSkin = playful
       {isLive ? 'Mimi usually replies within a day.' : ''}
     </p>
 
-    {/* Colorado Cottage Foods Act disclosure — Mimi's exact wording, keep verbatim */}
-    <p class="mt-1 text-xs italic leading-relaxed text-cocoa-soft">
-      *These products are produced in a home kitchen that is not subject to state licensure
-      or inspection and that may also process common food allergies such as tree nuts,
-      peanuts, eggs, soy, wheat, milk, fish and crustacean shellfish.
-    </p>
+    {/* Colorado Cottage Foods Act disclosure — text lives in CottageNotice.astro */}
+    <CottageNotice tone="form" class="mt-1 text-xs leading-relaxed" />
   </div>
 </form>
 

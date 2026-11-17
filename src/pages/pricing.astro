@@ -31,6 +31,7 @@ import '../styles/global.css';
 import Seo from '../components/Seo.astro';
 import RainField from '../components/RainField.astro';
 import CakePop from '../components/CakePop.astro';
+import CottageNotice from '../components/CottageNotice.astro';
 
 const IG_URL = 'https://instagram.com/mimischocolatebites';
 
@@ -57,7 +58,7 @@ const dozenAlt =
     <div class="relative min-h-[100svh] bg-[#241009] text-cream">
       <RainField />
 
-      <main class="relative z-10 mx-auto max-w-4xl px-4 pb-16 pt-6 sm:px-6">
+      <main class="relative z-10 mx-auto max-w-4xl px-4 pb-10 pt-6 sm:px-6">
         {/* back link, same treatment as /contact */}
         <a
           href="/"
@@ -159,6 +160,10 @@ const dozenAlt =
             </a>
           </div>
         </section>
+
+        <footer class="mt-12">
+          <CottageNotice class="mx-auto max-w-2xl text-center text-[11px] leading-relaxed" />
+        </footer>
       </main>
     </div>
   </body>
