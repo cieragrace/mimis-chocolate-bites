@@ -166,7 +166,7 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
 
               {items.length > 1 && (
                 <>
-                  <button type="button" class={`${arrowClass} left-2 lg:left-6`} data-prev aria-label="Previous treat" disabled>
+                  <button type="button" class={`${arrowClass} left-2 lg:left-6`} data-prev aria-label="Previous treat">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
                   </button>
                   <button type="button" class={`${arrowClass} right-2 lg:right-6`} data-next aria-label="Next treat">
@@ -180,11 +180,21 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
             <div class="mx-auto mt-3 max-w-sm text-center">
               <p class="min-h-[2.5rem] text-sm leading-snug text-cream/75" data-caption aria-live="polite">{items[0].caption}</p>
               {items.length > 1 && (
-                <div class="mx-auto mt-3 flex max-w-[12rem] items-center gap-3" aria-hidden="true">
-                  <span class="h-0.5 flex-1 overflow-hidden rounded-full bg-gold/20">
+                <div class="mx-auto mt-2 flex max-w-[14rem] items-center gap-3">
+                  <span class="h-0.5 flex-1 overflow-hidden rounded-full bg-gold/20" aria-hidden="true">
                     <span class="progress-fill block h-full rounded-full bg-gold" data-progress style={`width:${100 / items.length}%`} />
                   </span>
-                  <span class="text-xs font-semibold tabular-nums tracking-[0.15em] text-gold/80" data-count>1 / {items.length}</span>
+                  <span class="text-xs font-semibold tabular-nums tracking-[0.15em] text-gold/80" aria-hidden="true" data-count>1 / {items.length}</span>
+                  {/* WCAG 2.2.2: the slideshow moves on its own, so it can be paused */}
+                  <button
+                    type="button"
+                    data-autoplay-toggle
+                    aria-label="Pause slideshow"
+                    class={`autoplay-toggle -my-3 -mr-3 inline-flex h-11 w-11 items-center justify-center rounded-full text-gold/70 transition hover:text-gold focus-visible:ring-gold ${focusRing}`}
+                  >
+                    <svg class="icon-pause h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" /></svg>
+                    <svg class="icon-play h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 001.5.86l10.5-6.5a1 1 0 000-1.72L9.5 4.64A1 1 0 008 5.5z" /></svg>
+                  </button>
                 </div>
               )}
             </div>
@@ -352,6 +362,7 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
           dialog!.showModal();
           closeBtn.focus();
           syncPlayback();
+          nudge();
         }
 
         function go(step: number) {
@@ -361,21 +372,52 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
         }
 
         // ── carousel ──────────────────────────────────────────────
-        const track = document.querySelector<HTMLElement>('[data-track]')!;
-        const slides = Array.from(track.querySelectorAll<HTMLElement>('[data-slide]'));
-        const btns = slides.map((s) => s.querySelector<HTMLButtonElement>('[data-open]')!);
-        const reels = slides.map((s) => s.querySelector<HTMLVideoElement>('video[data-reel]'));
-        const cPrev = document.querySelector<HTMLButtonElement>('[data-prev]');
-        const cNext = document.querySelector<HTMLButtonElement>('[data-next]');
-        const cCaption = document.querySelector<HTMLElement>('[data-caption]')!;
-        const cCount = document.querySelector<HTMLElement>('[data-count]');
-        const cFill = document.querySelector<HTMLElement>('[data-progress]');
+        // Infinite loop: JS adds LOOP clones of the last items before the
+        // first slide and of the first items after the last one (inert,
+        // aria-hidden). Whenever scrolling settles on a clone, the strip
+        // jumps instantly to the real twin — same pixels, so the jump is
+        // invisible, and the loop never scrolls "back" across every slide.
+        // Snap-stop keeps a hard flick to one slide, so a fling can't run
+        // past the clones.
+        const section = document.querySelector<HTMLElement>('[data-carousel]')!;
+        const track = section.querySelector<HTMLElement>('[data-track]')!;
+        const realSlides = Array.from(track.querySelectorAll<HTMLElement>('[data-slide]'));
+        const btns = realSlides.map((s) => s.querySelector<HTMLButtonElement>('[data-open]')!);
+        const n = realSlides.length;
+        const LOOP = n >= 3 ? Math.min(2, n) : 0;
+
+        if (LOOP) {
+          const mk = (s: HTMLElement) => {
+            const c = s.cloneNode(true) as HTMLElement;
+            c.removeAttribute('data-active');
+            c.setAttribute('aria-hidden', 'true');
+            c.inert = true;
+            c.dataset.clone = '';
+            c.querySelector('[data-open]')?.setAttribute('tabindex', '-1');
+            return c;
+          };
+          realSlides.slice(-LOOP).forEach((s) => track.insertBefore(mk(s), realSlides[0]));
+          realSlides.slice(0, LOOP).forEach((s) => track.appendChild(mk(s)));
+        }
+        // every slide in DOM order (clones included); pos = DOM index
+        const all = Array.from(track.querySelectorAll<HTMLElement>('[data-slide]'));
+        const reels = all.map((s) => s.querySelector<HTMLVideoElement>('video[data-reel]'));
+        const realOf = (pos: number) => Number(all[pos].dataset.slide);
+        const posOf = (real: number) => real + LOOP;
+
+        const cPrev = section.querySelector<HTMLButtonElement>('[data-prev]');
+        const cNext = section.querySelector<HTMLButtonElement>('[data-next]');
+        const cCaption = section.querySelector<HTMLElement>('[data-caption]')!;
+        const cCount = section.querySelector<HTMLElement>('[data-count]');
+        const cFill = section.querySelector<HTMLElement>('[data-progress]');
+        const cToggle = section.querySelector<HTMLButtonElement>('[data-autoplay-toggle]');
+        let pos = posOf(0);
         let active = 0;
         let stripVisible = true;
 
         // wake a slide's video: poster + metadata (called when it nears view)
-        function wake(i: number) {
-          const v = reels[i];
+        function wake(p: number) {
+          const v = reels[p];
           if (!v || v.dataset.awake) return;
           v.dataset.awake = '1';
           if (v.dataset.poster) v.poster = v.dataset.poster;
@@ -383,104 +425,193 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
         }
 
         function syncPlayback() {
-          reels.forEach((v, i) => {
+          reels.forEach((v, p) => {
             if (!v) return;
-            const play = i === active && stripVisible && !dialog!.open && !reduceMotion.matches;
+            const play = p === pos && stripVisible && !dialog!.open && !reduceMotion.matches;
             if (play) {
-              wake(i);
+              wake(p);
               v.play().catch(() => {});
             } else if (!v.paused) {
               v.pause();
             }
           });
+          updateRotation();
         }
 
-        function setActive(i: number) {
-          if (i === active && slides[i].hasAttribute('data-active')) return;
-          const hadFocus = slides.some((s) => s.contains(document.activeElement));
-          slides[active].removeAttribute('data-active');
+        function setPos(p: number) {
+          if (p === pos && all[p].hasAttribute('data-active')) return;
+          const hadFocus = section.contains(document.activeElement) && track.contains(document.activeElement);
+          all[pos].removeAttribute('data-active');
           btns[active].tabIndex = -1;
-          active = i;
-          slides[i].setAttribute('data-active', '');
-          btns[i].tabIndex = 0;
-          if (hadFocus) btns[i].focus({ preventScroll: true });
-          cCaption.textContent = items[i].caption;
-          if (cCount) cCount.textContent = `${i + 1} / ${items.length}`;
-          if (cFill) cFill.style.width = `${((i + 1) / items.length) * 100}%`;
-          if (cPrev) cPrev.disabled = i === 0;
-          if (cNext) cNext.disabled = i === items.length - 1;
+          pos = p;
+          active = realOf(p);
+          all[p].setAttribute('data-active', '');
+          btns[active].tabIndex = 0;
+          if (hadFocus && !all[p].hasAttribute('data-clone')) btns[active].focus({ preventScroll: true });
+          cCaption.textContent = items[active].caption;
+          if (cCount) cCount.textContent = `${active + 1} / ${n}`;
+          if (cFill) cFill.style.width = `${((active + 1) / n) * 100}%`;
+          if (!LOOP) {
+            if (cPrev) cPrev.disabled = active === 0;
+            if (cNext) cNext.disabled = active === n - 1;
+          }
           syncPlayback();
         }
 
-        function scrollToSlide(i: number, smooth = !reduceMotion.matches) {
-          i = Math.max(0, Math.min(items.length - 1, i));
-          const s = slides[i];
-          track.scrollTo({
-            left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2,
-            behavior: smooth ? 'smooth' : 'auto',
-          });
-          setActive(i);
+        const leftFor = (p: number) => all[p].offsetLeft - (track.clientWidth - all[p].offsetWidth) / 2;
+
+        function scrollToPos(p: number, smooth = !reduceMotion.matches) {
+          p = Math.max(0, Math.min(all.length - 1, p));
+          track.scrollTo({ left: leftFor(p), behavior: smooth ? 'smooth' : 'auto' });
+          setPos(p);
         }
+        const scrollToSlide = (real: number, smooth?: boolean) => scrollToPos(posOf(real), smooth);
+        const step = (d: number) =>
+          LOOP ? scrollToPos(pos + d) : scrollToPos(Math.max(LOOP, Math.min(posOf(n - 1), pos + d)));
 
         // which slide sits nearest the centre of the strip
         function nearest() {
           const mid = track.scrollLeft + track.clientWidth / 2;
           let best = 0;
           let d = Infinity;
-          slides.forEach((s, i) => {
+          all.forEach((s, i) => {
             const dd = Math.abs(s.offsetLeft + s.offsetWidth / 2 - mid);
             if (dd < d) { d = dd; best = i; }
           });
           return best;
         }
+
+        // settled on a clone → hop to its real twin (instant, identical frame)
+        function settle() {
+          const p = nearest();
+          if (all[p].hasAttribute('data-clone')) {
+            const twin = posOf(realOf(p));
+            const prev = track.style.scrollSnapType;
+            track.style.scrollSnapType = 'none';
+            track.scrollLeft += leftFor(twin) - leftFor(p);
+            track.style.scrollSnapType = prev;
+            setPos(twin);
+          }
+        }
         let raf = 0;
+        let settleT = 0;
         track.addEventListener('scroll', () => {
           cancelAnimationFrame(raf);
-          raf = requestAnimationFrame(() => setActive(nearest()));
+          raf = requestAnimationFrame(() => setPos(nearest()));
+          // scrollend fallback (older Safari)
+          clearTimeout(settleT);
+          settleT = window.setTimeout(settle, 140);
         }, { passive: true });
+        track.addEventListener('scrollend', () => { clearTimeout(settleT); settle(); });
+
+        // ── auto-rotate ── every 3s; resets on any user nudge, resumes after
+        // 6s idle; held while hovered, keyboard-focused, viewer open, tab
+        // hidden, strip off screen, or the visitor pressed pause.
+        const TICK = 3000;
+        const IDLE = 6000;
+        let timer = 0;
+        let hovered = false;
+        let kbFocus = false;
+        let userPaused = false;
+        let nextDelay = TICK;
+
+        const canRotate = () =>
+          n > 1 && !reduceMotion.matches && !userPaused && !hovered && !kbFocus &&
+          stripVisible && !document.hidden && !dialog!.open;
+
+        function updateRotation() {
+          const on = canRotate();
+          if (on && !timer) timer = window.setTimeout(tick, nextDelay);
+          if (!on && timer) { clearTimeout(timer); timer = 0; nextDelay = TICK; }
+          // announce captions only when the strip isn't moving by itself
+          cCaption.setAttribute('aria-live', on ? 'off' : 'polite');
+          if (cToggle) cToggle.hidden = reduceMotion.matches || n < 2;
+        }
+        function tick() {
+          timer = 0;
+          nextDelay = TICK;
+          if (!canRotate()) return;
+          if (LOOP) step(1);
+          else scrollToSlide(active === n - 1 ? 0 : active + 1);
+          updateRotation();
+        }
+        // a visitor touched it: restart the clock with the longer idle wait
+        function nudge() {
+          if (timer) clearTimeout(timer);
+          timer = 0;
+          nextDelay = IDLE;
+          updateRotation();
+        }
+
+        const strip = track.parentElement!;
+        strip.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') { hovered = true; updateRotation(); } });
+        strip.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') { hovered = false; nudge(); } });
+        track.addEventListener('pointerdown', nudge, { passive: true });
+        track.addEventListener('touchstart', nudge, { passive: true });
+        track.addEventListener('wheel', nudge, { passive: true });
+        section.addEventListener('focusin', (e) => {
+          kbFocus = (e.target as HTMLElement).matches(':focus-visible');
+          updateRotation();
+        });
+        section.addEventListener('focusout', (e) => {
+          if (!section.contains(e.relatedTarget as Node)) { kbFocus = false; nudge(); }
+        });
+
+        cToggle?.addEventListener('click', () => {
+          userPaused = !userPaused;
+          cToggle.setAttribute('aria-label', userPaused ? 'Play slideshow' : 'Pause slideshow');
+          cToggle.toggleAttribute('data-paused', userPaused);
+          nudge();
+        });
 
         btns.forEach((btn, i) => {
           btn.addEventListener('click', () => {
+            nudge();
             if (i === active) open(i, btn);
             else scrollToSlide(i);
           });
         });
-        cPrev?.addEventListener('click', () => scrollToSlide(active - 1));
-        cNext?.addEventListener('click', () => scrollToSlide(active + 1));
+        cPrev?.addEventListener('click', () => { nudge(); step(-1); });
+        cNext?.addEventListener('click', () => { nudge(); step(1); });
 
         track.addEventListener('keydown', (e) => {
           const k = e.key;
-          const to =
-            k === 'ArrowRight' ? active + 1 :
-            k === 'ArrowLeft' ? active - 1 :
-            k === 'Home' ? 0 :
-            k === 'End' ? items.length - 1 : null;
+          let to: number | null = null;
+          if (k === 'ArrowRight') to = LOOP ? -2 : Math.min(n - 1, active + 1);
+          else if (k === 'ArrowLeft') to = LOOP ? -3 : Math.max(0, active - 1);
+          else if (k === 'Home') to = 0;
+          else if (k === 'End') to = n - 1;
           if (to === null) return;
           e.preventDefault();
-          scrollToSlide(to);
+          nudge();
+          if (to === -2) step(1);
+          else if (to === -3) step(-1);
+          else scrollToSlide(to);
           btns[active].focus({ preventScroll: true });
         });
 
         // lazy: wake videos within ~1 strip-width of view
         const near = new IntersectionObserver((entries) => {
           entries.forEach((en) => {
-            if (en.isIntersecting) wake(Number((en.target as HTMLElement).dataset.slide));
+            if (en.isIntersecting) wake(all.indexOf(en.target as HTMLElement));
           });
         }, { root: track, rootMargin: '0px 100% 0px 100%' });
-        slides.forEach((s) => near.observe(s));
+        all.forEach((s) => near.observe(s));
 
-        // pause when the strip scrolls off the page
+        // pause playback + rotation when the strip scrolls off the page
         new IntersectionObserver(([en]) => {
           stripVisible = en.isIntersecting;
           syncPlayback();
         }, { threshold: 0.35 }).observe(track);
 
         reduceMotion.addEventListener('change', syncPlayback);
-        document.addEventListener('visibilitychange', () => {
-          stripVisible = !document.hidden;
-          syncPlayback();
-        });
-        setActive(0);
+        document.addEventListener('visibilitychange', syncPlayback);
+
+        // start on the first real slide, clones peeking on both sides
+        track.scrollLeft = leftFor(pos);
+        all[pos].removeAttribute('data-active');
+        setPos(pos);
+        window.addEventListener('resize', () => { track.scrollLeft = leftFor(pos); }, { passive: true });
 
         prevBtn.addEventListener('click', () => go(-1));
         nextBtn.addEventListener('click', () => go(1));
@@ -557,6 +688,7 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
   }
   .carousel-track .slide {
     width: var(--slide-w);
+    scroll-snap-stop: always;
     transition: transform 0.35s ease, opacity 0.35s ease;
     transform: scale(0.88);
     opacity: 0.5;
@@ -565,12 +697,26 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
     transform: none;
     opacity: 1;
   }
+  .autoplay-toggle .icon-play,
+  .autoplay-toggle[data-paused] .icon-pause {
+    display: none;
+  }
+  .autoplay-toggle[data-paused] .icon-play {
+    display: block;
+  }
   .progress-fill {
     transition: width 0.35s ease;
   }
   @media (prefers-reduced-motion: reduce) {
     .carousel-track .slide,
-    .progress-fill {
+    .autoplay-toggle .icon-play,
+  .autoplay-toggle[data-paused] .icon-pause {
+    display: none;
+  }
+  .autoplay-toggle[data-paused] .icon-play {
+    display: block;
+  }
+  .progress-fill {
       transition: none;
     }
   }
