@@ -94,11 +94,13 @@ export function getGalleryItems(): GalleryItem[] {
     });
   }
 
-  // pinned (`order`) first, ascending; then filename Z→A (date-prefixed = newest first)
+  // pinned (`order`) first, ascending; then photos before videos; then
+  // filename Z→A (date-prefixed = newest first)
   return items.sort((a, b) => {
     const ao = a.order ?? Infinity;
     const bo = b.order ?? Infinity;
     if (ao !== bo) return ao - bo;
+    if (a.kind !== b.kind) return a.kind === 'image' ? -1 : 1;
     return b.file.localeCompare(a.file, undefined, { numeric: true });
   });
 }

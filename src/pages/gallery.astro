@@ -51,7 +51,7 @@ const posterSrc = lightboxData.map((d) => ('poster' in d ? d.poster : ''));
 // JSON in a <script> tag — escape "<" so a caption can never close the tag
 const dataJson = JSON.stringify(lightboxData).replace(/</g, '\\u003c');
 
-const tileClass = `group relative block aspect-square w-full overflow-hidden rounded-[var(--radius-card)] bg-[#3a1d12] shadow-2xl ring-1 ring-gold/25 transition hover:ring-gold/60 focus-visible:ring-gold ${focusRing}`;
+const tileClass = `group relative block aspect-[4/5] w-full overflow-hidden rounded-[var(--radius-card)] bg-[#3a1d12] shadow-2xl ring-1 ring-gold/25 transition hover:ring-gold/60 focus-visible:ring-gold ${focusRing}`;
 ---
 
 <!doctype html>
@@ -127,14 +127,12 @@ const tileClass = `group relative block aspect-square w-full overflow-hidden rou
                       tabindex="-1"
                       data-preview
                     />
-                    {/* play badge */}
+                    {/* play mark — small, corner, quiet */}
                     <span
-                      class="pointer-events-none absolute inset-0 flex items-center justify-center"
+                      class="pointer-events-none absolute right-2.5 top-2.5 text-cream drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] transition group-hover:text-gold"
                       aria-hidden="true"
                     >
-                      <span class="flex h-12 w-12 items-center justify-center rounded-full bg-[#241009]/70 text-cream ring-1 ring-gold/50 backdrop-blur-sm transition group-hover:bg-gold group-hover:text-cocoa">
-                        <svg class="ml-0.5 h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 001.5.86l10.5-6.5a1 1 0 000-1.72L9.5 4.64A1 1 0 008 5.5z" /></svg>
-                      </span>
+                      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 001.5.86l10.5-6.5a1 1 0 000-1.72L9.5 4.64A1 1 0 008 5.5z" /></svg>
                     </span>
                   </button>
                 )}

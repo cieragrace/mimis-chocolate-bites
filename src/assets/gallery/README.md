@@ -9,7 +9,7 @@ Everything in this folder shows up on /gallery automatically (no code edits).
   (e.g. `cake-reveal.mp4` + `cake-reveal.poster.jpg`). It is used as the video's
   still frame and does NOT appear as its own tile.
 
-Order: newest first if files are named with a date prefix, e.g.
+Order: photos first, then videos; within each, newest first if files are named with a date prefix, e.g.
 `2026-11-02-cake-pops.jpg` (sorted by filename, Z→A / newest→oldest).
 
 Alt text is made from the filename ("2026-11-02-cake-pops.jpg" →
