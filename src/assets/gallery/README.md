@@ -9,8 +9,21 @@ Everything in this folder shows up on /gallery automatically (no code edits).
   (e.g. `cake-reveal.mp4` + `cake-reveal.poster.jpg`). It is used as the video's
   still frame and does NOT appear as its own tile.
 
-Order: photos first, then videos; within each, newest first if files are named with a date prefix, e.g.
-`2026-11-02-cake-pops.jpg` (sorted by filename, Z→A / newest→oldest).
+How the page lays them out:
+
+- **Photos** → a grid at the top ("Recent treats"): uniform 4:5 tiles, 2 across on
+  phones, 3 on tablets, 4 on desktop. The first 12 show; a "See all N photos"
+  button reveals the rest. Crop photos to 4:5 before dropping them in (tiles use
+  object-cover, so other shapes get trimmed). Tapping a photo opens the viewer;
+  its arrows move through photos only.
+- **Videos** → the auto-rotating carousel below ("Watch it come together"),
+  videos only. Tapping the centre video opens the viewer with sound; its arrows
+  move through videos only.
+- A section with nothing in it simply doesn't show.
+
+Order (within each section): entries with an `order` first, then newest first if
+files are named with a date prefix, e.g. `2026-11-02-cake-pops.jpg` (sorted by
+filename, Z→A / newest→oldest).
 
 Alt text is made from the filename ("2026-11-02-cake-pops.jpg" →
 "Cake pops — Mimi's Chocolate Bites"). For better alt text, a caption, a

@@ -10,19 +10,34 @@
  *    TEMPORARY (copied from public/img/treats/) — delete them when the real
  *    media lands.
  *
- * Carousel (direction A): one CSS scroll-snap strip — native swipe on
- * phones, the centre slide large with neighbours peeking, prev/next arrows
- * on desktop, a thin progress bar + "3 / 11". Photos and videos share one
- * strip in one 4:5 frame (they are all treats; mixing keeps the newest work
- * together). The centre slide's video plays muted + looped while the strip
- * is on screen (never under prefers-reduced-motion); the rest sit paused on
- * their poster, and offscreen videos/posters are only loaded when a slide
- * is near. Tapping a side slide brings it to the centre; tapping the centre
- * slide opens the lightbox: a native modal <dialog> (background inert, Esc
+ * Two sections, photos first:
+ *
+ * 1. PHOTO GRID — every photo as a uniform 4:5 tile (2 cols phone, 3 at
+ *    ≥640px, 4 at ≥1024px). The first PHOTOS_SHOWN show; a "See all N
+ *    photos" button reveals the rest. Progressive enhancement: without JS
+ *    every photo is visible — the extras are only collapsed once the script
+ *    runs. Tapping a tile opens the lightbox; prev/next cycle photos only.
+ *
+ * 2. VIDEO CAROUSEL — videos only, one CSS scroll-snap strip (direction A):
+ *    native swipe on phones, the centre slide large with neighbours peeking,
+ *    prev/next arrows on desktop, a thin progress bar + "3 / 11". Auto-
+ *    advances every 3s in a seamless clone loop; holds while hovered,
+ *    keyboard-focused, viewer open, tab hidden, strip off screen, or paused
+ *    via the pause button; never rotates under prefers-reduced-motion. The
+ *    centre slide's video plays muted + looped while the strip is on screen
+ *    (not under reduced motion); offscreen posters/videos load only when a
+ *    slide is near. Tapping a side slide centres it; tapping the centre slide
+ *    opens the lightbox (prev/next cycle videos only); on close the strip
+ *    follows to the video the visitor ended on. Keyboard: roving tabindex —
+ *    one stop for the strip, ←/→/Home/End move it, Enter opens.
+ *
+ * One shared lightbox: a native modal <dialog> (background inert, Esc
  * closes), Tab kept inside, ←/→ and swipe for prev/next, full uncropped
- * frame with sound + controls. On close the strip follows to the item the
- * visitor ended on. Keyboard: roving tabindex — one stop for the strip,
- * ←/→/Home/End move it, Enter opens.
+ * frame (videos with sound + controls), focus returns to the tile/slide.
+ * Its item list is scoped to whichever section opened it.
+ *
+ * A section with no items doesn't render; the empty state shows only when
+ * there are no photos AND no videos.
  */
 import '../styles/global.css';
 import { Image, getImage } from 'astro:assets';
@@ -38,14 +53,25 @@ const focusRing =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#241009]';
 
 const items = getGalleryItems();
+const photos = items.filter((it) => it.kind === 'image');
+const videos = items.filter((it) => it.kind === 'video');
 
-// what the lightbox needs, per item (full-size WebP for photos)
-const lightboxData = await Promise.all(
-  items.map(async (it) => {
-    if (it.kind === 'image') {
-      const full = await getImage({ src: it.image, width: Math.min(1600, it.image.width), format: 'webp' });
-      return { kind: 'image', src: full.src, alt: it.alt, caption: it.caption };
-    }
+// photos visible before "See all" (the rest are collapsed once JS runs)
+const PHOTOS_SHOWN = 12;
+// first grid tiles load straight away (above the fold on every screen)
+const PHOTOS_EAGER = 4;
+
+// what the lightbox needs, per section (full-size WebP for photos)
+const photoData = await Promise.all(
+  photos.map(async (it) => {
+    if (it.kind !== 'image') throw new Error('unreachable');
+    const full = await getImage({ src: it.image, width: Math.min(1600, it.image.width), format: 'webp' });
+    return { kind: 'image', src: full.src, alt: it.alt, caption: it.caption };
+  }),
+);
+const videoData = await Promise.all(
+  videos.map(async (it) => {
+    if (it.kind !== 'video') throw new Error('unreachable');
     const poster = it.poster
       ? (await getImage({ src: it.poster, width: Math.min(1200, it.poster.width), format: 'webp' })).src
       : '';
@@ -54,7 +80,7 @@ const lightboxData = await Promise.all(
 );
 // smaller posters for the strip (the lightbox gets the 1200px ones)
 const slidePoster = await Promise.all(
-  items.map(async (it) =>
+  videos.map(async (it) =>
     it.kind === 'video' && it.poster
       ? (await getImage({ src: it.poster, width: Math.min(720, it.poster.width), format: 'webp' })).src
       : '',
@@ -64,8 +90,10 @@ const slidePoster = await Promise.all(
 const EAGER = 3;
 
 // JSON in a <script> tag — escape "<" so a caption can never close the tag
-const dataJson = JSON.stringify(lightboxData).replace(/</g, '\\u003c');
+const dataJson = JSON.stringify({ photos: photoData, videos: videoData }).replace(/</g, '\\u003c');
 
+const tileBtn = `group relative block aspect-[4/5] w-full overflow-hidden rounded-[var(--radius-card)] bg-[#3a1d12] shadow-xl ring-1 ring-gold/25 transition hover:ring-gold/60 focus-visible:ring-gold ${focusRing}`;
+const subheading = 'text-center font-serif text-xl leading-tight text-cream sm:text-2xl';
 const slideBtn = `group relative block aspect-[4/5] w-full overflow-hidden rounded-[var(--radius-card)] bg-[#3a1d12] shadow-2xl ring-1 ring-gold/25 transition focus-visible:ring-gold ${focusRing}`;
 const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-[#241009]/80 text-cream ring-1 ring-gold/40 transition hover:text-gold disabled:opacity-30 disabled:hover:text-cream focus-visible:ring-gold sm:inline-flex ${focusRing}`;
 ---
@@ -113,31 +141,56 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
           </p>
         </header>
 
-        {items.length > 0 ? (
-          <section class="mt-8" aria-roledescription="carousel" aria-label="Recent treats" data-carousel>
-            <div class="relative -mx-4 sm:mx-0">
+        {photos.length > 0 && (
+          <section class="mt-8" aria-labelledby="photos-heading" data-photos>
+            <h2 id="photos-heading" class={subheading}>Recent treats</h2>
+            <ul class="mt-4 grid list-none grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4" data-photo-grid>
+              {photos.map((it, i) => it.kind === 'image' && (
+                <li data-extra={i >= PHOTOS_SHOWN ? '' : undefined}>
+                  <button type="button" class={tileBtn} data-photo={i} aria-label={`View larger: ${it.alt}`}>
+                    <Image
+                      src={it.image}
+                      alt={it.alt}
+                      widths={[240, 360, 480, 640, 800]}
+                      sizes="(min-width: 1024px) 270px, (min-width: 640px) 31vw, 47vw"
+                      format="webp"
+                      loading={i < PHOTOS_EAGER ? 'eager' : 'lazy'}
+                      class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                    />
+                  </button>
+                </li>
+              ))}
+            </ul>
+            {photos.length > PHOTOS_SHOWN && (
+              <div class="mt-6 text-center">
+                {/* hidden until JS collapses the extras — no-JS shows every photo */}
+                <button
+                  type="button"
+                  hidden
+                  data-see-all
+                  class={`inline-flex items-center gap-2 rounded-full border-2 border-cream/25 px-6 py-3.5 font-semibold text-cream transition hover:border-blush hover:text-blush focus-visible:ring-blush ${focusRing}`}
+                >
+                  See all {photos.length} photos
+                </button>
+              </div>
+            )}
+          </section>
+        )}
+
+        {videos.length > 0 && (
+          <section class="mt-14" aria-roledescription="carousel" aria-labelledby="videos-heading" data-carousel>
+            <h2 id="videos-heading" class={subheading}>Watch it come together</h2>
+            <div class="relative -mx-4 mt-3 sm:mx-0">
               <ul class="carousel-track flex list-none snap-x snap-mandatory gap-3 overflow-x-auto py-3 sm:gap-5" data-track>
-                {items.map((it, i) => (
+                {videos.map((it, i) => (
                   <li
                     class="slide shrink-0 snap-center"
                     aria-roledescription="slide"
-                    aria-label={`${i + 1} of ${items.length}`}
+                    aria-label={`${i + 1} of ${videos.length}`}
                     data-slide={i}
                     data-active={i === 0 ? '' : undefined}
                   >
-                    {it.kind === 'image' ? (
-                      <button type="button" class={slideBtn} data-open={i} tabindex={i === 0 ? 0 : -1} aria-label={`View larger: ${it.alt}`}>
-                        <Image
-                          src={it.image}
-                          alt={it.alt}
-                          widths={[360, 540, 720]}
-                          sizes="(min-width: 1024px) 360px, (min-width: 640px) 300px, 72vw"
-                          format="webp"
-                          loading={i < EAGER ? 'eager' : 'lazy'}
-                          class="h-full w-full object-cover"
-                        />
-                      </button>
-                    ) : (
+                    {it.kind === 'video' && (
                       <button type="button" class={slideBtn} data-open={i} tabindex={i === 0 ? 0 : -1} aria-label={`Play video with sound: ${it.alt}`}>
                         <video
                           class="h-full w-full object-cover"
@@ -164,12 +217,12 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
                 ))}
               </ul>
 
-              {items.length > 1 && (
+              {videos.length > 1 && (
                 <>
-                  <button type="button" class={`${arrowClass} left-2 lg:left-6`} data-prev aria-label="Previous treat">
+                  <button type="button" class={`${arrowClass} left-2 lg:left-6`} data-prev aria-label="Previous video">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
                   </button>
-                  <button type="button" class={`${arrowClass} right-2 lg:right-6`} data-next aria-label="Next treat">
+                  <button type="button" class={`${arrowClass} right-2 lg:right-6`} data-next aria-label="Next video">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6" /></svg>
                   </button>
                 </>
@@ -178,13 +231,13 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
 
             {/* caption + position: quiet, under the centre slide */}
             <div class="mx-auto mt-3 max-w-sm text-center">
-              <p class="min-h-[2.5rem] text-sm leading-snug text-cream/75" data-caption aria-live="polite">{items[0].caption}</p>
-              {items.length > 1 && (
+              <p class="min-h-[2.5rem] text-sm leading-snug text-cream/75" data-caption aria-live="polite">{videos[0].caption}</p>
+              {videos.length > 1 && (
                 <div class="mx-auto mt-2 flex max-w-[14rem] items-center gap-3">
                   <span class="h-0.5 flex-1 overflow-hidden rounded-full bg-gold/20" aria-hidden="true">
-                    <span class="progress-fill block h-full rounded-full bg-gold" data-progress style={`width:${100 / items.length}%`} />
+                    <span class="progress-fill block h-full rounded-full bg-gold" data-progress style={`width:${100 / videos.length}%`} />
                   </span>
-                  <span class="text-xs font-semibold tabular-nums tracking-[0.15em] text-gold/80" aria-hidden="true" data-count>1 / {items.length}</span>
+                  <span class="text-xs font-semibold tabular-nums tracking-[0.15em] text-gold/80" aria-hidden="true" data-count>1 / {videos.length}</span>
                   {/* WCAG 2.2.2: the slideshow moves on its own, so it can be paused */}
                   <button
                     type="button"
@@ -199,7 +252,9 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
               )}
             </div>
           </section>
-        ) : (
+        )}
+
+        {photos.length === 0 && videos.length === 0 && (
           /* empty state — the page builds before any media exists */
           <section class="mx-auto mt-8 max-w-md rounded-[var(--radius-card)] px-6 py-10 text-center shadow-2xl ring-1 ring-gold/25">
             <CakePop class="mx-auto h-14 w-auto drop-shadow-sm" />
@@ -248,7 +303,7 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
       </footer>
     </div>
 
-    {items.length > 0 && (
+    {(photos.length > 0 || videos.length > 0) && (
       <>
         <script type="application/json" id="gallery-data" set:html={dataJson} />
 
@@ -300,12 +355,13 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
 
     <script>
       type Item = { kind: 'image' | 'video'; src: string; alt: string; caption: string; poster?: string };
+      type Scope = 'photos' | 'videos';
 
       const dataEl = document.getElementById('gallery-data');
       const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
 
       if (dataEl && dialog) {
-        const items: Item[] = JSON.parse(dataEl.textContent || '[]');
+        const data: Record<Scope, Item[]> = JSON.parse(dataEl.textContent || '{"photos":[],"videos":[]}');
         const media = dialog.querySelector<HTMLElement>('[data-lb-media]')!;
         const caption = dialog.querySelector<HTMLElement>('[data-lb-caption]')!;
         const count = dialog.querySelector<HTMLElement>('[data-lb-count]')!;
@@ -314,11 +370,11 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
         const closeBtn = dialog.querySelector<HTMLButtonElement>('[data-lb-close]')!;
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+        // the lightbox's item list is scoped to the section that opened it
+        let scope: Scope = 'photos';
+        let list: Item[] = [];
         let index = 0;
-
-        const single = items.length < 2;
-        prevBtn.hidden = single;
-        nextBtn.hidden = single;
+        const single = () => list.length < 2;
 
         function stopVideo() {
           media.querySelector('video')?.pause();
@@ -326,7 +382,7 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
 
         function render() {
           stopVideo();
-          const it = items[index];
+          const it = list[index];
           const cls = 'max-h-[calc(100dvh-9rem)] max-w-full rounded-[var(--radius-card)] shadow-2xl ring-1 ring-gold/25';
           let el: HTMLImageElement | HTMLVideoElement;
           if (it.kind === 'image') {
@@ -355,265 +411,309 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
           media.replaceChildren(el);
           caption.textContent = it.caption;
           caption.hidden = !it.caption;
-          count.textContent = `${index + 1} / ${items.length}`;
+          count.textContent = `${index + 1} / ${list.length}`;
         }
 
-        function open(i: number, _from: HTMLElement) {
+        function open(s: Scope, i: number) {
+          scope = s;
+          list = data[s];
           index = i;
+          prevBtn.hidden = single();
+          nextBtn.hidden = single();
           render();
           dialog!.showModal();
           closeBtn.focus();
-          syncPlayback();
-          nudge();
+          carousel?.sync();
+          // only a video open counts as the visitor touching the carousel
+          if (s === 'videos') carousel?.nudge();
         }
 
         function go(step: number) {
-          if (single) return;
-          index = (index + step + items.length) % items.length;
+          if (single()) return;
+          index = (index + step + list.length) % list.length;
           render();
         }
 
-        // ── carousel ──────────────────────────────────────────────
-        // Infinite loop: JS adds LOOP clones of the last items before the
-        // first slide and of the first items after the last one (inert,
-        // aria-hidden). Whenever scrolling settles on a clone, the strip
-        // jumps instantly to the real twin — same pixels, so the jump is
-        // invisible, and the loop never scrolls "back" across every slide.
-        // Snap-stop keeps a hard flick to one slide, so a fling can't run
-        // past the clones.
-        const section = document.querySelector<HTMLElement>('[data-carousel]')!;
-        const track = section.querySelector<HTMLElement>('[data-track]')!;
-        const realSlides = Array.from(track.querySelectorAll<HTMLElement>('[data-slide]'));
-        const btns = realSlides.map((s) => s.querySelector<HTMLButtonElement>('[data-open]')!);
-        const n = realSlides.length;
-        const LOOP = n >= 3 ? Math.min(2, n) : 0;
+        // ── photo grid ────────────────────────────────────────────
+        // Progressive enhancement: the server renders every tile; JS
+        // collapses the ones past the first PHOTOS_SHOWN and reveals the
+        // "See all" button. No JS → every photo is simply visible.
+        const grid = document.querySelector<HTMLElement>('[data-photo-grid]');
+        const tiles = grid ? Array.from(grid.querySelectorAll<HTMLButtonElement>('[data-photo]')) : [];
+        const seeAll = document.querySelector<HTMLButtonElement>('[data-see-all]');
 
-        if (LOOP) {
-          const mk = (s: HTMLElement) => {
-            const c = s.cloneNode(true) as HTMLElement;
-            c.removeAttribute('data-active');
-            c.setAttribute('aria-hidden', 'true');
-            c.inert = true;
-            c.dataset.clone = '';
-            c.querySelector('[data-open]')?.setAttribute('tabindex', '-1');
-            return c;
-          };
-          realSlides.slice(-LOOP).forEach((s) => track.insertBefore(mk(s), realSlides[0]));
-          realSlides.slice(0, LOOP).forEach((s) => track.appendChild(mk(s)));
+        function expandGrid() {
+          grid?.removeAttribute('data-collapsed');
+          if (seeAll) seeAll.hidden = true;
         }
-        // every slide in DOM order (clones included); pos = DOM index
-        const all = Array.from(track.querySelectorAll<HTMLElement>('[data-slide]'));
-        const reels = all.map((s) => s.querySelector<HTMLVideoElement>('video[data-reel]'));
-        const realOf = (pos: number) => Number(all[pos].dataset.slide);
-        const posOf = (real: number) => real + LOOP;
-
-        const cPrev = section.querySelector<HTMLButtonElement>('[data-prev]');
-        const cNext = section.querySelector<HTMLButtonElement>('[data-next]');
-        const cCaption = section.querySelector<HTMLElement>('[data-caption]')!;
-        const cCount = section.querySelector<HTMLElement>('[data-count]');
-        const cFill = section.querySelector<HTMLElement>('[data-progress]');
-        const cToggle = section.querySelector<HTMLButtonElement>('[data-autoplay-toggle]');
-        let pos = posOf(0);
-        let active = 0;
-        let stripVisible = true;
-
-        // wake a slide's video: poster + metadata (called when it nears view)
-        function wake(p: number) {
-          const v = reels[p];
-          if (!v || v.dataset.awake) return;
-          v.dataset.awake = '1';
-          if (v.dataset.poster) v.poster = v.dataset.poster;
-          v.preload = 'metadata';
+        if (grid && seeAll) {
+          grid.setAttribute('data-collapsed', '');
+          seeAll.hidden = false;
+          seeAll.addEventListener('click', () => {
+            const firstExtra = grid.querySelector<HTMLButtonElement>('[data-extra] [data-photo]');
+            expandGrid();
+            // keep keyboard users in place: move on to the first new photo
+            firstExtra?.focus({ preventScroll: true });
+          });
         }
+        tiles.forEach((btn, i) => btn.addEventListener('click', () => open('photos', i)));
 
-        function syncPlayback() {
-          reels.forEach((v, p) => {
-            if (!v) return;
-            const play = p === pos && stripVisible && !dialog!.open && !reduceMotion.matches;
-            if (play) {
-              wake(p);
-              v.play().catch(() => {});
-            } else if (!v.paused) {
-              v.pause();
+        // ── video carousel ────────────────────────────────────────
+        const carouselEl = document.querySelector<HTMLElement>('[data-carousel]');
+        const carousel = carouselEl ? initCarousel(carouselEl, data.videos) : null;
+
+        function initCarousel(section: HTMLElement, items: Item[]) {
+          // Infinite loop: JS adds LOOP clones of the last items before the
+          // first slide and of the first items after the last one (inert,
+          // aria-hidden). Whenever scrolling settles on a clone, the strip
+          // jumps instantly to the real twin — same pixels, so the jump is
+          // invisible, and the loop never scrolls "back" across every slide.
+          // Snap-stop keeps a hard flick to one slide, so a fling can't run
+          // past the clones.
+          const track = section.querySelector<HTMLElement>('[data-track]')!;
+          const realSlides = Array.from(track.querySelectorAll<HTMLElement>('[data-slide]'));
+          const btns = realSlides.map((s) => s.querySelector<HTMLButtonElement>('[data-open]')!);
+          const n = realSlides.length;
+          const LOOP = n >= 3 ? Math.min(2, n) : 0;
+
+          if (LOOP) {
+            const mk = (s: HTMLElement) => {
+              const c = s.cloneNode(true) as HTMLElement;
+              c.removeAttribute('data-active');
+              c.setAttribute('aria-hidden', 'true');
+              c.inert = true;
+              c.dataset.clone = '';
+              c.querySelector('[data-open]')?.setAttribute('tabindex', '-1');
+              return c;
+            };
+            realSlides.slice(-LOOP).forEach((s) => track.insertBefore(mk(s), realSlides[0]));
+            realSlides.slice(0, LOOP).forEach((s) => track.appendChild(mk(s)));
+          }
+          // every slide in DOM order (clones included); pos = DOM index
+          const all = Array.from(track.querySelectorAll<HTMLElement>('[data-slide]'));
+          const reels = all.map((s) => s.querySelector<HTMLVideoElement>('video[data-reel]'));
+          const realOf = (pos: number) => Number(all[pos].dataset.slide);
+          const posOf = (real: number) => real + LOOP;
+
+          const cPrev = section.querySelector<HTMLButtonElement>('[data-prev]');
+          const cNext = section.querySelector<HTMLButtonElement>('[data-next]');
+          const cCaption = section.querySelector<HTMLElement>('[data-caption]')!;
+          const cCount = section.querySelector<HTMLElement>('[data-count]');
+          const cFill = section.querySelector<HTMLElement>('[data-progress]');
+          const cToggle = section.querySelector<HTMLButtonElement>('[data-autoplay-toggle]');
+          let pos = posOf(0);
+          let active = 0;
+          let stripVisible = true;
+
+          // wake a slide's video: poster + metadata (called when it nears view)
+          function wake(p: number) {
+            const v = reels[p];
+            if (!v || v.dataset.awake) return;
+            v.dataset.awake = '1';
+            if (v.dataset.poster) v.poster = v.dataset.poster;
+            v.preload = 'metadata';
+          }
+
+          function syncPlayback() {
+            reels.forEach((v, p) => {
+              if (!v) return;
+              const play = p === pos && stripVisible && !dialog!.open && !reduceMotion.matches;
+              if (play) {
+                wake(p);
+                v.play().catch(() => {});
+              } else if (!v.paused) {
+                v.pause();
+              }
+            });
+            updateRotation();
+          }
+
+          function setPos(p: number) {
+            if (p === pos && all[p].hasAttribute('data-active')) return;
+            const hadFocus = section.contains(document.activeElement) && track.contains(document.activeElement);
+            all[pos].removeAttribute('data-active');
+            btns[active].tabIndex = -1;
+            pos = p;
+            active = realOf(p);
+            all[p].setAttribute('data-active', '');
+            btns[active].tabIndex = 0;
+            if (hadFocus && !all[p].hasAttribute('data-clone')) btns[active].focus({ preventScroll: true });
+            cCaption.textContent = items[active].caption;
+            if (cCount) cCount.textContent = `${active + 1} / ${n}`;
+            if (cFill) cFill.style.width = `${((active + 1) / n) * 100}%`;
+            if (!LOOP) {
+              if (cPrev) cPrev.disabled = active === 0;
+              if (cNext) cNext.disabled = active === n - 1;
             }
-          });
-          updateRotation();
-        }
-
-        function setPos(p: number) {
-          if (p === pos && all[p].hasAttribute('data-active')) return;
-          const hadFocus = section.contains(document.activeElement) && track.contains(document.activeElement);
-          all[pos].removeAttribute('data-active');
-          btns[active].tabIndex = -1;
-          pos = p;
-          active = realOf(p);
-          all[p].setAttribute('data-active', '');
-          btns[active].tabIndex = 0;
-          if (hadFocus && !all[p].hasAttribute('data-clone')) btns[active].focus({ preventScroll: true });
-          cCaption.textContent = items[active].caption;
-          if (cCount) cCount.textContent = `${active + 1} / ${n}`;
-          if (cFill) cFill.style.width = `${((active + 1) / n) * 100}%`;
-          if (!LOOP) {
-            if (cPrev) cPrev.disabled = active === 0;
-            if (cNext) cNext.disabled = active === n - 1;
+            syncPlayback();
           }
-          syncPlayback();
-        }
 
-        const leftFor = (p: number) => all[p].offsetLeft - (track.clientWidth - all[p].offsetWidth) / 2;
+          const leftFor = (p: number) => all[p].offsetLeft - (track.clientWidth - all[p].offsetWidth) / 2;
 
-        function scrollToPos(p: number, smooth = !reduceMotion.matches) {
-          p = Math.max(0, Math.min(all.length - 1, p));
-          track.scrollTo({ left: leftFor(p), behavior: smooth ? 'smooth' : 'auto' });
-          setPos(p);
-        }
-        const scrollToSlide = (real: number, smooth?: boolean) => scrollToPos(posOf(real), smooth);
-        const step = (d: number) =>
-          LOOP ? scrollToPos(pos + d) : scrollToPos(Math.max(LOOP, Math.min(posOf(n - 1), pos + d)));
-
-        // which slide sits nearest the centre of the strip
-        function nearest() {
-          const mid = track.scrollLeft + track.clientWidth / 2;
-          let best = 0;
-          let d = Infinity;
-          all.forEach((s, i) => {
-            const dd = Math.abs(s.offsetLeft + s.offsetWidth / 2 - mid);
-            if (dd < d) { d = dd; best = i; }
-          });
-          return best;
-        }
-
-        // settled on a clone → hop to its real twin (instant, identical frame)
-        function settle() {
-          const p = nearest();
-          if (all[p].hasAttribute('data-clone')) {
-            const twin = posOf(realOf(p));
-            const prev = track.style.scrollSnapType;
-            track.style.scrollSnapType = 'none';
-            track.scrollLeft += leftFor(twin) - leftFor(p);
-            track.style.scrollSnapType = prev;
-            setPos(twin);
+          function scrollToPos(p: number, smooth = !reduceMotion.matches) {
+            p = Math.max(0, Math.min(all.length - 1, p));
+            track.scrollTo({ left: leftFor(p), behavior: smooth ? 'smooth' : 'auto' });
+            setPos(p);
           }
-        }
-        let raf = 0;
-        let settleT = 0;
-        track.addEventListener('scroll', () => {
-          cancelAnimationFrame(raf);
-          raf = requestAnimationFrame(() => setPos(nearest()));
-          // scrollend fallback (older Safari)
-          clearTimeout(settleT);
-          settleT = window.setTimeout(settle, 140);
-        }, { passive: true });
-        track.addEventListener('scrollend', () => { clearTimeout(settleT); settle(); });
+          const scrollToSlide = (real: number, smooth?: boolean) => scrollToPos(posOf(real), smooth);
+          const step = (d: number) =>
+            LOOP ? scrollToPos(pos + d) : scrollToPos(Math.max(LOOP, Math.min(posOf(n - 1), pos + d)));
 
-        // ── auto-rotate ── every 3s; resets on any user nudge, resumes after
-        // 6s idle; held while hovered, keyboard-focused, viewer open, tab
-        // hidden, strip off screen, or the visitor pressed pause.
-        const TICK = 3000;
-        const IDLE = 6000;
-        let timer = 0;
-        let hovered = false;
-        let kbFocus = false;
-        let userPaused = false;
-        let nextDelay = TICK;
+          // which slide sits nearest the centre of the strip
+          function nearest() {
+            const mid = track.scrollLeft + track.clientWidth / 2;
+            let best = 0;
+            let d = Infinity;
+            all.forEach((s, i) => {
+              const dd = Math.abs(s.offsetLeft + s.offsetWidth / 2 - mid);
+              if (dd < d) { d = dd; best = i; }
+            });
+            return best;
+          }
 
-        const canRotate = () =>
-          n > 1 && !reduceMotion.matches && !userPaused && !hovered && !kbFocus &&
-          stripVisible && !document.hidden && !dialog!.open;
+          // settled on a clone → hop to its real twin (instant, identical frame)
+          function settle() {
+            const p = nearest();
+            if (all[p].hasAttribute('data-clone')) {
+              const twin = posOf(realOf(p));
+              const prev = track.style.scrollSnapType;
+              track.style.scrollSnapType = 'none';
+              track.scrollLeft += leftFor(twin) - leftFor(p);
+              track.style.scrollSnapType = prev;
+              setPos(twin);
+            }
+          }
+          let raf = 0;
+          let settleT = 0;
+          track.addEventListener('scroll', () => {
+            cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(() => setPos(nearest()));
+            // scrollend fallback (older Safari)
+            clearTimeout(settleT);
+            settleT = window.setTimeout(settle, 140);
+          }, { passive: true });
+          track.addEventListener('scrollend', () => { clearTimeout(settleT); settle(); });
 
-        function updateRotation() {
-          const on = canRotate();
-          if (on && !timer) timer = window.setTimeout(tick, nextDelay);
-          if (!on && timer) { clearTimeout(timer); timer = 0; nextDelay = TICK; }
-          // announce captions only when the strip isn't moving by itself
-          cCaption.setAttribute('aria-live', on ? 'off' : 'polite');
-          if (cToggle) cToggle.hidden = reduceMotion.matches || n < 2;
-        }
-        function tick() {
-          timer = 0;
-          nextDelay = TICK;
-          if (!canRotate()) return;
-          if (LOOP) step(1);
-          else scrollToSlide(active === n - 1 ? 0 : active + 1);
-          updateRotation();
-        }
-        // a visitor touched it: restart the clock with the longer idle wait
-        function nudge() {
-          if (timer) clearTimeout(timer);
-          timer = 0;
-          nextDelay = IDLE;
-          updateRotation();
-        }
+          // ── auto-rotate ── every 3s; resets on any user nudge, resumes after
+          // 6s idle; held while hovered, keyboard-focused, viewer open, tab
+          // hidden, strip off screen, or the visitor pressed pause.
+          const TICK = 3000;
+          const IDLE = 6000;
+          let timer = 0;
+          let hovered = false;
+          let kbFocus = false;
+          let userPaused = false;
+          let nextDelay = TICK;
 
-        const strip = track.parentElement!;
-        strip.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') { hovered = true; updateRotation(); } });
-        strip.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') { hovered = false; nudge(); } });
-        track.addEventListener('pointerdown', nudge, { passive: true });
-        track.addEventListener('touchstart', nudge, { passive: true });
-        track.addEventListener('wheel', nudge, { passive: true });
-        section.addEventListener('focusin', (e) => {
-          kbFocus = (e.target as HTMLElement).matches(':focus-visible');
-          updateRotation();
-        });
-        section.addEventListener('focusout', (e) => {
-          if (!section.contains(e.relatedTarget as Node)) { kbFocus = false; nudge(); }
-        });
+          const canRotate = () =>
+            n > 1 && !reduceMotion.matches && !userPaused && !hovered && !kbFocus &&
+            stripVisible && !document.hidden && !dialog!.open;
 
-        cToggle?.addEventListener('click', () => {
-          userPaused = !userPaused;
-          cToggle.setAttribute('aria-label', userPaused ? 'Play slideshow' : 'Pause slideshow');
-          cToggle.toggleAttribute('data-paused', userPaused);
-          nudge();
-        });
+          function updateRotation() {
+            const on = canRotate();
+            if (on && !timer) timer = window.setTimeout(tick, nextDelay);
+            if (!on && timer) { clearTimeout(timer); timer = 0; nextDelay = TICK; }
+            // announce captions only when the strip isn't moving by itself
+            cCaption.setAttribute('aria-live', on ? 'off' : 'polite');
+            if (cToggle) cToggle.hidden = reduceMotion.matches || n < 2;
+          }
+          function tick() {
+            timer = 0;
+            nextDelay = TICK;
+            if (!canRotate()) return;
+            if (LOOP) step(1);
+            else scrollToSlide(active === n - 1 ? 0 : active + 1);
+            updateRotation();
+          }
+          // a visitor touched it: restart the clock with the longer idle wait
+          function nudge() {
+            if (timer) clearTimeout(timer);
+            timer = 0;
+            nextDelay = IDLE;
+            updateRotation();
+          }
 
-        btns.forEach((btn, i) => {
-          btn.addEventListener('click', () => {
+          const strip = track.parentElement!;
+          strip.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') { hovered = true; updateRotation(); } });
+          strip.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') { hovered = false; nudge(); } });
+          track.addEventListener('pointerdown', nudge, { passive: true });
+          track.addEventListener('touchstart', nudge, { passive: true });
+          track.addEventListener('wheel', nudge, { passive: true });
+          section.addEventListener('focusin', (e) => {
+            kbFocus = (e.target as HTMLElement).matches(':focus-visible');
+            updateRotation();
+          });
+          section.addEventListener('focusout', (e) => {
+            if (!section.contains(e.relatedTarget as Node)) { kbFocus = false; nudge(); }
+          });
+
+          cToggle?.addEventListener('click', () => {
+            userPaused = !userPaused;
+            cToggle.setAttribute('aria-label', userPaused ? 'Play slideshow' : 'Pause slideshow');
+            cToggle.toggleAttribute('data-paused', userPaused);
             nudge();
-            if (i === active) open(i, btn);
-            else scrollToSlide(i);
           });
-        });
-        cPrev?.addEventListener('click', () => { nudge(); step(-1); });
-        cNext?.addEventListener('click', () => { nudge(); step(1); });
 
-        track.addEventListener('keydown', (e) => {
-          const k = e.key;
-          let to: number | null = null;
-          if (k === 'ArrowRight') to = LOOP ? -2 : Math.min(n - 1, active + 1);
-          else if (k === 'ArrowLeft') to = LOOP ? -3 : Math.max(0, active - 1);
-          else if (k === 'Home') to = 0;
-          else if (k === 'End') to = n - 1;
-          if (to === null) return;
-          e.preventDefault();
-          nudge();
-          if (to === -2) step(1);
-          else if (to === -3) step(-1);
-          else scrollToSlide(to);
-          btns[active].focus({ preventScroll: true });
-        });
-
-        // lazy: wake videos within ~1 strip-width of view
-        const near = new IntersectionObserver((entries) => {
-          entries.forEach((en) => {
-            if (en.isIntersecting) wake(all.indexOf(en.target as HTMLElement));
+          btns.forEach((btn, i) => {
+            btn.addEventListener('click', () => {
+              nudge();
+              if (i === active) open('videos', i);
+              else scrollToSlide(i);
+            });
           });
-        }, { root: track, rootMargin: '0px 100% 0px 100%' });
-        all.forEach((s) => near.observe(s));
+          cPrev?.addEventListener('click', () => { nudge(); step(-1); });
+          cNext?.addEventListener('click', () => { nudge(); step(1); });
 
-        // pause playback + rotation when the strip scrolls off the page
-        new IntersectionObserver(([en]) => {
-          stripVisible = en.isIntersecting;
-          syncPlayback();
-        }, { threshold: 0.35 }).observe(track);
+          track.addEventListener('keydown', (e) => {
+            const k = e.key;
+            let to: number | null = null;
+            if (k === 'ArrowRight') to = LOOP ? -2 : Math.min(n - 1, active + 1);
+            else if (k === 'ArrowLeft') to = LOOP ? -3 : Math.max(0, active - 1);
+            else if (k === 'Home') to = 0;
+            else if (k === 'End') to = n - 1;
+            if (to === null) return;
+            e.preventDefault();
+            nudge();
+            if (to === -2) step(1);
+            else if (to === -3) step(-1);
+            else scrollToSlide(to);
+            btns[active].focus({ preventScroll: true });
+          });
 
-        reduceMotion.addEventListener('change', syncPlayback);
-        document.addEventListener('visibilitychange', syncPlayback);
+          // lazy: wake videos within ~1 strip-width of view
+          const near = new IntersectionObserver((entries) => {
+            entries.forEach((en) => {
+              if (en.isIntersecting) wake(all.indexOf(en.target as HTMLElement));
+            });
+          }, { root: track, rootMargin: '0px 100% 0px 100%' });
+          all.forEach((s) => near.observe(s));
 
-        // start on the first real slide, clones peeking on both sides
-        track.scrollLeft = leftFor(pos);
-        all[pos].removeAttribute('data-active');
-        setPos(pos);
-        window.addEventListener('resize', () => { track.scrollLeft = leftFor(pos); }, { passive: true });
+          // pause playback + rotation when the strip scrolls off the page
+          new IntersectionObserver(([en]) => {
+            stripVisible = en.isIntersecting;
+            syncPlayback();
+          }, { threshold: 0.35 }).observe(track);
+
+          reduceMotion.addEventListener('change', syncPlayback);
+          document.addEventListener('visibilitychange', syncPlayback);
+
+          // start on the first real slide, clones peeking on both sides
+          track.scrollLeft = leftFor(pos);
+          all[pos].removeAttribute('data-active');
+          setPos(pos);
+          window.addEventListener('resize', () => { track.scrollLeft = leftFor(pos); }, { passive: true });
+
+          return {
+            sync: syncPlayback,
+            nudge,
+            // the strip follows to wherever the visitor ended up in the viewer
+            follow(i: number) {
+              scrollToSlide(i, false);
+              btns[i].focus({ preventScroll: true });
+              syncPlayback();
+            },
+          };
+        }
 
         prevBtn.addEventListener('click', () => go(-1));
         nextBtn.addEventListener('click', () => go(1));
@@ -656,14 +756,20 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
           if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
         }, { passive: true });
 
-        // Esc (native cancel) or any close: stop playback, return focus
+        // Esc (native cancel) or any close: stop playback, return focus to
+        // the tile/slide the visitor ended on
         dialog.addEventListener('close', () => {
           stopVideo();
           media.replaceChildren();
-          // the strip follows to wherever the visitor ended up in the viewer
-          scrollToSlide(index, false);
-          btns[index].focus({ preventScroll: true });
-          syncPlayback();
+          if (scope === 'videos') {
+            carousel?.follow(index);
+          } else {
+            const tile = tiles[index];
+            // ended on a photo that's still collapsed → show them all
+            if (tile?.closest('[data-extra]') && grid?.hasAttribute('data-collapsed')) expandGrid();
+            tile?.focus();
+            carousel?.sync();
+          }
         });
       }
     </script>
@@ -711,16 +817,15 @@ const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 item
   }
   @media (prefers-reduced-motion: reduce) {
     .carousel-track .slide,
-    .autoplay-toggle .icon-play,
-  .autoplay-toggle[data-paused] .icon-pause {
-    display: none;
-  }
-  .autoplay-toggle[data-paused] .icon-play {
-    display: block;
-  }
-  .progress-fill {
+    .progress-fill,
+    [data-photo-grid] img {
       transition: none;
     }
+  }
+
+  /* ── photo grid ── extras collapse only once JS has run (see script) */
+  [data-photo-grid][data-collapsed] > [data-extra] {
+    display: none;
   }
 
   /* no page scroll behind the open lightbox */
