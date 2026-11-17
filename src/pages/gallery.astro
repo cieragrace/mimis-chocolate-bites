@@ -10,13 +10,19 @@
  *    TEMPORARY (copied from public/img/treats/) — delete them when the real
  *    media lands.
  *
- * Grid: square tiles, 2 cols phone / 3 tablet / 4 desktop, same gold ring +
- * shadow as the /pricing flyers. Videos show their poster (or first frame)
- * with a play badge; on mouse hover they preview muted (skipped under
- * prefers-reduced-motion). Tapping any tile opens the lightbox: a native
- * modal <dialog> (background inert, Esc closes), Tab kept inside, ←/→ and
- * swipe for prev/next, focus returned to the tile on close. Videos play
- * there with controls.
+ * Carousel (direction A): one CSS scroll-snap strip — native swipe on
+ * phones, the centre slide large with neighbours peeking, prev/next arrows
+ * on desktop, a thin progress bar + "3 / 11". Photos and videos share one
+ * strip in one 4:5 frame (they are all treats; mixing keeps the newest work
+ * together). The centre slide's video plays muted + looped while the strip
+ * is on screen (never under prefers-reduced-motion); the rest sit paused on
+ * their poster, and offscreen videos/posters are only loaded when a slide
+ * is near. Tapping a side slide brings it to the centre; tapping the centre
+ * slide opens the lightbox: a native modal <dialog> (background inert, Esc
+ * closes), Tab kept inside, ←/→ and swipe for prev/next, full uncropped
+ * frame with sound + controls. On close the strip follows to the item the
+ * visitor ended on. Keyboard: roving tabindex — one stop for the strip,
+ * ←/→/Home/End move it, Enter opens.
  */
 import '../styles/global.css';
 import { Image, getImage } from 'astro:assets';
@@ -46,12 +52,22 @@ const lightboxData = await Promise.all(
     return { kind: 'video', src: it.url, poster, alt: it.alt, caption: it.caption };
   }),
 );
-const posterSrc = lightboxData.map((d) => ('poster' in d ? d.poster : ''));
+// smaller posters for the strip (the lightbox gets the 1200px ones)
+const slidePoster = await Promise.all(
+  items.map(async (it) =>
+    it.kind === 'video' && it.poster
+      ? (await getImage({ src: it.poster, width: Math.min(720, it.poster.width), format: 'webp' })).src
+      : '',
+  ),
+);
+// first few slides load straight away; the rest when the strip nears them
+const EAGER = 3;
 
 // JSON in a <script> tag — escape "<" so a caption can never close the tag
 const dataJson = JSON.stringify(lightboxData).replace(/</g, '\\u003c');
 
-const tileClass = `group relative block aspect-[4/5] w-full overflow-hidden rounded-[var(--radius-card)] bg-[#3a1d12] shadow-2xl ring-1 ring-gold/25 transition hover:ring-gold/60 focus-visible:ring-gold ${focusRing}`;
+const slideBtn = `group relative block aspect-[4/5] w-full overflow-hidden rounded-[var(--radius-card)] bg-[#3a1d12] shadow-2xl ring-1 ring-gold/25 transition focus-visible:ring-gold ${focusRing}`;
+const arrowClass = `absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-[#241009]/80 text-cream ring-1 ring-gold/40 transition hover:text-gold disabled:opacity-30 disabled:hover:text-cream focus-visible:ring-gold sm:inline-flex ${focusRing}`;
 ---
 
 <!doctype html>
@@ -98,47 +114,81 @@ const tileClass = `group relative block aspect-[4/5] w-full overflow-hidden roun
         </header>
 
         {items.length > 0 ? (
-          <ul class="mt-8 grid list-none grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4" data-gallery-grid>
-            {items.map((it, i) => (
-              <li>
-                {it.kind === 'image' ? (
-                  <button type="button" class={tileClass} data-open={i} aria-label={`View larger: ${it.alt}`}>
-                    <Image
-                      src={it.image}
-                      alt={it.alt}
-                      widths={[320, 480, 720]}
-                      sizes="(min-width: 1024px) 270px, (min-width: 640px) 33vw, 50vw"
-                      format="webp"
-                      loading={i < 4 ? 'eager' : 'lazy'}
-                      class="h-full w-full object-cover transition duration-300 motion-safe:group-hover:scale-[1.03]"
-                    />
+          <section class="mt-8" aria-roledescription="carousel" aria-label="Recent treats" data-carousel>
+            <div class="relative -mx-4 sm:mx-0">
+              <ul class="carousel-track flex list-none snap-x snap-mandatory gap-3 overflow-x-auto py-3 sm:gap-5" data-track>
+                {items.map((it, i) => (
+                  <li
+                    class="slide shrink-0 snap-center"
+                    aria-roledescription="slide"
+                    aria-label={`${i + 1} of ${items.length}`}
+                    data-slide={i}
+                    data-active={i === 0 ? '' : undefined}
+                  >
+                    {it.kind === 'image' ? (
+                      <button type="button" class={slideBtn} data-open={i} tabindex={i === 0 ? 0 : -1} aria-label={`View larger: ${it.alt}`}>
+                        <Image
+                          src={it.image}
+                          alt={it.alt}
+                          widths={[360, 540, 720]}
+                          sizes="(min-width: 1024px) 360px, (min-width: 640px) 300px, 72vw"
+                          format="webp"
+                          loading={i < EAGER ? 'eager' : 'lazy'}
+                          class="h-full w-full object-cover"
+                        />
+                      </button>
+                    ) : (
+                      <button type="button" class={slideBtn} data-open={i} tabindex={i === 0 ? 0 : -1} aria-label={`Play video with sound: ${it.alt}`}>
+                        <video
+                          class="h-full w-full object-cover"
+                          src={slidePoster[i] ? it.url : `${it.url}#t=0.1`}
+                          poster={i < EAGER ? slidePoster[i] || undefined : undefined}
+                          data-poster={slidePoster[i] || undefined}
+                          muted
+                          playsinline
+                          loop
+                          preload="none"
+                          aria-hidden="true"
+                          tabindex="-1"
+                          data-reel
+                        />
+                        <span
+                          class="pointer-events-none absolute right-2.5 top-2.5 text-cream drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+                          aria-hidden="true"
+                        >
+                          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 001.5.86l10.5-6.5a1 1 0 000-1.72L9.5 4.64A1 1 0 008 5.5z" /></svg>
+                        </span>
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+
+              {items.length > 1 && (
+                <>
+                  <button type="button" class={`${arrowClass} left-2 lg:left-6`} data-prev aria-label="Previous treat" disabled>
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
                   </button>
-                ) : (
-                  <button type="button" class={tileClass} data-open={i} aria-label={`Play video: ${it.alt}`}>
-                    <video
-                      class="h-full w-full object-cover"
-                      src={posterSrc[i] ? it.url : `${it.url}#t=0.1`}
-                      poster={posterSrc[i] || undefined}
-                      muted
-                      playsinline
-                      loop
-                      preload="metadata"
-                      aria-hidden="true"
-                      tabindex="-1"
-                      data-preview
-                    />
-                    {/* play mark — small, corner, quiet */}
-                    <span
-                      class="pointer-events-none absolute right-2.5 top-2.5 text-cream drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] transition group-hover:text-gold"
-                      aria-hidden="true"
-                    >
-                      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 001.5.86l10.5-6.5a1 1 0 000-1.72L9.5 4.64A1 1 0 008 5.5z" /></svg>
-                    </span>
+                  <button type="button" class={`${arrowClass} right-2 lg:right-6`} data-next aria-label="Next treat">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6" /></svg>
                   </button>
-                )}
-              </li>
-            ))}
-          </ul>
+                </>
+              )}
+            </div>
+
+            {/* caption + position: quiet, under the centre slide */}
+            <div class="mx-auto mt-3 max-w-sm text-center">
+              <p class="min-h-[2.5rem] text-sm leading-snug text-cream/75" data-caption aria-live="polite">{items[0].caption}</p>
+              {items.length > 1 && (
+                <div class="mx-auto mt-3 flex max-w-[12rem] items-center gap-3" aria-hidden="true">
+                  <span class="h-0.5 flex-1 overflow-hidden rounded-full bg-gold/20">
+                    <span class="progress-fill block h-full rounded-full bg-gold" data-progress style={`width:${100 / items.length}%`} />
+                  </span>
+                  <span class="text-xs font-semibold tabular-nums tracking-[0.15em] text-gold/80" data-count>1 / {items.length}</span>
+                </div>
+              )}
+            </div>
+          </section>
         ) : (
           /* empty state — the page builds before any media exists */
           <section class="mx-auto mt-8 max-w-md rounded-[var(--radius-card)] px-6 py-10 text-center shadow-2xl ring-1 ring-gold/25">
@@ -253,7 +303,6 @@ const tileClass = `group relative block aspect-[4/5] w-full overflow-hidden roun
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
         let index = 0;
-        let opener: HTMLElement | null = null;
 
         const single = items.length < 2;
         prevBtn.hidden = single;
@@ -297,12 +346,12 @@ const tileClass = `group relative block aspect-[4/5] w-full overflow-hidden roun
           count.textContent = `${index + 1} / ${items.length}`;
         }
 
-        function open(i: number, from: HTMLElement) {
+        function open(i: number, _from: HTMLElement) {
           index = i;
-          opener = from;
           render();
           dialog!.showModal();
           closeBtn.focus();
+          syncPlayback();
         }
 
         function go(step: number) {
@@ -311,18 +360,127 @@ const tileClass = `group relative block aspect-[4/5] w-full overflow-hidden roun
           render();
         }
 
-        document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((btn) => {
-          btn.addEventListener('click', () => open(Number(btn.dataset.open), btn));
+        // ── carousel ──────────────────────────────────────────────
+        const track = document.querySelector<HTMLElement>('[data-track]')!;
+        const slides = Array.from(track.querySelectorAll<HTMLElement>('[data-slide]'));
+        const btns = slides.map((s) => s.querySelector<HTMLButtonElement>('[data-open]')!);
+        const reels = slides.map((s) => s.querySelector<HTMLVideoElement>('video[data-reel]'));
+        const cPrev = document.querySelector<HTMLButtonElement>('[data-prev]');
+        const cNext = document.querySelector<HTMLButtonElement>('[data-next]');
+        const cCaption = document.querySelector<HTMLElement>('[data-caption]')!;
+        const cCount = document.querySelector<HTMLElement>('[data-count]');
+        const cFill = document.querySelector<HTMLElement>('[data-progress]');
+        let active = 0;
+        let stripVisible = true;
 
-          // muted hover preview for video tiles (mouse only, not reduced-motion)
-          const preview = btn.querySelector<HTMLVideoElement>('video[data-preview]');
-          if (preview) {
-            btn.addEventListener('pointerenter', (e) => {
-              if (e.pointerType === 'mouse' && !reduceMotion.matches) preview.play().catch(() => {});
-            });
-            btn.addEventListener('pointerleave', () => preview.pause());
-          }
+        // wake a slide's video: poster + metadata (called when it nears view)
+        function wake(i: number) {
+          const v = reels[i];
+          if (!v || v.dataset.awake) return;
+          v.dataset.awake = '1';
+          if (v.dataset.poster) v.poster = v.dataset.poster;
+          v.preload = 'metadata';
+        }
+
+        function syncPlayback() {
+          reels.forEach((v, i) => {
+            if (!v) return;
+            const play = i === active && stripVisible && !dialog!.open && !reduceMotion.matches;
+            if (play) {
+              wake(i);
+              v.play().catch(() => {});
+            } else if (!v.paused) {
+              v.pause();
+            }
+          });
+        }
+
+        function setActive(i: number) {
+          if (i === active && slides[i].hasAttribute('data-active')) return;
+          const hadFocus = slides.some((s) => s.contains(document.activeElement));
+          slides[active].removeAttribute('data-active');
+          btns[active].tabIndex = -1;
+          active = i;
+          slides[i].setAttribute('data-active', '');
+          btns[i].tabIndex = 0;
+          if (hadFocus) btns[i].focus({ preventScroll: true });
+          cCaption.textContent = items[i].caption;
+          if (cCount) cCount.textContent = `${i + 1} / ${items.length}`;
+          if (cFill) cFill.style.width = `${((i + 1) / items.length) * 100}%`;
+          if (cPrev) cPrev.disabled = i === 0;
+          if (cNext) cNext.disabled = i === items.length - 1;
+          syncPlayback();
+        }
+
+        function scrollToSlide(i: number, smooth = !reduceMotion.matches) {
+          i = Math.max(0, Math.min(items.length - 1, i));
+          const s = slides[i];
+          track.scrollTo({
+            left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2,
+            behavior: smooth ? 'smooth' : 'auto',
+          });
+          setActive(i);
+        }
+
+        // which slide sits nearest the centre of the strip
+        function nearest() {
+          const mid = track.scrollLeft + track.clientWidth / 2;
+          let best = 0;
+          let d = Infinity;
+          slides.forEach((s, i) => {
+            const dd = Math.abs(s.offsetLeft + s.offsetWidth / 2 - mid);
+            if (dd < d) { d = dd; best = i; }
+          });
+          return best;
+        }
+        let raf = 0;
+        track.addEventListener('scroll', () => {
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(() => setActive(nearest()));
+        }, { passive: true });
+
+        btns.forEach((btn, i) => {
+          btn.addEventListener('click', () => {
+            if (i === active) open(i, btn);
+            else scrollToSlide(i);
+          });
         });
+        cPrev?.addEventListener('click', () => scrollToSlide(active - 1));
+        cNext?.addEventListener('click', () => scrollToSlide(active + 1));
+
+        track.addEventListener('keydown', (e) => {
+          const k = e.key;
+          const to =
+            k === 'ArrowRight' ? active + 1 :
+            k === 'ArrowLeft' ? active - 1 :
+            k === 'Home' ? 0 :
+            k === 'End' ? items.length - 1 : null;
+          if (to === null) return;
+          e.preventDefault();
+          scrollToSlide(to);
+          btns[active].focus({ preventScroll: true });
+        });
+
+        // lazy: wake videos within ~1 strip-width of view
+        const near = new IntersectionObserver((entries) => {
+          entries.forEach((en) => {
+            if (en.isIntersecting) wake(Number((en.target as HTMLElement).dataset.slide));
+          });
+        }, { root: track, rootMargin: '0px 100% 0px 100%' });
+        slides.forEach((s) => near.observe(s));
+
+        // pause when the strip scrolls off the page
+        new IntersectionObserver(([en]) => {
+          stripVisible = en.isIntersecting;
+          syncPlayback();
+        }, { threshold: 0.35 }).observe(track);
+
+        reduceMotion.addEventListener('change', syncPlayback);
+        document.addEventListener('visibilitychange', () => {
+          stripVisible = !document.hidden;
+          syncPlayback();
+        });
+        setActive(0);
 
         prevBtn.addEventListener('click', () => go(-1));
         nextBtn.addEventListener('click', () => go(1));
@@ -369,7 +527,10 @@ const tileClass = `group relative block aspect-[4/5] w-full overflow-hidden roun
         dialog.addEventListener('close', () => {
           stopVideo();
           media.replaceChildren();
-          opener?.focus();
+          // the strip follows to wherever the visitor ended up in the viewer
+          scrollToSlide(index, false);
+          btns[index].focus({ preventScroll: true });
+          syncPlayback();
         });
       }
     </script>
@@ -377,6 +538,43 @@ const tileClass = `group relative block aspect-[4/5] w-full overflow-hidden roun
 </html>
 
 <style is:global>
+  /* ── carousel strip ── */
+  .carousel-track {
+    --slide-w: 72vw;
+    padding-inline: calc(50% - var(--slide-w) / 2);
+    scroll-padding-inline: calc(50% - var(--slide-w) / 2);
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+  @media (min-width: 640px) {
+    .carousel-track { --slide-w: 300px; }
+  }
+  @media (min-width: 1024px) {
+    .carousel-track { --slide-w: min(360px, calc((100svh - 22rem) * 0.8)); }
+  }
+  .carousel-track .slide {
+    width: var(--slide-w);
+    transition: transform 0.35s ease, opacity 0.35s ease;
+    transform: scale(0.88);
+    opacity: 0.5;
+  }
+  .carousel-track .slide[data-active] {
+    transform: none;
+    opacity: 1;
+  }
+  .progress-fill {
+    transition: width 0.35s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .carousel-track .slide,
+    .progress-fill {
+      transition: none;
+    }
+  }
+
   /* no page scroll behind the open lightbox */
   html:has(dialog[data-lightbox][open]) {
     overflow: hidden;
