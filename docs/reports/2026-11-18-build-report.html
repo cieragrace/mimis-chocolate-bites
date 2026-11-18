@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mimi's Build Report — November 18, 2026</title>
+<style>
+  :root {
+    --ink: #2a1a10;
+    --navy: #241009;
+    --gold: #c9975a;
+    --paper: #ffffff;
+    --soft: #fbf4ea;
+    --line: #e2d5c2;
+    --muted: #6b5a4c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Avenir Next', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--ink); background: var(--paper);
+    font-size: 10.5pt; line-height: 1.5;
+  }
+  .page { padding: 48px 56px; }
+  header.masthead {
+    background: var(--navy); color: #fff;
+    padding: 44px 56px 36px;
+  }
+  .masthead .kicker { text-transform: uppercase; letter-spacing: 3px; font-size: 8.5pt; color: var(--gold); font-weight: 600; }
+  .masthead h1 { font-size: 26pt; font-weight: 700; margin: 6px 0 4px; }
+  .masthead .sub { font-size: 11pt; color: #e0cdb9; }
+  .stats { display: flex; gap: 14px; margin: 26px 0 6px; }
+  .stat {
+    flex: 1; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.18);
+    border-radius: 8px; padding: 12px 14px;
+  }
+  .stat .n { font-size: 17pt; font-weight: 700; color: var(--gold); }
+  .stat .l { font-size: 8pt; text-transform: uppercase; letter-spacing: 1.2px; color: #e0cdb9; }
+  h2 {
+    font-size: 14pt; color: var(--navy); margin: 26px 0 10px;
+    padding-bottom: 6px; border-bottom: 2px solid var(--gold);
+  }
+  h3 { font-size: 11pt; color: var(--navy); margin: 14px 0 4px; }
+  p { margin: 6px 0; }
+  ul { margin: 4px 0 10px 18px; }
+  li { margin: 2.5px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 9.5pt; }
+  th { background: var(--soft); text-align: left; padding: 7px 10px; border-bottom: 2px solid var(--line); font-size: 8.5pt; text-transform: uppercase; letter-spacing: 1px; color: var(--navy); }
+  td { padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .pill { display: inline-block; border-radius: 10px; padding: 1px 8px; font-size: 8pt; font-weight: 600; }
+  .pill.high { background: #f6e3e1; color: #8c2f26; }
+  .pill.med { background: #f4ecd9; color: #7a5c1e; }
+  .pill.low { background: #e9e5dd; color: #55503f; }
+  .pill.fixed { background: #e3efe4; color: #2c5f34; }
+  .two-col { display: flex; gap: 28px; }
+  .two-col > div { flex: 1; }
+  .note { color: var(--muted); font-size: 9pt; }
+  code { font-family: 'SF Mono', Menlo, monospace; font-size: 8.5pt; background: var(--soft); padding: 1px 4px; border-radius: 3px; }
+  footer { margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 8.5pt; display: flex; justify-content: space-between; }
+  .avoid-break { break-inside: avoid; }
+  @page { size: Letter; margin: 0; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="kicker">Mimi's Chocolate Bites · Internal Build Report</div>
+  <h1>The Gallery, the Carousel &amp; the Cottage Ribbon</h1>
+  <div class="sub">November 17&ndash;18, 2026 · main · 5fa0b35 &rarr; 422a65c · pushed + live on mimischocolatebites.com</div>
+  <div class="stats">
+    <div class="stat"><div class="n">8</div><div class="l">Commits</div></div>
+    <div class="stat"><div class="n">+1,409</div><div class="l">Lines (72 files)</div></div>
+    <div class="stat"><div class="n">38</div><div class="l">Photos, trimmed 4:5</div></div>
+    <div class="stat"><div class="n">11</div><div class="l">Reels hosted on site</div></div>
+    <div class="stat"><div class="n">11</div><div class="l">Device sizes verified</div></div>
+  </div>
+</header>
+
+<div class="page">
+
+<h2>What happened</h2>
+<p>
+Two asks from Mimi: put the Colorado cottage-food disclosure on the site, and add a gallery of her
+Instagram photos and videos. Her public reels were pulled logged-out, muxed from Instagram's split
+video and audio streams, re-encoded to 720p, and given clean end-frame posters because Instagram's
+own covers carry a baked-in play icon. Feedback rounds made the grid cleaner and put photos ahead of
+videos. Three redesign directions were prototyped in parallel worktrees, and Mimi's pick became a
+3-second auto-rotating carousel. The fine print turned into a scrolling pink ribbon footer. Last came
+her 41 downloaded photos: 38 kept, cropped to 4:5, EXIF and GPS stripped since the repo is public.
+Each stage went to a preview link first, then shipped and was checked live on 11 device sizes.
+</p>
+
+<div class="two-col">
+<div>
+<h3>Gallery (/gallery)</h3>
+<ul>
+  <li>Folder-driven: drop a file in <code>src/assets/gallery/</code>; <code>gallery.json</code> overrides alt, caption, order, hidden</li>
+  <li>"Recent treats" photo grid first: 2/3/4 columns of 4:5 tiles, 12 shown plus "See all 38 photos"; all photos render without JS</li>
+  <li>"Watch it come together" video carousel: scroll-snap, seamless clone loop, 3s auto-advance</li>
+  <li>Rotation pauses on hover, focus, open viewer, hidden tab and off-screen, resumes after 6s idle, has a pause button</li>
+  <li>Lightbox is one <code>&lt;dialog&gt;</code> per section</li>
+  <li>11 reels at 720p H.264 with <code>+faststart</code>, end-frame posters with black bars cropped</li>
+  <li><b>Fixed:</b> reduced-motion CSS hid every slide, so those visitors saw an empty gallery</li>
+</ul>
+</div>
+<div>
+<h3>Cottage disclosure</h3>
+<ul>
+  <li>Wording single-sourced in <code>src/data/cottage.ts</code>, verbatim</li>
+  <li>Pink ribbon marquee footer on landing, /pricing and /gallery: Fraunces italic, heart separators, 70s loop</li>
+  <li>Pauses on hover/focus; screen readers get the sentence once; static and wrapped under reduced motion</li>
+  <li>Static notice stays under Submit on the order form</li>
+</ul>
+<h3>Landing + SEO</h3>
+<ul>
+  <li>Gallery button added to the landing</li>
+  <li><b>Fixed:</b> 2px overflow on 320px phones (Galaxy S9+); landing fits one screen again</li>
+  <li>/pricing and /gallery added to <code>sitemap.xml</code></li>
+</ul>
+<h3>Verification</h3>
+<ul>
+  <li>Live check on iPhone SE / 15 Pro / Pro Max / landscape, Pixel 7, Galaxy S9+, iPad Mini, iPad Pro, 1280, 1440, 1920</li>
+  <li>No sideways scroll, 0 console errors, 0 broken images, carousel advances</li>
+</ul>
+</div>
+</div>
+
+<h2 class="avoid-break">Deliberately not built</h2>
+<table>
+  <tr><th>Item</th><th>Why it waited</th><th>Priority</th></tr>
+  <tr><td>Older Instagram posts</td><td>Logged-out Instagram only exposes the latest 12; more need Mimi to send files</td><td><span class="pill med">MED</span></td></tr>
+  <tr><td>Auto-sync from Instagram</td><td>Needs the Instagram Graph API and a business account token; manual drop-in is enough for now</td><td><span class="pill low">LOW</span></td></tr>
+  <tr><td>Worktree cleanup</td><td><code>mimis-wt-carousel</code>, <code>-spotlight</code>, <code>-rows</code> still on disk; prototypes B and C were not chosen</td><td><span class="pill low">LOW</span></td></tr>
+</table>
+<p class="note">Test note: automated checks that leave the pointer over the carousel see it paused at 1/11. That is the hover pause working, not a bug; checks with the pointer moved away advance as expected.</p>
+
+<h2 class="avoid-break">Paper trail</h2>
+<ul>
+  <li><code>src/pages/gallery.astro</code> — grid, carousel, lightbox</li>
+  <li><code>src/lib/gallery.ts</code> + <code>src/data/gallery.json</code> — media loader and per-file overrides</li>
+  <li><code>src/assets/gallery/README.md</code> — how to add photos and videos</li>
+  <li><code>src/components/CottageStripe.astro</code> + <code>src/data/cottage.ts</code> — the ribbon and its text</li>
+  <li><code>docs/reports/2026-11-18-build-report.html</code> — this report's source</li>
+</ul>
+
+<footer>
+  <div>cieragrace/mimis-chocolate-bites · main @ 422a65c</div>
+  <div>Report generated November 18, 2026</div>
+</footer>
+
+</div>
+</body>
+</html>
